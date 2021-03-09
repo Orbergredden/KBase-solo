@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConfigMainList>
+    <ConfigMainItem>
+        <id>-1128660070</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2017-04-04</lastModified>
+        <name>PathDirCache</name>
+        <sectionName>directories</sectionName>
+        <value>cache/</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <descr>Сохранять сосотояние программы при выходе и восстанавливать при старте</descr>
+        <id>1482215445</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2019-08-12</lastModified>
+        <name>SaveAppStateOnExit</name>
+        <sectionName>AppState</sectionName>
+        <value>1</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <descr>Удаляет каталог на диске с кешированными документами при выходе</descr>
+        <id>2684626</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2019-09-12</lastModified>
+        <name>DeleteCacheOnExit</name>
+        <sectionName>AppState</sectionName>
+        <value>1</value>
+    </ConfigMainItem>
+</ConfigMainList>

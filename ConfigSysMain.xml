@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConfigMainList>
+    <ConfigMainItem>
+        <id>-1284171030</id>
+        <isEditable>false</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2018-02-05</lastModified>
+        <name>name</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>KBase solo</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171031</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2021-02-26</lastModified>
+        <name>version</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>1.03.04.511</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171032</id>
+        <isEditable>false</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2018-02-05</lastModified>
+        <name>BeginDate</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>02.2017</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171033</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2021-02-26</lastModified>
+        <name>EndDate</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>26.02.2021</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171034</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2021-02-26</lastModified>
+        <name>CodeName</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>fix create template with more themes</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171035</id>
+        <isEditable>false</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2018-02-05</lastModified>
+        <name>Author</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>Igor Makarevich</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>-1284171036</id>
+        <isEditable>false</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2018-02-05</lastModified>
+        <name>site</name>
+        <sectionName>AboutProgram</sectionName>
+        <value>http://</value>
+    </ConfigMainItem>
+    <ConfigMainItem>
+        <id>13717830</id>
+        <isEditable>true</isEditable>
+        <isShow>true</isShow>
+        <lastModified>2020-12-10</lastModified>
+        <name>Required version</name>
+        <sectionName>DB</sectionName>
+        <value>1.02.01.*</value>
+    </ConfigMainItem>
+</ConfigMainList>

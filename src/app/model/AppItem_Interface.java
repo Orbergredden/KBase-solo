@@ -1,0 +1,74 @@
+package app.model;
+
+import java.time.LocalDateTime;
+
+/**
+ * Интерфейс.
+ * Элемент приложения, информация и действия
+ * Методы сохранения и восстановления состояния контролов в интерфейсе приложения.
+ */
+public interface AppItem_Interface {
+	
+	/**
+	 * Получаем уникальный идентификатор обьекта
+	 */
+	int getOID();
+	
+    /**
+     * Название элемента приложения
+     */
+    String getName();
+    /**
+     * id обекта элемента приложения
+     */
+    default long getAppItemId() {  return 0;  };
+    /**
+     * id соединения с базой данных
+     */
+    int getDbConnId();
+    /**
+     * контроллер элемента приложения
+     */
+    Object getController();
+    /**
+     * Корень дерева (или другой какой то рут)
+     */
+    default long getRootId() {
+    	return 0;
+    }
+    
+    /**
+     * Проверяем наличие несохраненных данных
+     */
+    default boolean checkUnsavedData () {
+        return false;
+    }
+    
+    /**
+     * Сохраняем измененную информацию в БД
+     */
+    default void save () {
+        //nothing
+    }
+    
+    /**
+     * Сохраняем всю измененную информацию в БД
+     */
+    default void saveAll () {
+        //nothing
+    }
+
+    /**
+     * Сохраняем состояние в иерархической структуре
+     */
+    default void saveControlsState (StateList stateList) {
+        //nothing
+    }
+
+    /**
+     * Восстанавливаем состояние контролов
+     */
+    default void restoreControlsState (StateList stateList) {
+        //nothing
+    }
+}
