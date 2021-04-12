@@ -9,7 +9,7 @@ import app.model.business.IconItem;
 import app.model.business.InfoHeaderItem;
 import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
-import app.model.business.templates.TemplateRequiredFileItem;
+import app.model.business.templates_old.TemplateRequiredFileItem;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,5 +1,5 @@
 
-package app.view.business.templates;
+package app.view.business.templates_old;
 
 import java.util.Date;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.prefs.Preferences;
 
 import app.lib.ShowAppMsg;
 import app.model.Params;
-import app.model.business.templates.TemplateThemeItem;
+import app.model.business.templates_old.TemplateThemeItem;
 import app.view.business.SectionEdit_Controller;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;

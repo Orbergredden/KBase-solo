@@ -15,7 +15,7 @@ SET client_min_messages = warning;
 SET search_path = kbase, public, pg_catalog;
 
 -- ######## update table Settings for new version ##################################
-/*update settings 
+update settings 
    set value = '1.03.00.023', 
        descr = 'new version support of template for documents',
        date_modified = now(),
@@ -30,7 +30,7 @@ update settings
  where alias = 'VERSION_DB_END_DATE'
 ;
 --######## move table template_themes #######################################
-
+/*
 CREATE SEQUENCE kbase.seq_template_themes
     START WITH 1
     INCREMENT BY 1

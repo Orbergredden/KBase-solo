@@ -1,5 +1,5 @@
 
-package app.model.business.templates;
+package app.model.business.templates_old;
 
 import java.util.Date;
 

@@ -12,10 +12,10 @@ import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
-import app.model.business.templates.TemplateItem;
-import app.model.business.templates.TemplateRequiredFileItem;
-import app.model.business.templates.TemplateSimpleItem;
-import app.model.business.templates.TemplateThemeItem;
+import app.model.business.templates_old.TemplateItem;
+import app.model.business.templates_old.TemplateRequiredFileItem;
+import app.model.business.templates_old.TemplateSimpleItem;
+import app.model.business.templates_old.TemplateThemeItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

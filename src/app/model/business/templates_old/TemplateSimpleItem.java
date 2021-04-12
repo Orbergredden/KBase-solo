@@ -1,9 +1,8 @@
 
-package app.model.business.templates;
-
-import java.util.Date;
+package app.model.business.templates_old;
 
 import app.model.business.SimpleItem;
+import java.util.Date;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleIntegerProperty;

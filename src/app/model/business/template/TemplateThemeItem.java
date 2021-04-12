@@ -1,5 +1,5 @@
 
-package app.model.business.templates;
+package app.model.business.template;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ public class TemplateThemeItem extends TemplateSimpleItem {
 	 * @param
 	 */
 	public TemplateThemeItem(long id, String name, String descr) {
-		super(id, id, name, descr, TYPE_THEME, 0, 0);
+		super(id, name, descr, id, TYPE_ITEM_THEME, 0);
 	}
 	
 	/**
@@ -30,8 +30,8 @@ public class TemplateThemeItem extends TemplateSimpleItem {
 	 * @param
 	 */
 	public TemplateThemeItem(long id, String name, String descr,
-									    Date dateCreated, Date dateModified, String userCreated, String userModified) {
-		super(id, id, name, descr, TYPE_THEME, 0, 0, dateCreated, dateModified, userCreated, userModified);
+							 Date dateCreated, Date dateModified, String userCreated, String userModified) {
+		super(id, name, descr, id, TYPE_ITEM_THEME, 0, dateCreated, dateModified, userCreated, userModified);
 	}
 	
 	/**

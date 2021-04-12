@@ -11,8 +11,8 @@ import app.model.DBConn_Parameters;
 import app.model.Params;
 import app.model.WinItem;
 import app.view.business.IconsList_Controller;
+import app.view.business.templates_old.TemplatesList_Controller;
 import app.view.business.Container_Interface;
-import app.view.business.templates.TemplatesList_Controller;
 import app.view.structure.TabNavigationHistory;
 
 import java.io.IOException;
@@ -552,7 +552,7 @@ public class Root_Controller implements Container_Interface {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/templates/TemplatesList_Layout.fxml"));
+			loader.setLocation(Main.class.getResource("view/business/templates_old/TemplatesList_Layout.fxml"));
 			page = loader.load();
 			
 			// Даём контроллеру доступ к главному прилодению.
@@ -586,15 +586,6 @@ public class Root_Controller implements Container_Interface {
      */
     @FXML
     private void handleAbout() {
-//    	mainApp.config.add("AboutProgram", "name",      "KBase solo",   LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "version",   "00.01.02.239", LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "BeginDate", "02.2017",      LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "EndDate",   "05.02.2018",   LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "CodeName",  "{dev} version settings", LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "Author",    "Igor Makarevich", LocalDate.now());
-//    	mainApp.config.add("AboutProgram", "site",      "http://",      LocalDate.now());
-//    	mainApp.config.saveToFile();
-    	
     	ShowAppMsg.showAlert("INFORMATION", "О программе", params.getConfigSys().getItemValue("AboutProgram", "name"), 
 				 "Версия: "+params.getConfigSys().getItemValue("AboutProgram", "version")+
 				 " ("+params.getConfigSys().getItemValue("AboutProgram", "BeginDate")+
@@ -603,12 +594,6 @@ public class Root_Controller implements Container_Interface {
                 "Кодовое название : "+params.getConfigSys().getItemValue("AboutProgram", "CodeName")+" \n" +
                 "Автор: "+params.getConfigSys().getItemValue("AboutProgram", "Author")+"\n" +
                    "Сайт: "+params.getConfigSys().getItemValue("AboutProgram", "site"));
-    	
-//    	ShowAppMsg.showAlert("INFORMATION", "О программе", "KBase solo", 
-//    						 "Версия: 00.01.02.239 (02.2017 - 05.02.2018)\n" +
-//                             "Кодовое название : {dev} version settings \n" +
-//                             "Автор: Igor Makarevich\n" +
-//   		                     "Сайт: http://");
     }
 
 	/**

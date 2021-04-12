@@ -1,5 +1,5 @@
 
-package app.view.business.templates;
+package app.view.business.templates_old;
 
 import app.exceptions.KBase_Ex;
 import app.exceptions.KBase_ReadTextFileUTFEx;
@@ -11,10 +11,10 @@ import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.InfoTypeItem;
 import app.model.business.InfoTypeStyleItem;
-import app.model.business.templates.TemplateItem;
-import app.model.business.templates.TemplateRequiredFileItem;
-import app.model.business.templates.TemplateSimpleItem;
-import app.model.business.templates.TemplateThemeItem;
+import app.model.business.templates_old.TemplateItem;
+import app.model.business.templates_old.TemplateRequiredFileItem;
+import app.model.business.templates_old.TemplateSimpleItem;
+import app.model.business.templates_old.TemplateThemeItem;
 
 import java.io.File;
 import java.util.Date;

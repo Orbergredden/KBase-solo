@@ -12,7 +12,7 @@ import app.model.business.InfoTypeStyleItem;
 import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
-import app.model.business.templates.TemplateItem;
+import app.model.business.templates_old.TemplateItem;
 
 import java.io.IOException;
 import java.util.List;

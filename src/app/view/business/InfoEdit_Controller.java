@@ -13,7 +13,7 @@ import app.model.business.InfoHeaderItem;
 import app.model.business.InfoTypeItem;
 import app.model.business.InfoTypeStyleItem;
 import app.model.business.SectionItem;
-import app.model.business.templates.TemplateItem;
+import app.model.business.templates_old.TemplateItem;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
