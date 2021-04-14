@@ -395,7 +395,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 	 * Реализуем метод интерфейса AppItem_Interface.
 	 */
 	public String getName() {
-		return "TemplateList_Controller";
+		return AppItem_Interface.ELEMENT_TEMPLATE_LIST;
 	}
 
 	/**

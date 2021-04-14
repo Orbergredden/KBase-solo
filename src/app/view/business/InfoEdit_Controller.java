@@ -380,7 +380,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
 	 * Реализуем метод интерфейса AppItem_Interface.
 	 */
 	public String getName() {
-		return "InfoEdit_Controller";
+		return AppItem_Interface.ELEMENT_INFO_EDIT;
 	}
 
 	/**

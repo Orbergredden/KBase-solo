@@ -1098,7 +1098,7 @@ public class IconsList_Controller implements AppItem_Interface {
 	 * Реализуем метод интерфейса AppItem_Interface.
 	 */
 	public String getName() {
-		return "IconsList_Controller";
+		return AppItem_Interface.ELEMENT_ICON_LIST;
 	}
 
 	/**

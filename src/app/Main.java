@@ -496,7 +496,7 @@ public class Main extends Application {
 					break;
 				case "tabCreateAction" :
 					switch (tabName) {
-						case "SectionList_Controller" :
+						case AppItem_Interface.ELEMENT_SECTION_LIST :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									DBConCur_Parameters conCur = dbConnect(cp);
@@ -512,7 +512,7 @@ public class Main extends Application {
 								}
 							}
 							break;
-						case "DocumentView_Controller" :
+						case AppItem_Interface.ELEMENT_DOCUMENT_VIEW :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									conn = dbConnect(cp);
@@ -538,7 +538,7 @@ public class Main extends Application {
 								}
 							}
 							break;	
-						case "InfoEdit_Controller" :
+						case AppItem_Interface.ELEMENT_INFO_EDIT :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									conn = dbConnect(cp);
@@ -553,7 +553,7 @@ public class Main extends Application {
 								}
 							}
 							break;	
-						case "IconsList_Controller" :
+						case AppItem_Interface.ELEMENT_ICON_LIST :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									if (dbConnect(cp) != null) {
@@ -562,7 +562,7 @@ public class Main extends Application {
 								}
 							}
 							break;
-						case "TemplateList_Controller" :
+						case AppItem_Interface.ELEMENT_TEMPLATE_LIST :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									if (dbConnect(cp) != null) {
@@ -625,7 +625,7 @@ public class Main extends Application {
 					break;
 				case "winCreateAction" :
 					switch (winClassName) {
-						case "SectionList_Controller" :
+						case AppItem_Interface.ELEMENT_SECTION_LIST :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == winDbConnId) {
 									conn = dbConnect(cp);
@@ -643,7 +643,7 @@ public class Main extends Application {
 								}
 							}
 							break;
-						case "DocumentView_Controller" :
+						case AppItem_Interface.ELEMENT_DOCUMENT_VIEW :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == winDbConnId) {
 									conn = dbConnect(cp);
@@ -670,7 +670,7 @@ public class Main extends Application {
 								}
 							}
 							break;
-						case "InfoEdit_Controller" :
+						case AppItem_Interface.ELEMENT_INFO_EDIT :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == winDbConnId) {
 									conn = dbConnect(cp);

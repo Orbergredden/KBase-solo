@@ -885,7 +885,7 @@ public class SectionList_Controller implements Container_Interface, AppItem_Inte
 	 * Реализуем метод интерфейса AppItem_Interface.
 	 */
 	public String getName() {
-		return "SectionList_Controller";
+		return AppItem_Interface.ELEMENT_SECTION_LIST;
 	}
 
 	/**
@@ -1149,7 +1149,7 @@ public class SectionList_Controller implements Container_Interface, AppItem_Inte
 					break;
 				case "tabCreateAction" :
 					switch (tabName) {
-						case "DocumentView_Controller" :
+						case AppItem_Interface.ELEMENT_DOCUMENT_VIEW :
 							Params par = new Params(this.params);
 							par.setObjContainer(this);
 							par.setParentObj(this);
@@ -1160,7 +1160,7 @@ public class SectionList_Controller implements Container_Interface, AppItem_Inte
 									par,
 									treeViewCtrl.getTreeItemById(treeViewCtrl.root, tabAppItemId));
 							break;
-						case "InfoEdit_Controller" :
+						case AppItem_Interface.ELEMENT_INFO_EDIT :
 							Params parIE = new Params(this.params);
 							parIE.setObjContainer(this);
 							parIE.setParentObj(this);

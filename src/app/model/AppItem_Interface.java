@@ -1,6 +1,6 @@
 package app.model;
 
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
 
 /**
  * Интерфейс.
@@ -8,6 +8,12 @@ import java.time.LocalDateTime;
  * Методы сохранения и восстановления состояния контролов в интерфейсе приложения.
  */
 public interface AppItem_Interface {
+	// for Name 
+	public static final String ELEMENT_SECTION_LIST  = "SectionList_Controller";
+	public static final String ELEMENT_DOCUMENT_VIEW = "DocumentView_Controller";
+	public static final String ELEMENT_INFO_EDIT     = "InfoEdit_Controller";
+	public static final String ELEMENT_ICON_LIST     = "IconsList_Controller";
+	public static final String ELEMENT_TEMPLATE_LIST = "TemplateList_Controller";
 	
 	/**
 	 * Получаем уникальный идентификатор обьекта

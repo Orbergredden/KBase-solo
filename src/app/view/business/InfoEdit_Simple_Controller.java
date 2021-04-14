@@ -26,11 +26,6 @@ public abstract class InfoEdit_Simple_Controller implements AppItem_Interface {
      * Вызывается родительским обьектом, которое даёт на себя ссылку.
      * Инициализирует переменные и контролы.
      */
-//    public void setParrentObj(
-//    		InfoEdit_Controller parrentObj,
-//    		DBConCur_Parameters conn,
-//    		long infoTypeId,
-//    		long infoId) {
     public void setParams(Params params, long infoTypeId, long infoId) {
     	this.params     = params;
         this.parrentObj = (InfoEdit_Controller)params.getParentObj();

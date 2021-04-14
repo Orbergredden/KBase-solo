@@ -856,7 +856,7 @@ public class DocumentView_Controller implements AppItem_Interface {
 	 * Реализуем метод интерфейса AppItem_Interface.
 	 */
 	public String getName() {
-		return "DocumentView_Controller";
+		return AppItem_Interface.ELEMENT_DOCUMENT_VIEW;
 	}
 
 	/**
