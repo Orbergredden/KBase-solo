@@ -562,7 +562,7 @@ public class Main extends Application {
 								}
 							}
 							break;
-						case "TemplatesList_Controller" :
+						case "TemplateList_Controller" :
 							for (DBConn_Parameters cp : new DBConnList_Parameters().dbConnListParam) {
 								if (cp.getConnId() == tabDbConnId) {
 									if (dbConnect(cp) != null) {

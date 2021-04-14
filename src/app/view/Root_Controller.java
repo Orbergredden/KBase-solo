@@ -11,7 +11,7 @@ import app.model.DBConn_Parameters;
 import app.model.Params;
 import app.model.WinItem;
 import app.view.business.IconsList_Controller;
-import app.view.business.templates_old.TemplatesList_Controller;
+import app.view.business.template.TemplateList_Controller;
 import app.view.business.Container_Interface;
 import app.view.structure.TabNavigationHistory;
 
@@ -529,12 +529,11 @@ public class Root_Controller implements Container_Interface {
      */
     @FXML
     public void handleCatalogTemplates() {
-		TemplatesList_Controller controller = null;
+		TemplateList_Controller controller = null;
 		DBConCur_Parameters conCur = getActiveConnection();        // обьект текущего соединения
 
 		//
 		if (conCur == null) {
-			//e.printStackTrace();
 			ShowAppMsg.showAlert("INFORMATION", "Сообщение", "Нет активного соединения с источником данных", "Необходимо подключиться.");
 			//handleConnectToDB();
 			return;
@@ -552,12 +551,11 @@ public class Root_Controller implements Container_Interface {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/templates_old/TemplatesList_Layout.fxml"));
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateList.fxml"));
 			page = loader.load();
 			
 			// Даём контроллеру доступ к главному прилодению.
 			controller = loader.getController();
-	        //controller.setMainApp(params.getMain(), conCur, this);
 			
 			Params params = new Params(this.params);
 			params.setConCur(conCur);

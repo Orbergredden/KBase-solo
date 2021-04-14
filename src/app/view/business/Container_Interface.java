@@ -27,7 +27,6 @@ public interface Container_Interface {
 		
 		tab.setTooltip(new Tooltip(tooltip));
 		tab.setContent(pane);
-		//tab.setId(id);
 		tab.setUserData(controller);         // запихиваем ссылку на контролер для внешних вызовов
 	
 		// выводим картинку и надпись
