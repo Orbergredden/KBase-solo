@@ -1,14 +1,14 @@
 
-package app.view.business.templates_old;
+package app.view.business.template;
+
+import app.lib.ShowAppMsg;
+import app.model.Params;
+import app.model.business.template.TemplateThemeItem;
 
 import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import app.lib.ShowAppMsg;
-import app.model.Params;
-import app.model.business.templates_old.TemplateThemeItem;
-import app.view.business.SectionEdit_Controller;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -71,18 +71,9 @@ public class TemplateThemeSelect_Controller {
      * Вызывается родительским обьектом, который даёт на себя ссылку.
      * Инициализирует контролы на слое.
      */
-//    public void setParentObj(SectionEdit_Controller parentObj, Stage dialogStage, long themeIdCur) {
     public void setParams(Params params, long themeIdCur) {
         this.params      = params;
         this.themeIdCur  = themeIdCur;
-
-        
-        
-//      this.parentObj   = parentObj;
-//      this.themeIdCur  = themeIdCur;
-//      this.dialogStage = dialogStage;
-        
-        //TODO
         
         // init controls
         initControlsValue();

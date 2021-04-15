@@ -5,13 +5,15 @@ import app.lib.ConvertType;
 import app.lib.DateConv;
 import app.lib.ShowAppMsg;
 import app.Main;
-import app.model.*;
+import app.model.AppItem_Interface;
+import app.model.DBConCur_Parameters;
+import app.model.Params;
 import app.model.business.InfoTypeItem;
 //import app.model.business.InfoTypeStyleItem;
 //import app.model.business.template.TemplateItem;
 //import app.model.business.templates_old.TemplateRequiredFileItem;
 import app.model.business.template.TemplateSimpleItem;
-//import app.model.business.templates_old.TemplateThemeItem;
+import app.model.business.template.TemplateThemeItem;
 import app.view.business.Container_Interface;
 
 import java.io.IOException;
@@ -443,7 +445,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			treeTableView_templates.setRoot(root);
 
 			initTreeItems(root);
-///			initCellFactory();
+			initCellFactory();
 ///			initRowFactory();
 
 			// Слушаем изменения выбора, и при изменении отображаем информацию.
@@ -564,12 +566,127 @@ public class TemplateList_Controller implements AppItem_Interface {
 
 			if (f == null)  return;
 			
+			TreeItem<TemplateSimpleItem> sectionThemeItem = new TreeItem<>(new TemplateSimpleItem(
+					0, "Темы", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_THEME, 0));
+			ti.getChildren().add(sectionThemeItem);
 			
+			List<TemplateThemeItem> themesList = conn.db.templateThemesList();
 			
+			for (TemplateThemeItem i : themesList) {       // cycle for themes
+				TreeItem<TemplateSimpleItem> themeItem = new TreeItem<>(i);
+				themeItem.getValue().setThemeId(i.getId());
+				themeItem.getValue().setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
+				sectionThemeItem.getChildren().add(themeItem);
+				
+				
+				
+				
+				
+				
+				
+			}
 			
+			//======== Templates
+			TreeItem<TemplateSimpleItem> sectionTemplateItem = new TreeItem<>(new TemplateSimpleItem(
+					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, 0));
+			ti.getChildren().add(sectionTemplateItem);
 			
 		
 		
+		}
+		//TODO
+		
+		/**
+		 * CellFactory - показ иконок
+		 */
+		public void initCellFactory () {
+			treeTableColumn_name.setCellFactory(ttc -> new TreeTableCell<TemplateSimpleItem, String>() {
+				private TemplateSimpleItem row;
+				private ImageView graphic;
+				private ImageView graphic_default;
+				private HBox hBox;
+				private boolean isDefault;
+
+				@Override
+				protected void updateItem(String item, boolean empty) {    // display graphic
+					isDefault = false;
+
+					try {
+						row = getTreeTableRow().getItem();
+						switch (row.getTypeItem()) {
+							case TemplateSimpleItem.TYPE_ITEM_ROOT :                      // 0 - корень
+								graphic = null;
+								break;
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_THEME :
+							case TemplateSimpleItem.TYPE_ITEM_THEME : 
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
+								break;
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE : 
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_file_16.png"));
+								break;
+								
+								
+								
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
+								break;
+								
+/*								
+							case TemplateSimpleItem.TYPE_FILE :                      // 3 - обязательный файл
+								switch (row.getFileTypeExt()) {
+									case TemplateSimpleItem.FILETYPEEXT_TEXT :                  // 1 - текстовый
+										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
+										break;
+									case TemplateSimpleItem.FILETYPEEXT_IMAGE :                  // 2 - картинка
+										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_picture_16.png"));
+										break;
+									case TemplateSimpleItem.FILETYPEEXT_BINARY :                  // 3 - бинарный
+										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_binary_16.png"));
+										break;
+								}
+								break;
+*/
+/*								
+							case TemplateSimpleItem.TYPE_DIR_FOR_TEMPLATES :                      // 4 - папка для шаблонов определенного типа
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_InfoBlock_16.png"));
+								break;
+*/
+/*
+							case TemplateSimpleItem.TYPE_STYLE :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
+								if (conn.db.infoTypeStyleIsDefault (row.getThemeId(), row.getId())) {
+									graphic_default = new ImageView(new Image("file:resources/images/icon_default_item_16.png"));
+									hBox = new HBox();
+									hBox.getChildren().addAll(graphic, graphic_default);
+									isDefault = true;
+								}
+								break;
+							case TemplateSimpleItem.TYPE_TEMPLATE :                      // 5 - шаблон
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+								if (conn.db.infoTypeStyleIsDefault (row.getThemeId(), row.getSubItem().getId())) {
+									graphic_default = new ImageView(new Image("file:resources/images/icon_default_item_16.png"));
+									hBox = new HBox();
+									hBox.getChildren().addAll(graphic, graphic_default);
+									isDefault = true;
+								}
+								break;
+*/
+
+
+
+						}
+					} catch (NullPointerException e) {
+						//e.printStackTrace();
+						graphic = null;
+					}
+
+					super.updateItem(item, empty);
+					setText(empty ? null : item);
+					if (isDefault) setGraphic(empty ? null : hBox);
+					else           setGraphic(empty ? null : graphic);
+				}
+			});
 		}
 		//TODO
 

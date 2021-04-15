@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleLongProperty;
 public class TemplateSimpleItem extends SimpleItem {
 	// for "typeItem"
 	public static final int TYPE_ITEM_ROOT                  = 0;
+	public static final int TYPE_ITEM_SECTION_THEME         = 10;
 	public static final int TYPE_ITEM_THEME                 = 1;
 	public static final int TYPE_ITEM_SECTION_FILE          = 2;
 	public static final int TYPE_ITEM_FILE                  = 3;

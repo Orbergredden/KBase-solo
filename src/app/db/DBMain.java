@@ -12,10 +12,10 @@ import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
 import app.model.business.templates_old.TemplateSimpleItem;
-import app.model.business.templates_old.TemplateThemeItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -335,7 +335,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		             "Ошибка при добавлении новой пиктограммы (сохранение картинки).");
 		}
 	}
-//TODO
 	
 	/**
 	 * Пиктограмма. Удаление пиктограммы со всеми подчиненными пиктограммами.
@@ -2780,6 +2779,56 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает список тем шаблонов
+	 */
+	public List<TemplateThemeItem> templateThemesList () {
+		List<TemplateThemeItem> retVal = new ArrayList<TemplateThemeItem>();
+		
+		try {
+			String stm = "SELECT id, name, descr, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+					     "  FROM template_themes ";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				retVal.add(new TemplateThemeItem(
+	         			rs.getLong("id"), 
+	         			rs.getString("name"),
+	         			rs.getString("descr"),
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						));
+			}
+			
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		//System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "Ошибка получения списка тем (templateThemesList).");
+    	}
+		
+		return retVal;
+	}
+	
+	
+	//TODO OLD TEMPLATE
+	/* >>>  OLD TEMPLATE ################################################################### */
+	/**
 	 * Шаблон. Добавление нового.
 	 */
 	public void templateAdd (TemplateItem i) {
@@ -3879,49 +3928,5 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при изменении темы шаблонов.");
 		}
 	}
-		
-	/**
-	 * Возвращает список для показа тем шаблонов
-	 */
-	public List<TemplateThemeItem> templateThemesList () {
-		List<TemplateThemeItem> retVal = new ArrayList<TemplateThemeItem>();
-		
-		try {
-			String stm = "SELECT id, name, descr, " +
-		                 "       date_created, date_modified, user_created, user_modified " +
-					     "  FROM template_themes ";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			
-			while (rs.next()) {
-				java.util.Date dateTmpCre;
-				Timestamp timestampCr = rs.getTimestamp("date_created");
-				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-				else                      dateTmpCre = null;
-				
-				java.util.Date dateTmpMod;
-				Timestamp timestampMo = rs.getTimestamp("date_modified");
-				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-				else                      dateTmpMod = null;
-				
-				retVal.add(new TemplateThemeItem(
-	         			rs.getLong("id"), 
-	         			rs.getString("name"),
-	         			rs.getString("descr"),
-						dateTmpCre, 
-	         			dateTmpMod,
-	         			rs.getString("user_created"),
-	         			rs.getString("user_modified")
-						));
-			}
-			
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
+	/* <<<  OLD TEMPLATE ################################################################### */	
 }

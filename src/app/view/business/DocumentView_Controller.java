@@ -12,8 +12,8 @@ import app.model.StateList;
 import app.model.business.DocumentItem;
 import app.model.business.InfoHeaderItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
-import app.model.business.templates_old.TemplateThemeItem;
 
 import java.io.File;
 import java.io.IOException;

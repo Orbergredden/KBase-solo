@@ -1,13 +1,6 @@
 
 package app.lib;
 
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import app.exceptions.KBase_HtmlCompileEx;
 import app.model.ConfigMainList;
 import app.model.DBConCur_Parameters;
@@ -17,9 +10,16 @@ import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
-import app.model.business.templates_old.TemplateThemeItem;
+
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Класс содержит инструментарий по компиляции документов в HTML из инфо блоков с использованием шаблонов.

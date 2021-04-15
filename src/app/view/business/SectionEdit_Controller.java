@@ -1,16 +1,17 @@
 
 package app.view.business;
 
-import java.io.IOException;
-import java.util.prefs.Preferences;
-
 import app.Main;
 import app.lib.DateConv;
 import app.lib.ShowAppMsg;
 import app.model.Params;
 import app.model.business.IconItem;
 import app.model.business.SectionItem;
-import app.view.business.templates_old.TemplateThemeSelect_Controller;
+import app.view.business.template.TemplateThemeSelect_Controller;
+
+import java.io.IOException;
+import java.util.prefs.Preferences;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -484,7 +485,7 @@ public class SectionEdit_Controller {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/templates/TemplateThemeSelect_Layout.fxml"));
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateThemeSelect.fxml"));
 			AnchorPane page = (AnchorPane) loader.load();
 		
 			// Создаём диалоговое окно Stage.
