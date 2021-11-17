@@ -161,10 +161,4 @@ ALTER FUNCTION kbase.section_get_pathname(bigint, character varying)
 
 COMMENT ON FUNCTION kbase.section_get_pathname(bigint, character varying)
     IS 'get section''s tree path';
-
-
-
-
-
-
 --<<
