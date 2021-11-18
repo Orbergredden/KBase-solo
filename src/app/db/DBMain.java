@@ -12,10 +12,10 @@ import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
-import app.model.business.templates_old.TemplateSimpleItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -888,6 +888,8 @@ public static int getRowCount(ResultSet set) throws SQLException
 		return retVal;
 	}
 	
+	//TODO OLD STYLE
+	//########################################################## OLD STYLE
 	/**
 	 * Стиль шаблонов. Добавление нового.
 	 */
@@ -1266,8 +1268,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 	 * @param infoTypeId, infoTypeStyleId - родительский стиль
 	 * @return
 	 */
-	public List<TemplateSimpleItem> infoTypeStyleList (long infoTypeId, long infoTypeStyleId) {
-		List<TemplateSimpleItem> retVal = new ArrayList<TemplateSimpleItem>();
+	public List<app.model.business.templates_old.TemplateSimpleItem> infoTypeStyleList 
+			(long infoTypeId, long infoTypeStyleId) {
+		List<app.model.business.templates_old.TemplateSimpleItem> retVal = 
+				new ArrayList<app.model.business.templates_old.TemplateSimpleItem>();
 		PreparedStatement pst = null;
 	
 		try {
@@ -1300,12 +1304,12 @@ public static int getRowCount(ResultSet set) throws SQLException
 				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
 				else                      dateTmpMod = null;
 				
-				retVal.add(new TemplateSimpleItem(
+				retVal.add(new app.model.business.templates_old.TemplateSimpleItem(
 	         			rs.getLong("id"),
 	         			0,                 // здесь themeId взять негде
 	         			rs.getString("name"),
 	         			rs.getString("descr"),
-	         			TemplateSimpleItem.TYPE_STYLE,
+	         			app.model.business.templates_old.TemplateSimpleItem.TYPE_STYLE,
 						0,
 						0,
 						dateTmpCre, 
@@ -1422,6 +1426,8 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при изменении стиля шаблонов (infoTypeStyleUpdate).");
 		}
 	}
+	//TODO OLD STYLE end
+	//########################################################## OLD STYLE
 
 	/**
 	 * Заголовок инфоблока. Добавление нового.
@@ -2825,6 +2831,63 @@ public static int getRowCount(ResultSet set) throws SQLException
 		return retVal;
 	}
 	
+	/**
+	 * Возващает список шаблонов и директорий шаблонов по id родительской директории. 
+	 * @param parentId
+	 * @return
+	 */
+	public List<TemplateSimpleItem> templateListByParent (long parentId) {
+		List<TemplateSimpleItem> retVal = new ArrayList<TemplateSimpleItem>();
+		PreparedStatement pst = null;
+	
+		try {
+			String stm = "select id, type, name, descr, date_created, date_modified, user_created, user_modified " + 
+					     "  from template " +
+					     " where parent_id = ? "; 
+			pst = con.prepareStatement(stm);
+			pst.setLong (1, parentId);
+				
+			ResultSet rs = pst.executeQuery();
+		
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				retVal.add(new TemplateSimpleItem(
+	         			rs.getLong("id"),
+	         			rs.getString("name"),
+	         			rs.getString("descr"),
+	         			0,
+	         			((rs.getInt("type")==0)||(rs.getInt("type")==10)) ? 
+	         					TemplateSimpleItem.TYPE_ITEM_TEMPLATE : TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE,
+	         			rs.getInt("type"),
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						));
+			}
+			
+            rs.close();
+            pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateListByParent("+parentId+")");
+    		//System.out.println("execute query Failed (infoTypeStyleListByInfoTypeId)");
+    	}
+		
+		return retVal;
+	}
+	
+	
 	
 	//TODO OLD TEMPLATE
 	/* >>>  OLD TEMPLATE ################################################################### */
@@ -3929,4 +3992,5 @@ public static int getRowCount(ResultSet set) throws SQLException
 		}
 	}
 	/* <<<  OLD TEMPLATE ################################################################### */	
+	//TODO OLD TEMPLATE
 }

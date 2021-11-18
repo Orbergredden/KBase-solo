@@ -43,7 +43,7 @@ import javafx.util.Callback;
  * Контроллер фрейма каталога шаблонов. Показываем дерево-список тем и шаблонов, 
  * с возможность добавления, редактирования и удаления.
  * @author Igor Makarevich
- * @version 2.00.00.001   11.04.2021
+ * @version 2.00.00.002   11.04.2021 - 17.11.2021
  */
 public class TemplateList_Controller implements AppItem_Interface {
 	
@@ -52,7 +52,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 	private Container_Interface objContainer;
     
     /**
-     * Ковертор даты/времени
+     * Конвертор даты/времени
      */
     DateConv dateConv;
     
@@ -582,7 +582,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 				
 				
 				
-				
+				//TODO
 				
 			}
 			
@@ -591,10 +591,54 @@ public class TemplateList_Controller implements AppItem_Interface {
 					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, 0));
 			ti.getChildren().add(sectionTemplateItem);
 			
-		
+			initTreeItemsTemplatesRecursive (sectionTemplateItem);
+			
+			
+			
+			
+			
 		
 		}
 		//TODO
+		
+		/**
+		 * Инициализирует подветки TreeTableView, содержащие шаблоны
+		 */
+		private void initTreeItemsTemplatesRecursive (TreeItem<TemplateSimpleItem> ti) {
+			TemplateSimpleItem f = ti.getValue();
+			List<TemplateSimpleItem> tList;
+
+			if (f != null) {
+				tList = conn.db.infoTypeStyleList (infoTypeId, infoTypeStyleId);
+
+				for (TemplateSimpleItem i : tList) {
+					i.setThemeId(f.getThemeId());
+					i.setFileType(infoTypeId);               // тип инфо блока
+
+					//---- если есть шаблон для этого стиля, то добавляем его в дерево на место стиля,
+					//     а стиль подвязываем к шаблону
+					TemplateItem tti = conn.db.templateGet(i.getThemeId(), i.getId());
+					TreeItem<TemplateSimpleItem> subItem;
+					if (tti != null) {
+						tti.setName(i.getName() +" : "+ tti.getName());
+						tti.setDescr(i.getDescr() +" : "+ tti.getDescr() +" ("+ tti.getFileName() +")");
+						tti.setThemeId(i.getThemeId());
+						tti.setFileType(infoTypeId);               // тип инфо блока
+						tti.setSubItem(i);
+
+						subItem = new TreeItem<>(tti);
+					} else {
+						subItem = new TreeItem<>(i);
+					}
+
+					//---- добавляем в дерево и ищем дочерние стили с шаблонами
+					ti.getChildren().add(subItem);
+
+					initTreeItemsStyleAndTemplatesRecursive(subItem, infoTypeId, i.getId());
+				}
+			}
+		}
+		// TODO
 		
 		/**
 		 * CellFactory - показ иконок
@@ -630,6 +674,9 @@ public class TemplateList_Controller implements AppItem_Interface {
 								
 							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
+								break;
+							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
 								break;
 								
 /*								
