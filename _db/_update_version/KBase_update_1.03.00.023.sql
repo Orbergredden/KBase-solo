@@ -337,6 +337,12 @@ insert into kbase.template_files (id, theme_id, type, file_type, file_name, desc
 select id, theme_id, 0, file_type, file_name, descr, body, body_bin, date_created, date_modified, user_created, user_modified
   from public.template_required_files
 ;
+-- Заменяем NULL на 0
+update kbase.template_files
+   set parent_id = 0
+ where parent_id is null
+;
+
 --######## move table infotype #######################################
 CREATE TABLE kbase.infotype
 (

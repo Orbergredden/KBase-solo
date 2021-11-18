@@ -2785,6 +2785,94 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возващает список файлов и директорий по id родительской директории. 
+	 * @param parentId
+	 * @return
+	 */
+	public List<TemplateSimpleItem> templateFileListByParent (TemplateSimpleItem parentItem) {
+		List<TemplateSimpleItem> retVal = new ArrayList<TemplateSimpleItem>();
+		PreparedStatement pst = null;
+	
+		try {
+			String subSql = "";
+			if (parentItem.getId() == 0) {
+				switch (parentItem.getTypeItem()) {
+				case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE :
+					subSql = " and type < 10 ";
+					break;
+				case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+					subSql = " and type >= 10 ";
+					break;
+				default :
+					subSql = " and type < 10 ";    // что то присвоили на всякий случай
+				}
+			}
+			
+			String stm = "select id, theme_id, type, file_type, file_name, descr, " +
+		                 "       date_created, date_modified, user_created, user_modified " + 
+					     "  from template_files " +
+					     " where parent_id = ? " +
+					     subSql; 
+			pst = con.prepareStatement(stm);
+			pst.setLong (1, parentItem.getId());
+				
+			ResultSet rs = pst.executeQuery();
+		
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				int typeItem;
+				switch (rs.getInt("type")) {
+				case 0 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE;
+					break;
+				case 1 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE;
+					break;
+				case 10 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL;
+					break;
+				case 11 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL;
+					break;
+				default :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE;  // что нибудь присвоим
+				}
+				
+				retVal.add(new TemplateSimpleItem(
+	         			rs.getLong("id"),
+	         			rs.getString("file_name"),
+	         			rs.getString("descr"),
+	         			rs.getLong("theme_id"),
+	         			typeItem,
+	         			rs.getInt("file_type"),
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						));
+			}
+			
+            rs.close();
+            pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateFileListByParent("+parentItem.getId()+")");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Возвращает список тем шаблонов
 	 */
 	public List<TemplateThemeItem> templateThemesList () {

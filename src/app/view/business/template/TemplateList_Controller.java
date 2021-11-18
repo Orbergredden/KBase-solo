@@ -578,12 +578,25 @@ public class TemplateList_Controller implements AppItem_Interface {
 				themeItem.getValue().setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
 				sectionThemeItem.getChildren().add(themeItem);
 				
+				//======== files
+				TreeItem<TemplateSimpleItem> fileDirReqItem = new TreeItem<>(new TemplateSimpleItem(
+						0, "Файлы обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE, 1));
+				themeItem.getChildren().add(fileDirReqItem);
+				
+				initTreeItemsFilesRecursive (fileDirReqItem);
+				
+				TreeItem<TemplateSimpleItem> fileDirOptItem = new TreeItem<>(new TemplateSimpleItem(
+						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL, 10));
+				themeItem.getChildren().add(fileDirOptItem);
+				
+				initTreeItemsFilesRecursive (fileDirOptItem);
+				
+				
 				
 				
 				
 				
 				//TODO
-				
 			}
 			
 			//======== Templates
@@ -592,14 +605,26 @@ public class TemplateList_Controller implements AppItem_Interface {
 			ti.getChildren().add(sectionTemplateItem);
 			
 			initTreeItemsTemplatesRecursive (sectionTemplateItem);
-			
-			
-			
-			
-			
-		
 		}
 		//TODO
+		
+		/**
+		 * Инициализирует подветки TreeTableView, содержащие шаблоны
+		 */
+		private void initTreeItemsFilesRecursive (TreeItem<TemplateSimpleItem> ti) {
+			TemplateSimpleItem f = ti.getValue();
+			List<TemplateSimpleItem> tList;
+
+			if (f != null) {
+				tList = conn.db.templateFileListByParent (f);
+
+				for (TemplateSimpleItem i : tList) {
+					TreeItem<TemplateSimpleItem> subItem = new TreeItem<>(i);
+					ti.getChildren().add(subItem);
+					initTreeItemsFilesRecursive (subItem);
+				}
+			}
+		}
 		
 		/**
 		 * Инициализирует подветки TreeTableView, содержащие шаблоны
@@ -609,36 +634,15 @@ public class TemplateList_Controller implements AppItem_Interface {
 			List<TemplateSimpleItem> tList;
 
 			if (f != null) {
-				tList = conn.db.infoTypeStyleList (infoTypeId, infoTypeStyleId);
+				tList = conn.db.templateListByParent (f.getId());
 
 				for (TemplateSimpleItem i : tList) {
-					i.setThemeId(f.getThemeId());
-					i.setFileType(infoTypeId);               // тип инфо блока
-
-					//---- если есть шаблон для этого стиля, то добавляем его в дерево на место стиля,
-					//     а стиль подвязываем к шаблону
-					TemplateItem tti = conn.db.templateGet(i.getThemeId(), i.getId());
-					TreeItem<TemplateSimpleItem> subItem;
-					if (tti != null) {
-						tti.setName(i.getName() +" : "+ tti.getName());
-						tti.setDescr(i.getDescr() +" : "+ tti.getDescr() +" ("+ tti.getFileName() +")");
-						tti.setThemeId(i.getThemeId());
-						tti.setFileType(infoTypeId);               // тип инфо блока
-						tti.setSubItem(i);
-
-						subItem = new TreeItem<>(tti);
-					} else {
-						subItem = new TreeItem<>(i);
-					}
-
-					//---- добавляем в дерево и ищем дочерние стили с шаблонами
+					TreeItem<TemplateSimpleItem> subItem = new TreeItem<>(i);
 					ti.getChildren().add(subItem);
-
-					initTreeItemsStyleAndTemplatesRecursive(subItem, infoTypeId, i.getId());
+					initTreeItemsTemplatesRecursive (subItem);
 				}
 			}
 		}
-		// TODO
 		
 		/**
 		 * CellFactory - показ иконок
@@ -669,6 +673,22 @@ public class TemplateList_Controller implements AppItem_Interface {
 							case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_file_16.png"));
 								break;
+							case TemplateSimpleItem.TYPE_ITEM_FILE : 
+							case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
+								switch ((int)row.getSubtypeItem()) {
+								case TemplateSimpleItem.SUBTYPE_FILE_TEXT :                  // 1 - текстовый
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
+									break;
+								case TemplateSimpleItem.SUBTYPE_FILE_IMAGE :                  // 2 - картинка
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_picture_16.png"));
+									break;
+								case TemplateSimpleItem.SUBTYPE_FILE_BINARY :                  // 3 - бинарный
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_binary_16.png"));
+									break;
+								}
+								break;
+								
+								
 								
 								
 								
@@ -679,21 +699,6 @@ public class TemplateList_Controller implements AppItem_Interface {
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
 								break;
 								
-/*								
-							case TemplateSimpleItem.TYPE_FILE :                      // 3 - обязательный файл
-								switch (row.getFileTypeExt()) {
-									case TemplateSimpleItem.FILETYPEEXT_TEXT :                  // 1 - текстовый
-										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
-										break;
-									case TemplateSimpleItem.FILETYPEEXT_IMAGE :                  // 2 - картинка
-										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_picture_16.png"));
-										break;
-									case TemplateSimpleItem.FILETYPEEXT_BINARY :                  // 3 - бинарный
-										graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_binary_16.png"));
-										break;
-								}
-								break;
-*/
 /*								
 							case TemplateSimpleItem.TYPE_DIR_FOR_TEMPLATES :                      // 4 - папка для шаблонов определенного типа
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_InfoBlock_16.png"));

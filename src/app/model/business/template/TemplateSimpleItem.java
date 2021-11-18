@@ -29,6 +29,11 @@ public class TemplateSimpleItem extends SimpleItem {
 	public static final int TYPE_ITEM_SECTION_TEMPLATE      = 8;
 	public static final int TYPE_ITEM_TEMPLATE              = 9;
 	
+	// subtypeItem for files
+	public static final int SUBTYPE_FILE_TEXT               = 1;
+	public static final int SUBTYPE_FILE_IMAGE              = 2;
+	public static final int SUBTYPE_FILE_BINARY             = 3;
+	
 	protected final LongProperty themeId;
 	
 	/**
