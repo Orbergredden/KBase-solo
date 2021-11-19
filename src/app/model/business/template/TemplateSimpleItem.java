@@ -55,6 +55,10 @@ public class TemplateSimpleItem extends SimpleItem {
 	 * Подтип записи. В случае стиля содежит ид типа инфо блока или -1 - зарезервированный стиль
 	 */
 	protected final LongProperty subtypeItem;
+	/**
+	 * для различного использования в разных типах обьектов
+	 */
+	protected LongProperty flag;
 	
 	/**
 	 * Конструктор по умолчанию.
@@ -76,6 +80,19 @@ public class TemplateSimpleItem extends SimpleItem {
 	}
 	
 	/**
+	 * Конструктор с основными данными и с флагом
+	 * @param
+	 */
+	public TemplateSimpleItem(
+			long id, String name, String descr, long themeId, int typeItem, long subtypeItem, long flag) {
+		super(id, name, descr);
+		this.themeId          = new SimpleLongProperty(themeId);
+		this.typeItem         = new SimpleIntegerProperty(typeItem);
+		this.subtypeItem      = new SimpleLongProperty(subtypeItem);
+		this.flag             = new SimpleLongProperty(flag);
+	}
+	
+	/**
 	 * Конструктор со всеми данными
 	 * @param
 	 */
@@ -89,6 +106,20 @@ public class TemplateSimpleItem extends SimpleItem {
 	}
 	
 	/**
+	 * Конструктор со всеми данными и с флагом
+	 * @param
+	 */
+	public TemplateSimpleItem(
+			long id, String name, String descr, long themeId, int typeItem, long subtypeItem, long flag,
+			Date dateCreated, Date dateModified, String userCreated, String userModified) {
+		super(id, name, descr, dateCreated, dateModified, userCreated, userModified);
+		this.themeId          = new SimpleLongProperty(themeId);
+		this.typeItem         = new SimpleIntegerProperty(typeItem);
+		this.subtypeItem      = new SimpleLongProperty(subtypeItem);
+		this.flag             = new SimpleLongProperty(flag);
+	}
+	
+	/**
 	 * Конструктор
 	 * @param
 	 */
@@ -97,6 +128,7 @@ public class TemplateSimpleItem extends SimpleItem {
 		this.themeId      = new SimpleLongProperty(item.getThemeId());
 		this.typeItem     = new SimpleIntegerProperty(item.getTypeItem());
 		this.subtypeItem  = new SimpleLongProperty(item.getSubtypeItem());
+		this.flag         = new SimpleLongProperty(item.getFlag());
 	}
 	
 	// themeId  -- g,s,p
@@ -130,5 +162,16 @@ public class TemplateSimpleItem extends SimpleItem {
 	}
 	public LongProperty subtypeItemProperty() {
 	    return subtypeItem;
+	}
+	
+	// flag  -- g,s,p
+	public long getFlag() {
+	    return flag.get();
+	}
+	public void setFlag(long flag) {
+	    this.flag.set(flag);
+	}
+	public LongProperty flagProperty() {
+	    return flag;
 	}
 }

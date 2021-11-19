@@ -439,7 +439,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 
 			root = new TreeItem<>(new TemplateSimpleItem(
 					0, "Темы и Шаблоны", "это корень, он не редактируется", 0, 
-					TemplateSimpleItem.TYPE_ITEM_ROOT, 0));
+					TemplateSimpleItem.TYPE_ITEM_ROOT, 0, 0));
 			root.setExpanded(true);
 			treeTableView_templates.setShowRoot(false);
 			treeTableView_templates.setRoot(root);
@@ -567,7 +567,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			if (f == null)  return;
 			
 			TreeItem<TemplateSimpleItem> sectionThemeItem = new TreeItem<>(new TemplateSimpleItem(
-					0, "Темы", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_THEME, 0));
+					0, "Темы", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_THEME, 0, 0));
 			ti.getChildren().add(sectionThemeItem);
 			
 			List<TemplateThemeItem> themesList = conn.db.templateThemesList();
@@ -580,18 +580,43 @@ public class TemplateList_Controller implements AppItem_Interface {
 				
 				//======== files
 				TreeItem<TemplateSimpleItem> fileDirReqItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Файлы обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE, 1));
+						0, "Файлы обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE, 1, 0));
 				themeItem.getChildren().add(fileDirReqItem);
 				
 				initTreeItemsFilesRecursive (fileDirReqItem);
 				
 				TreeItem<TemplateSimpleItem> fileDirOptItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL, 10));
+						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL, 10, 0));
 				themeItem.getChildren().add(fileDirOptItem);
 				
 				initTreeItemsFilesRecursive (fileDirOptItem);
 				
+				//======== styles
+				TreeItem<TemplateSimpleItem> styleDirOptItem = new TreeItem<>(new TemplateSimpleItem(
+						0, "Стили зарезервированные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 11, 0));
+				themeItem.getChildren().add(styleDirOptItem);
 				
+				
+				
+				
+				List<InfoTypeItem> listInfoTypes = conn.db.infoTypeList ();
+				for (InfoTypeItem iInfo : listInfoTypes) {
+					TreeItem<TemplateSimpleItem> styleInfoTypeItem = new TreeItem<>(new TemplateSimpleItem(
+							0, "Стиль \""+iInfo.getName()+"\"", iInfo.getDescr(), i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 1, 
+							iInfo.getId()));
+					themeItem.getChildren().add(styleInfoTypeItem);
+					
+					
+					
+					
+				}
+				
+				
+				
+				
+				// создаем пустые разделы
+				//	- зарезервированный
+				//	- в цикле для каждого типа инфоблока
 				
 				
 				
@@ -601,7 +626,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			
 			//======== Templates
 			TreeItem<TemplateSimpleItem> sectionTemplateItem = new TreeItem<>(new TemplateSimpleItem(
-					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, 0));
+					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, 0, 0));
 			ti.getChildren().add(sectionTemplateItem);
 			
 			initTreeItemsTemplatesRecursive (sectionTemplateItem);
@@ -687,6 +712,10 @@ public class TemplateList_Controller implements AppItem_Interface {
 									break;
 								}
 								break;
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
+								break;
+								
 								
 								
 								
@@ -696,7 +725,11 @@ public class TemplateList_Controller implements AppItem_Interface {
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
-								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+								if (row.getFlag() == 0) {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+								} else {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png"));
+								}
 								break;
 								
 /*								
