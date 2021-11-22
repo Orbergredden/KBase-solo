@@ -52,13 +52,19 @@ public class TemplateSimpleItem extends SimpleItem {
 	 */
 	protected final IntegerProperty typeItem;
 	/**
-	 * Подтип записи. В случае стиля содежит ид типа инфо блока или -1 - зарезервированный стиль
+	 * Подтип записи. В случае стиля содежит тип из таблицы template_style
 	 */
 	protected final LongProperty subtypeItem;
 	/**
 	 * для различного использования в разных типах обьектов
+	 * Для стиля - ид инфо блока или 0 для зарезервированных
 	 */
 	protected LongProperty flag;
+	/**
+	 * для различного использования в разных типах обьектов
+	 * Для стиля - ид шаблона или 0 если нет связки с шаблоном
+	 */
+	private long flag2;
 	
 	/**
 	 * Конструктор по умолчанию.
@@ -173,5 +179,13 @@ public class TemplateSimpleItem extends SimpleItem {
 	}
 	public LongProperty flagProperty() {
 	    return flag;
+	}
+	
+	// flag2  -- g,s
+	public long getFlag2() {
+	    return flag2;
+	}
+	public void setFlag2(long flag2) {
+	    this.flag2 = flag2;
 	}
 }

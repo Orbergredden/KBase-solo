@@ -2873,6 +2873,95 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 
+	 * @param parentId
+	 * @return
+	 */
+	public List<TemplateSimpleItem> templateStyleListByParent (TemplateSimpleItem parentItem) {
+		List<TemplateSimpleItem> retVal = new ArrayList<TemplateSimpleItem>();
+		PreparedStatement pst = null;
+	
+		try {
+			String subSql = "";
+			if (parentItem.getId() == 0) {
+				if (parentItem.getSubtypeItem() < 10) {
+					subSql = " and s.type < 10 ";
+				} else {
+					subSql = " and s.type >= 10 ";
+				}
+			}
+			
+			String stm = "select s.id, s.type, s.name, s.descr, " +
+						 "       coalesce(t.template_id,0) as flag2, "+
+	                 	 "       s.date_created, s.date_modified, s.user_created, s.user_modified " + 
+	                 	 "  from template_style s " +
+	                 	 "  left join template_style_link t     on t.style_id = s.id "+
+	                 	 "                                     and t.theme_id = ? "+
+	                 	 " where s.parent_id = ? " +
+	                 	 "   and s.infotype_id = ? "+
+	                 	 subSql;
+			
+			pst = con.prepareStatement(stm);
+			pst.setLong (1, parentItem.getThemeId());
+			pst.setLong (2, parentItem.getId());
+			pst.setLong (3, parentItem.getFlag());
+				
+			ResultSet rs = pst.executeQuery();
+		
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				int typeItem;
+				switch (rs.getInt("type")) {
+				case  0 :
+				case 10 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_STYLE;
+					break;
+				case  1 :
+				case 11 :
+					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE;
+					break;
+				default :
+					typeItem = parentItem.getTypeItem();  // что нибудь присвоим
+				}
+				
+				TemplateSimpleItem newItem = new TemplateSimpleItem(
+	         			rs.getLong("id"),
+	         			rs.getString("name"),
+	         			rs.getString("descr"),
+	         			parentItem.getThemeId(),
+	         			typeItem,
+	         			rs.getInt("type"),
+	         			parentItem.getFlag(),    // info type id
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						);
+				newItem.setFlag2(rs.getLong("flag2"));
+				retVal.add(newItem);
+			}
+			
+            rs.close();
+            pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateFileListByParent("+parentItem.getId()+")");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Возвращает список тем шаблонов
 	 */
 	public List<TemplateThemeItem> templateThemesList () {
@@ -2934,7 +3023,12 @@ public static int getRowCount(ResultSet set) throws SQLException
 				         "       t.name, t.descr, t.date_created, t.date_modified, t.user_created, t.user_modified "+ 
 			             "  from template t "+
 			             "  left join template_style_link s     on s.template_id = t.id "+ 
-			             " where t.parent_id = ? "; 
+			             " where t.parent_id = ? ";
+			
+			
+			//TODO в таком виде может дублироваться, если шаблон имеет несколько связок, ПЕРЕДЕЛАТЬ
+			
+			
 			pst = con.prepareStatement(stm);
 			pst.setLong (1, parentId);
 				

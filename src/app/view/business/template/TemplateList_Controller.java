@@ -592,36 +592,22 @@ public class TemplateList_Controller implements AppItem_Interface {
 				initTreeItemsFilesRecursive (fileDirOptItem);
 				
 				//======== styles
-				TreeItem<TemplateSimpleItem> styleDirOptItem = new TreeItem<>(new TemplateSimpleItem(
+				TreeItem<TemplateSimpleItem> styleDirResItem = new TreeItem<>(new TemplateSimpleItem(
 						0, "Стили зарезервированные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 11, 0));
-				themeItem.getChildren().add(styleDirOptItem);
+				themeItem.getChildren().add(styleDirResItem);
 				
-				
-				
+				initTreeItemsStylesRecursive (styleDirResItem);
 				
 				List<InfoTypeItem> listInfoTypes = conn.db.infoTypeList ();
 				for (InfoTypeItem iInfo : listInfoTypes) {
 					TreeItem<TemplateSimpleItem> styleInfoTypeItem = new TreeItem<>(new TemplateSimpleItem(
-							0, "Стиль \""+iInfo.getName()+"\"", iInfo.getDescr(), i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 1, 
+							0, "Стиль \""+iInfo.getName()+"\"", iInfo.getDescr(), i.getId(), 
+							TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 1, 
 							iInfo.getId()));
 					themeItem.getChildren().add(styleInfoTypeItem);
 					
-					
-					
-					
+					initTreeItemsStylesRecursive (styleInfoTypeItem);
 				}
-				
-				
-				
-				
-				// создаем пустые разделы
-				//	- зарезервированный
-				//	- в цикле для каждого типа инфоблока
-				
-				
-				
-				
-				//TODO
 			}
 			
 			//======== Templates
@@ -631,7 +617,6 @@ public class TemplateList_Controller implements AppItem_Interface {
 			
 			initTreeItemsTemplatesRecursive (sectionTemplateItem);
 		}
-		//TODO
 		
 		/**
 		 * Инициализирует подветки TreeTableView, содержащие шаблоны
@@ -647,6 +632,24 @@ public class TemplateList_Controller implements AppItem_Interface {
 					TreeItem<TemplateSimpleItem> subItem = new TreeItem<>(i);
 					ti.getChildren().add(subItem);
 					initTreeItemsFilesRecursive (subItem);
+				}
+			}
+		}
+		
+		/**
+		 * Инициализирует подветки TreeTableView, содержащие стили
+		 */
+		private void initTreeItemsStylesRecursive (TreeItem<TemplateSimpleItem> ti) {
+			TemplateSimpleItem f = ti.getValue();
+			List<TemplateSimpleItem> tList;
+
+			if (f != null) {
+				tList = conn.db.templateStyleListByParent (f);
+
+				for (TemplateSimpleItem i : tList) {
+					TreeItem<TemplateSimpleItem> subItem = new TreeItem<>(i);
+					ti.getChildren().add(subItem);
+					initTreeItemsStylesRecursive (subItem);
 				}
 			}
 		}
@@ -715,28 +718,24 @@ public class TemplateList_Controller implements AppItem_Interface {
 							case TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
 								break;
-								
-								
-								
-								
-								
-								
+							case TemplateSimpleItem.TYPE_ITEM_STYLE :
+								if (row.getFlag2() == 0) {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
+								} else {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_16.png"));
+								}
+								break;
 							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
-								if (row.getFlag() == 0) {
+								if (row.getFlag2() == 0) {
 									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
 								} else {
 									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png"));
 								}
 								break;
 								
-/*								
-							case TemplateSimpleItem.TYPE_DIR_FOR_TEMPLATES :                      // 4 - папка для шаблонов определенного типа
-								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_InfoBlock_16.png"));
-								break;
-*/
 /*
 							case TemplateSimpleItem.TYPE_STYLE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
