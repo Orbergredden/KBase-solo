@@ -3019,16 +3019,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 	
 		try {
 			String stm = "select t.id, t.type, "+ 
-				         "       coalesce(s.id,0) as flag, "+
-				         "       t.name, t.descr, t.date_created, t.date_modified, t.user_created, t.user_modified "+ 
-			             "  from template t "+
-			             "  left join template_style_link s     on s.template_id = t.id "+ 
-			             " where t.parent_id = ? ";
-			
-			
-			//TODO в таком виде может дублироваться, если шаблон имеет несколько связок, ПЕРЕДЕЛАТЬ
-			
-			
+				         "       (select count(*) from template_style_link s where s.template_id = t.id) as flag, "+
+		                 "       t.name, t.descr, t.date_created, t.date_modified, t.user_created, t.user_modified "+  
+	                     "  from template t "+ 
+	                     " where t.parent_id = ? ";
 			pst = con.prepareStatement(stm);
 			pst.setLong (1, parentId);
 				
@@ -3053,7 +3047,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	         			((rs.getInt("type")==0)||(rs.getInt("type")==10)) ? 
 	         					TemplateSimpleItem.TYPE_ITEM_TEMPLATE : TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE,
 	         			rs.getInt("type"),
-	         			(rs.getLong("flag") == 0) ? 0 : 1,
+	         			rs.getLong("flag"),
 						dateTmpCre, 
 	         			dateTmpMod,
 	         			rs.getString("user_created"),

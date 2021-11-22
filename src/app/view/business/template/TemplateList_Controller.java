@@ -619,7 +619,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 		}
 		
 		/**
-		 * Инициализирует подветки TreeTableView, содержащие шаблоны
+		 * Инициализирует подветки TreeTableView, содержащие файлы
 		 */
 		private void initTreeItemsFilesRecursive (TreeItem<TemplateSimpleItem> ti) {
 			TemplateSimpleItem f = ti.getValue();
@@ -724,21 +724,6 @@ public class TemplateList_Controller implements AppItem_Interface {
 								} else {
 									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 								}
-								break;
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
-								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
-								break;
-							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
-								if (row.getFlag2() == 0) {
-									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
-								} else {
-									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png"));
-								}
-								break;
-								
-/*
-							case TemplateSimpleItem.TYPE_STYLE :
-								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
 								if (conn.db.infoTypeStyleIsDefault (row.getThemeId(), row.getId())) {
 									graphic_default = new ImageView(new Image("file:resources/images/icon_default_item_16.png"));
 									hBox = new HBox();
@@ -746,19 +731,16 @@ public class TemplateList_Controller implements AppItem_Interface {
 									isDefault = true;
 								}
 								break;
-							case TemplateSimpleItem.TYPE_TEMPLATE :                      // 5 - шаблон
-								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
-								if (conn.db.infoTypeStyleIsDefault (row.getThemeId(), row.getSubItem().getId())) {
-									graphic_default = new ImageView(new Image("file:resources/images/icon_default_item_16.png"));
-									hBox = new HBox();
-									hBox.getChildren().addAll(graphic, graphic_default);
-									isDefault = true;
+							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
+								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
+								break;
+							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+								if (row.getFlag() == 0) {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+								} else {
+									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png"));
 								}
 								break;
-*/
-
-
-
 						}
 					} catch (NullPointerException e) {
 						//e.printStackTrace();
@@ -772,7 +754,6 @@ public class TemplateList_Controller implements AppItem_Interface {
 				}
 			});
 		}
-		//TODO
 
 		/*
 		 * Возвращает строку иерархического пути шаблона
