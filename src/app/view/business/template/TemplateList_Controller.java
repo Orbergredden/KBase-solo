@@ -15,6 +15,7 @@ import app.model.business.InfoTypeItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
 import app.view.business.Container_Interface;
+import app.view.business.SectionEdit_Controller;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ import javafx.util.Callback;
  * Контроллер фрейма каталога шаблонов. Показываем дерево-список тем и шаблонов, 
  * с возможность добавления, редактирования и удаления.
  * @author Igor Makarevich
- * @version 2.00.00.002   11.04.2021 - 17.11.2021
+ * @version 2.00.00.003   11.04.2021 - 24.11.2021
  */
 public class TemplateList_Controller implements AppItem_Interface {
 	
@@ -202,12 +203,61 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     @FXML
     private void handleButtonAddItem() {
-//    	if (treeTableView_templates.getSelectionModel().getSelectedItem() == null) {
-//    		ShowAppMsg.showAlert("WARNING", "Нет выбора", "Не выбран раздел", 
-//    				"Выберите раздел, в который добавиться новый шаблон или файл.");
-//    		return;
-//    	}
+    	if (treeTableView_templates.getSelectionModel().getSelectedItem() == null) {
+    		ShowAppMsg.showAlert("WARNING", "Нет выбора", "Не выбран раздел", 
+    				"Выберите раздел, в который добавиться новый элемент.");
+    		return;
+    	}
     	
+    	//======== select type for new item
+    	try {
+	    	// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateTypeSelect.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+		
+			// Создаём диалоговое окно Stage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Выбор типа добавляемого элемента");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_CatalogTemplates_16.png"));
+			
+			Preferences prefs = Preferences.userNodeForPackage(TemplateTypeSelect.class);
+			dialogStage.setWidth(prefs.getDouble("stageTemplateTypeSelect_Width", 500));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateTypeSelect_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageTemplateTypeSelect_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageTemplateTypeSelect_PosY", 0));
+			
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateTypeSelect controller = loader.getController();
+			
+			Params params = new Params (this.params);
+			params.setParentObj(this);
+			params.setStageCur(dialogStage);
+			
+			controller.setParams(params, treeTableView_templates.getSelectionModel().getSelectedItem().getValue());
+	        
+	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+	        
+	        if (controller.isSelected) {
+///	        	themeId = controller.themeIdRet;
+///	        	label_themeName.setText(params.getConCur().db.templateThemeGetById(themeId).getName() +" ("+ themeId +")");
+	        }
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    	
+    	
+    	
+
+    	//TODO select type
+    	
+/*    	
     	try {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
@@ -219,6 +269,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Добавление нового шаблона или файла");
 			dialogStage.initModality(Modality.NONE);
+			//dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(params.getMainStage());
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
@@ -230,6 +281,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			dialogStage.setHeight(prefs.getDouble("stageTemplatesEdit_Height", 600));
 			dialogStage.setX(prefs.getDouble("stageTemplatesEdit_PosX", 0));
 			dialogStage.setY(prefs.getDouble("stageTemplatesEdit_PosY", 0));
+*/
 /*			
 			// Даём контроллеру доступ к главному прилодению.
 			TemplateEdit_Controller controller = loader.getController();
@@ -243,7 +295,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 */	        
 	        
 	        
-	        
+/*	        
 	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
 	        //dialogStage.showAndWait();
 			dialogStage.show();
@@ -253,6 +305,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     	} catch (IOException e) {
             e.printStackTrace();
         }
+*/
     }
     
     /**
@@ -452,7 +505,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			treeTableView_templates.getSelectionModel().selectedItemProperty().addListener(
 					(observable, oldValue, newValue) -> showTemplateDetails(newValue));
 
-///			initSortColumn();
+			initSortColumn();
 		}
 
 		/**
@@ -753,6 +806,28 @@ public class TemplateList_Controller implements AppItem_Interface {
 					else           setGraphic(empty ? null : graphic);
 				}
 			});
+		}
+		
+		/**
+		 * восстанавливаем сортировку таблицы по столбцу
+		 */
+		public void initSortColumn () {
+			String sortColumnId = prefs.get("stageTemplatesList_sortColumnId","");
+
+			if (! sortColumnId.equals("")) {
+				for (TreeTableColumn column : treeTableView_templates.getColumns()) {
+					if (column.getId().equals(sortColumnId)) {
+						String sortType = prefs.get("stageTemplatesList_sortType","ASCENDING");
+
+						treeTableView_templates.setSortMode(TreeSortMode.ALL_DESCENDANTS);
+						column.setSortable(true); // This performs a sort
+						treeTableView_templates.getSortOrder().add(column);
+						if (sortType.equals("DESCENDING")) column.setSortType(TreeTableColumn.SortType.DESCENDING);
+						else                               column.setSortType(TreeTableColumn.SortType.ASCENDING);
+						treeTableView_templates.sort();
+					}
+				}
+			}
 		}
 
 		/*
