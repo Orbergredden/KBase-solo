@@ -16,11 +16,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeSortMode;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -54,10 +56,6 @@ public class TemplateTypeSelect {
 	// возвращаемые параметры
 	public boolean isSelected = false;
 	public int returnTypeItem = 0;
-	/**
-     * Элемент в дереве шаблонов, который будет родительским для добавляемого элемента
-     */
-    private TemplateSimpleItem targetItem;
 
 	//
 	private Preferences prefs;
@@ -85,6 +83,7 @@ public class TemplateTypeSelect {
         
         // init controls
         initControlsValue();
+        initCellFactory();
     }
     
     /**
@@ -226,6 +225,61 @@ public class TemplateTypeSelect {
     }
     
     /**
+	 * CellFactory - показ иконок
+	 */
+	public void initCellFactory () {
+		treeTableColumn_name.setCellFactory(ttc -> new TreeTableCell<SimpleItem, String>() {
+			private SimpleItem row;
+			private ImageView graphic;
+			private HBox hBox;
+			private boolean isDefault;
+
+			@Override
+			protected void updateItem(String item, boolean empty) {    // display graphic
+				isDefault = false;
+
+				try {
+					row = getTreeTableRow().getItem();
+					switch ((int)row.getId()) {
+						case TemplateSimpleItem.TYPE_ITEM_SECTION_THEME :
+						case TemplateSimpleItem.TYPE_ITEM_THEME : 
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE : 
+						case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_file_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_FILE : 
+						case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_STYLE :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
+							break;
+						case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png"));
+							break;
+					}
+				} catch (NullPointerException e) {
+					//e.printStackTrace();
+					graphic = null;
+				}
+
+				super.updateItem(item, empty);
+				setText(empty ? null : item);
+				if (isDefault) setGraphic(empty ? null : hBox);
+				else           setGraphic(empty ? null : graphic);
+			}
+		});
+	}
+    
+    /**
 	 * Сохраняем текущее состояние фрейма и контролов
 	 */
 	private void saveState() {
@@ -241,18 +295,18 @@ public class TemplateTypeSelect {
      */
     @FXML
     private void handleButtonSelect() {
-/*    	if (treeTableView_themes.getSelectionModel().getSelectedItem() == null) {
-    		ShowAppMsg.showAlert("WARNING", "Выбор темы", "Тема не выбрана.", "Выберите тему.");
+    	if (treeTableView_types.getSelectionModel().getSelectedItem() == null) {
+    		ShowAppMsg.showAlert("WARNING", "Выбор типа для нового элемента", "Тип не выбран.", "Выберите тип элемента.");
     		return;
     	}
     	
-    	TemplateThemeItem si = treeTableView_themes.getSelectionModel().getSelectedItem().getValue();
+    	SimpleItem si = treeTableView_types.getSelectionModel().getSelectedItem().getValue();
 
 		saveState();      // save stage position and other
 
     	isSelected = true;
-    	themeIdRet = si.getId();
-*/    	
+    	returnTypeItem = (int)si.getId();
+    	
         //-------- close window
     	// get a handle to the stage
         Stage stage = (Stage) button_Cancel.getScene().getWindow();

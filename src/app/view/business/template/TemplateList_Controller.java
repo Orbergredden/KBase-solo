@@ -203,6 +203,10 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     @FXML
     private void handleButtonAddItem() {
+    	int typeNew = -1;
+    	TreeItem<TemplateSimpleItem> targetItem;
+    	
+    	//======== check
     	if (treeTableView_templates.getSelectionModel().getSelectedItem() == null) {
     		ShowAppMsg.showAlert("WARNING", "Нет выбора", "Не выбран раздел", 
     				"Выберите раздел, в который добавиться новый элемент.");
@@ -245,17 +249,36 @@ public class TemplateList_Controller implements AppItem_Interface {
 	        dialogStage.showAndWait();
 	        
 	        if (controller.isSelected) {
-///	        	themeId = controller.themeIdRet;
-///	        	label_themeName.setText(params.getConCur().db.templateThemeGetById(themeId).getName() +" ("+ themeId +")");
+	        	typeNew = controller.returnTypeItem;
 	        }
     	} catch (IOException e) {
             e.printStackTrace();
         }
     	
+    	// ничего не выбрали, отмена добавления
+    	if (typeNew == -1)  return; 
+    	
+    	//========= ищем родительский элемент куда будем вставлять
+    	targetItem = treeTableView_templates.getSelectionModel().getSelectedItem();
+
+    	while ((targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE) ||
+    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL) ||
+    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE) ||
+    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_TEMPLATE)) {
+    		targetItem = targetItem.getParent();
+    	}
+    	//System.out.println("type = "+ typeNew +" ; targetId = "+ targetItem.getValue().getId() +" ; targetType = "+ targetItem.getValue().getTypeItem());
+    	
+    	//======== 
+    	
+    	
+    	
+    	
+    	
     	
     	
 
-    	//TODO select type
+    	//TODO add directory or theme
     	
 /*    	
     	try {
