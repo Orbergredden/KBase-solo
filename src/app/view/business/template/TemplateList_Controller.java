@@ -203,7 +203,7 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     @FXML
     private void handleButtonAddItem() {
-    	int typeNew = -1;
+    	int typeNew;
     	TreeItem<TemplateSimpleItem> targetItem;
     	
     	//======== check
@@ -214,51 +214,12 @@ public class TemplateList_Controller implements AppItem_Interface {
     	}
     	
     	//======== select type for new item
-    	try {
-	    	// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/template/TemplateTypeSelect.fxml"));
-			AnchorPane page = (AnchorPane) loader.load();
-		
-			// Создаём диалоговое окно Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Выбор типа добавляемого элемента");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(params.getMainStage());
-			Scene scene = new Scene(page);
-			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
-			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_CatalogTemplates_16.png"));
-			
-			Preferences prefs = Preferences.userNodeForPackage(TemplateTypeSelect.class);
-			dialogStage.setWidth(prefs.getDouble("stageTemplateTypeSelect_Width", 500));
-			dialogStage.setHeight(prefs.getDouble("stageTemplateTypeSelect_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageTemplateTypeSelect_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageTemplateTypeSelect_PosY", 0));
-			
-			// Даём контроллеру доступ к главному прилодению.
-			TemplateTypeSelect controller = loader.getController();
-			
-			Params params = new Params (this.params);
-			params.setParentObj(this);
-			params.setStageCur(dialogStage);
-			
-			controller.setParams(params, treeTableView_templates.getSelectionModel().getSelectedItem().getValue());
-	        
-	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
-	        dialogStage.showAndWait();
-	        
-	        if (controller.isSelected) {
-	        	typeNew = controller.returnTypeItem;
-	        }
-    	} catch (IOException e) {
-            e.printStackTrace();
-        }
+    	typeNew = selectTypeItemForAdd ();
     	
     	// ничего не выбрали, отмена добавления
     	if (typeNew == -1)  return; 
     	
-    	//========= ищем родительский элемент куда будем вставлять
+    	// ищем родительский элемент куда будем вставлять
     	targetItem = treeTableView_templates.getSelectionModel().getSelectedItem();
 
     	while ((targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE) ||
@@ -269,7 +230,10 @@ public class TemplateList_Controller implements AppItem_Interface {
     	}
     	//System.out.println("type = "+ typeNew +" ; targetId = "+ targetItem.getValue().getId() +" ; targetType = "+ targetItem.getValue().getTypeItem());
     	
-    	//======== 
+    	//======== добавление директории или темы
+    	
+    	
+    	
     	
     	
     	
@@ -459,6 +423,54 @@ public class TemplateList_Controller implements AppItem_Interface {
     	//
 		objContainer.closeContainer(getOID());
     }
+    
+    private int selectTypeItemForAdd () {
+    	int typeNew = -1;
+    	
+    	try {
+	    	// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateTypeSelect.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+		
+			// Создаём диалоговое окно Stage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Выбор типа добавляемого элемента");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_CatalogTemplates_16.png"));
+			
+			Preferences prefs = Preferences.userNodeForPackage(TemplateTypeSelect.class);
+			dialogStage.setWidth(prefs.getDouble("stageTemplateTypeSelect_Width", 500));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateTypeSelect_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageTemplateTypeSelect_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageTemplateTypeSelect_PosY", 0));
+			
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateTypeSelect controller = loader.getController();
+			
+			Params params = new Params (this.params);
+			params.setParentObj(this);
+			params.setStageCur(dialogStage);
+			
+			controller.setParams(params, treeTableView_templates.getSelectionModel().getSelectedItem().getValue());
+	        
+	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+	        
+	        if (controller.isSelected) {
+	        	typeNew = controller.returnTypeItem;
+	        }
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+    	return typeNew;
+    }
+    //TODO
     
     /**
 	 * уникальный ИД обьекта
