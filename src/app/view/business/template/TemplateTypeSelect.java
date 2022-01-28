@@ -6,7 +6,6 @@ import app.model.business.SimpleItem;
 import app.model.business.template.TemplateSimpleItem;
 
 import java.util.Date;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -15,7 +14,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
@@ -313,7 +311,6 @@ public class TemplateTypeSelect {
         // do what you have to do
         stage.close();
     }
-    //TODO Ok
     
     /**
      * Вызывается при нажатии на кнопке "Отмена"

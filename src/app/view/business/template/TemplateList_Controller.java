@@ -204,7 +204,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     @FXML
     private void handleButtonAddItem() {
     	int typeNew;
-    	TreeItem<TemplateSimpleItem> targetItem;
+    	//TreeItem<TemplateSimpleItem> targetItem;
     	
     	//======== check
     	if (treeTableView_templates.getSelectionModel().getSelectedItem() == null) {
@@ -215,13 +215,20 @@ public class TemplateList_Controller implements AppItem_Interface {
     	
     	//======== select type for new item
     	typeNew = selectTypeItemForAdd ();
+    	switch (typeNew) {
+    	case TemplateSimpleItem.TYPE_ITEM_THEME :
+    		editTheme (0);
+    		break;
     	
-    	// ничего не выбрали, отмена добавления
-    	if (typeNew == -1)  return; 
     	
+    	
+    	}
+    	//TODO 
+    	
+    	/* не туда понесло - потом удалить
+    	 
     	// ищем родительский элемент куда будем вставлять
     	targetItem = treeTableView_templates.getSelectionModel().getSelectedItem();
-
     	while ((targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE) ||
     		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL) ||
     		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE) ||
@@ -233,17 +240,9 @@ public class TemplateList_Controller implements AppItem_Interface {
     	//======== добавление директории или темы
     	
     	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
 
     	//TODO add directory or theme
-    	
+    	*/
 /*    	
     	try {
 	    	// Загружаем fxml-файл и создаём новую сцену
@@ -469,6 +468,78 @@ public class TemplateList_Controller implements AppItem_Interface {
         }
     
     	return typeNew;
+    }
+    
+    /**
+     * Добавление редактирование темы
+     * actionType : 0 - добавить, 1 - редактировать
+     * @param actionType
+     */
+    private void editTheme (int actionType) {
+    	TreeItem<TemplateSimpleItem> ti;
+    
+    	//-------- ищем корневой элемент с темами (куда вставлять)
+    	switch (actionType) {
+    	case 0 :     // add
+    		// ищем корень тем
+    		for (TreeItem<TemplateSimpleItem> i : treeViewCtrl.root.getChildren()) {
+    			if (i.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) {
+    				ti = i;
+    			}
+    		}
+    		break;
+    	case 1 :     // edit
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		break;
+    	}
+    	
+    	try {
+    		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(Main.class.getResource("view/business/template/TemplateThemeEdit.fxml"));
+    		AnchorPane page = loader.load();
+    		
+    		// Создаём диалоговое окно Stage.
+    		Stage dialogStage = new Stage();
+			dialogStage.setTitle(((actionType == 0) ? "Добавление" : "Редактирование") +" темы");
+			dialogStage.initModality(Modality.NONE);
+			//dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
+  
+			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
+	    	dialogStage.setWidth(prefs.getDouble("stageThemeEdit_Width", 700));
+			dialogStage.setHeight(prefs.getDouble("stageThemeEdit_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageThemeEdit_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageThemeEdit_PosY", 0));
+    		
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateThemeEdit_Controller controller = loader.getController();
+    					
+    		Params params = new Params(this.params);
+    		params.setParentObj(this);
+    		params.setStageCur(dialogStage);
+	        
+	        controller.setParams(params, 0, treeTableView_templates.getSelectionModel().getSelectedItem());
+    			        
+	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+			//dialogStage.show();
+    			        
+	        //
+	        ///////////treeTableView_sections.refresh();
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    	
+    	
+    	
+    	
+    	
+    	
     }
     //TODO
     
