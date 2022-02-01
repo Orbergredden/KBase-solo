@@ -10,7 +10,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 /**
  * Контроллер форма для добавления/изменения темы
@@ -90,29 +94,70 @@ public class TemplateThemeEdit_Controller {
         initControlsValue();
     }
     
-    
-    
-    
+    /**
+     * Инициализирует контролы значениями из главного класса
+     */
+    private void initControlsValue() {
+    	
+    	if (actionType == 0) {                 // add
+    		label_Id.setText("");
+    		label_DateCreated.setText("");
+    		label_DateModified.setText("");
+    		label_UserCreated.setText("");
+    		label_UserModified.setText("");
+    	} else if (actionType == 1) {         // update
+    		label_Id.setText(Long.toString(editedItem.getId()));
+			textField_Name.setText(editedItem.getName());
+			textField_Descr.setText(editedItem.getDescr());
+			label_DateCreated.setText(dateConv.dateTimeToStr(editedItem.getDateCreated()));
+			label_DateModified.setText(dateConv.dateTimeToStr(editedItem.getDateModified()));
+			label_UserCreated.setText(editedItem.getUserCreated());
+			label_UserModified.setText(editedItem.getUserModified());
+    	}
+    	
+    	//======== buttons
+    	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
+    	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
+    }
 	
     /**
      * Вызывается при нажатии на кнопке "Ok"
      */
     @FXML
     private void handleButtonOk() {
+    	//-------- save stage position
+    	prefs.putDouble("stageThemeEdit_Width", params.getStageCur().getWidth());
+    	prefs.putDouble("stageThemeEdit_Height",params.getStageCur().getHeight());
+    	prefs.putDouble("stageThemeEdit_PosX",  params.getStageCur().getX());
+    	prefs.putDouble("stageThemeEdit_PosY",  params.getStageCur().getY());
     	
     	
     	
     	
+    	
+    	//-------- close window
+    	// get a handle to the stage
+        Stage stage = (Stage) button_Cancel.getScene().getWindow();
+        // do what you have to do
+        stage.close();
     }
+    //TODO
     
     /**
      * Вызывается при нажатии на кнопке "Отмена"
      */
     @FXML
     private void handleButtonCancel() {
+    	//-------- save stage position
+    	prefs.putDouble("stageThemeEdit_Width", params.getStageCur().getWidth());
+    	prefs.putDouble("stageThemeEdit_Height",params.getStageCur().getHeight());
+    	prefs.putDouble("stageThemeEdit_PosX",  params.getStageCur().getX());
+    	prefs.putDouble("stageThemeEdit_PosY",  params.getStageCur().getY());
     	
-    	
-    	
-    	
+    	//-------- close window
+    	// get a handle to the stage
+        Stage stage = (Stage) button_Cancel.getScene().getWindow();
+        // do what you have to do
+        stage.close();
     }
 }

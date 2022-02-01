@@ -299,63 +299,44 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     @FXML
     private void handleButtonUpdateItem() {
-    	//======== проверки
+    	int typeEdit;
+    	
+    	//======== check
     	if (treeTableView_templates.getSelectionModel().getSelectedItem() == null) {
     		ShowAppMsg.showAlert("WARNING", "Нет выбора", "Не выбран элемент", 
     				"Выберите элемент для редактирования.");
     		return;
     	}
-/*    	
-    	if ((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getType() == 0) || // 0 - корень
-    		(treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getType() == 2) || // 2 - папка для обязательных файлов
-    		(treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getType() == 4)) { // 4 - папка для шаблонов определенного типа
-    		ShowAppMsg.showAlert("WARNING", "Не редактируется", 
-    				"\"" + treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getName() + "\"", 
-    				"Данный элемент списка не редактируется.");
-    		return;
-    	}
-*/    	
-    	//======== load
-    	try {
-	    	// Загружаем fxml-файл и создаём новую сцену
-			// для всплывающего диалогового окна.
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/templates/TemplateEdit_Layout.fxml"));
-			AnchorPane page = loader.load();
     	
-			// Создаём диалоговое окно Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Редактирование шаблона или файла");
-			dialogStage.initModality(Modality.NONE);
-			dialogStage.initOwner(params.getMainStage());
-			Scene scene = new Scene(page);
-			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
-			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_CatalogTemplates_16.png"));
-			
-			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
-	    	dialogStage.setWidth(prefs.getDouble("stageTemplatesEdit_Width", 700));
-			dialogStage.setHeight(prefs.getDouble("stageTemplatesEdit_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageTemplatesEdit_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageTemplatesEdit_PosY", 0));
-/*			
-			// Даём контроллеру доступ к главному прилодению.
-			TemplateEdit_Controller controller = loader.getController();
-	        //controller.setParrentObj(this, 2, treeTableView_templates.getSelectionModel().getSelectedItem(), dialogStage);
-			
-			Params params = new Params(this.params);
-			params.setParentObj(this);
-			params.setStageCur(dialogStage);
-	        
-	        controller.setParams(params, 2, treeTableView_templates.getSelectionModel().getSelectedItem());
-			
-	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
-	        //dialogStage.showAndWait();
-			dialogStage.show();*/
-    	} catch (IOException e) {
-            e.printStackTrace();
+    	if ((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_ROOT) || 
+        	(treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) || 
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE) && 
+        	 (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL) && 
+             (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE) && 
+             (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE) && 
+             (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0))) {
+        		ShowAppMsg.showAlert("WARNING", "Не редактируется", 
+        				"\"" + treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getName() + "\"", 
+        				"Данный элемент списка не редактируется.");
+        		return;
         }
+    	
+    	//======== get type of current item for edit
+    	typeEdit = treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem();
+    	
+    	switch (typeEdit) {
+    	case TemplateSimpleItem.TYPE_ITEM_THEME :
+    		editTheme (1);
+    		break;
+    	
+    	
+    	
+    	}
     }
+    //TODO
     
     /**
      * Удаляем текущий элемент
@@ -476,7 +457,7 @@ public class TemplateList_Controller implements AppItem_Interface {
      * @param actionType
      */
     private void editTheme (int actionType) {
-    	TreeItem<TemplateSimpleItem> ti;
+    	TreeItem<TemplateSimpleItem> ti = null;
     
     	//-------- ищем корневой элемент с темами (куда вставлять)
     	switch (actionType) {
@@ -523,7 +504,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     		params.setParentObj(this);
     		params.setStageCur(dialogStage);
 	        
-	        controller.setParams(params, 0, treeTableView_templates.getSelectionModel().getSelectedItem());
+	        controller.setParams(params, actionType, ti);
     			        
 	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
 	        dialogStage.showAndWait();
