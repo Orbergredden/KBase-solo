@@ -3,9 +3,11 @@ package app.view.business.template;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
+import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateThemeItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,6 +24,10 @@ import javafx.stage.Stage;
  * @author Igor Makarevich
  */
 public class TemplateThemeEdit_Controller {
+	// for actionType
+	public static final int ACTION_TYPE_ADD       = 0;
+	public static final int ACTION_TYPE_EDIT      = 1;
+	
 	private Params params;
 	private DBConCur_Parameters conn;
     /**
@@ -131,6 +137,44 @@ public class TemplateThemeEdit_Controller {
     	prefs.putDouble("stageThemeEdit_PosX",  params.getStageCur().getX());
     	prefs.putDouble("stageThemeEdit_PosY",  params.getStageCur().getY());
     	
+    	//---------- check data in fields
+    	if ((textField_Name.getText().equals("") || (textField_Name.getText() == null))) {
+    		ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Название темы", "Укажите Название темы");
+    		return;
+    		//throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Название темы", this);
+    	}
+    	
+    	//-------- Сохраняем
+    	switch (actionType) {
+    	case ACTION_TYPE_ADD :
+    		TemplateThemeItem tip;
+			long newId = conn.db.templateThemeNextId();
+			
+			tip = new TemplateThemeItem (
+					newId,
+					textField_Name.getText(),
+					textField_Descr.getText()
+			);
+			conn.db.templateThemeAdd(tip);             // обьект-тему добавляем в БД
+			tip = conn.db.templateThemeGetById(newId); // get full info
+			tip.setThemeId(tip.getId());
+			tip.setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
+			
+			//--- добавляем в контрол-дерево
+			resultItem = new TreeItem<>(tip);
+			//((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root.getChildren().add(item);
+			editedItem_ti.getChildren().add(resultItem);
+    		
+    		
+    		
+    		break;
+    	case ACTION_TYPE_EDIT :
+    	
+    	
+    		
+    	
+    		break;
+    	}
     	
     	
     	

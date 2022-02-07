@@ -2812,9 +2812,11 @@ public static int getRowCount(ResultSet set) throws SQLException
 		                 "       date_created, date_modified, user_created, user_modified " + 
 					     "  from template_files " +
 					     " where parent_id = ? " +
+					     "   and theme_id = ? " +
 					     subSql; 
 			pst = con.prepareStatement(stm);
 			pst.setLong (1, parentItem.getId());
+			pst.setLong (2, parentItem.getThemeId());
 				
 			ResultSet rs = pst.executeQuery();
 		
@@ -2962,6 +2964,76 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Тема для шаблонов. Добавление новой.
+	 */
+	public void templateThemeAdd (TemplateThemeItem i) {
+		PreparedStatement pst = null;
+		
+		try {
+            String stm = "INSERT INTO template_themes (id, name, descr) " + 
+            			 "VALUES(?, ?, ?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, i.getId());
+            pst.setString(2, i.getName());
+            pst.setString(3, i.getDescr());
+            
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при добавлении новой темы шаблонов.");
+		}
+	}
+	
+	/**
+	 * Тема для шаблонов. Получение информации по id
+	 */
+	public TemplateThemeItem templateThemeGetById (long id) {
+		TemplateThemeItem retVal = null;
+	
+		try {
+			String stm = "SELECT id, name, descr, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+				         "  FROM template_themes " +
+				         " WHERE id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			retVal = new TemplateThemeItem(
+         			rs.getLong("id"), 
+         			rs.getString("name"),
+         			rs.getString("descr"),
+         			dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified"));
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		System.out.println("get templateTheme info : execute query Failed");
+    		e.printStackTrace();
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Возвращает список тем шаблонов
 	 */
 	public List<TemplateThemeItem> templateThemesList () {
@@ -3003,6 +3075,32 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 		             "Ошибка получения списка тем (templateThemesList).");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
+	 * Выдает следующий Id для добавления новой темы шаблонов
+	 */
+	public long templateThemeNextId () {
+		long retVal = -1;
+		
+		try {
+			String stm = "select nextval('seq_template_themes');";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+            retVal = rs.getLong(1);
+
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "select nextval('seq_template_themes');");
     	}
 		
 		return retVal;
@@ -4001,31 +4099,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Тема для шаблонов. Добавление новой.
-	 */
-	public void templateThemeAdd (TemplateThemeItem i) {
-		PreparedStatement pst = null;
-		
-		try {
-            String stm = "INSERT INTO template_themes (id, name, descr) " + 
-            			 "VALUES(?, ?, ?)";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, i.getId());
-            pst.setString(2, i.getName());
-            pst.setString(3, i.getDescr());
-            
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при добавлении новой темы шаблонов.");
-		}
-	}
-	
-	/**
 	 * Тема для шаблонов. Подсчет количества тем
 	 */
 	public long templateThemeCount () {
@@ -4071,77 +4144,6 @@ public static int getRowCount(ResultSet set) throws SQLException
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "Ошибка при удалении темы шаблонов.");
 		}
-	}
-	
-	/**
-	 * Тема для шаблонов. Получение информации по id
-	 */
-	public TemplateThemeItem templateThemeGetById (long id) {
-		TemplateThemeItem retVal = null;
-	
-		try {
-			String stm = "SELECT id, name, descr, " +
-		                 "       date_created, date_modified, user_created, user_modified " +
-				         "  FROM template_themes " +
-				         " WHERE id = ?";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, id);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			java.util.Date dateTmpCre;
-			Timestamp timestampCr = rs.getTimestamp("date_created");
-			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-			else                      dateTmpCre = null;
-			
-			java.util.Date dateTmpMod;
-			Timestamp timestampMo = rs.getTimestamp("date_modified");
-			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-			else                      dateTmpMod = null;
-			
-			retVal = new TemplateThemeItem(
-         			rs.getLong("id"), 
-         			rs.getString("name"),
-         			rs.getString("descr"),
-         			dateTmpCre, 
-         			dateTmpMod,
-         			rs.getString("user_created"),
-         			rs.getString("user_modified"));
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		System.out.println("get templateTheme info : execute query Failed");
-    		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Выдает следующий Id для добавления новой темы шаблонов
-	 */
-	public long templateThemeNextId () {
-		long retVal = -1;
-		
-		try {
-			String stm = "select nextval('seq_template_themes');";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.next();
-            retVal = rs.getLong(1);
-
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "select nextval('seq_template_themes');");
-    	}
-		
-		return retVal;
 	}
 	
 	/**

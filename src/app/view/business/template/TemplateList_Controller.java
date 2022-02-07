@@ -474,6 +474,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     		break;
     	}
     	
+    	//-------- open stage
     	try {
     		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
     		FXMLLoader loader = new FXMLLoader();
