@@ -2989,6 +2989,32 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Тема для шаблонов. Подсчет количества тем
+	 */
+	public long templateThemeCount () {
+		long retVal = 0;
+	
+		try {
+			String stm = "SELECT count(*) as CountR " +
+				         "  FROM template_themes " +
+						 ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			retVal = rs.getLong("CountR"); 
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		System.out.println("templateThemeCount : execute query Failed");
+    		e.printStackTrace();
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Тема для шаблонов. Получение информации по id
 	 */
 	public TemplateThemeItem templateThemeGetById (long id) {
@@ -3022,6 +3048,8 @@ public static int getRowCount(ResultSet set) throws SQLException
          			dateTmpMod,
          			rs.getString("user_created"),
          			rs.getString("user_modified"));
+			retVal.setThemeId(retVal.getId());
+			retVal.setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
 			
 			rs.close();
 			pst.close();
@@ -3104,6 +3132,33 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
+	}
+	
+	/**
+	 * Тема для шаблонов. Изменение.
+	 */
+	public void templateThemeUpdate (TemplateThemeItem p) {
+		PreparedStatement pst = null;
+		String stm;
+		
+		try {
+			stm = 	  "UPDATE template_themes " +
+					  "   SET name = ?, descr = ?, "+
+					  "       date_modified = now(), user_modified = \"current_user\"() " +
+				      " WHERE id = ? " +
+				      ";";
+			pst = con.prepareStatement(stm);
+			pst.setString(1, p.getName());
+			pst.setString(2, p.getDescr());
+			pst.setLong  (3, p.getId());
+			
+			pst.executeUpdate();
+            pst.close();
+		} catch (SQLException ex) {
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при изменении темы шаблонов.");
+		}
 	}
 	
 	/**
@@ -4099,32 +4154,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Тема для шаблонов. Подсчет количества тем
-	 */
-	public long templateThemeCount () {
-		long retVal = 0;
-	
-		try {
-			String stm = "SELECT count(*) as CountR " +
-				         "  FROM template_themes " +
-						 ";";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			retVal = rs.getLong("CountR"); 
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		System.out.println("templateThemeCount : execute query Failed");
-    		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
-	
-	/**
 	 * Тема для шаблонов. Удаление темы.
 	 */
 	public void templateThemeDelete (long id) {
@@ -4143,33 +4172,6 @@ public static int getRowCount(ResultSet set) throws SQLException
         	ex.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "Ошибка при удалении темы шаблонов.");
-		}
-	}
-	
-	/**
-	 * Тема для шаблонов. Изменение.
-	 */
-	public void templateThemeUpdate (TemplateThemeItem p) {
-		PreparedStatement pst = null;
-		String stm;
-		
-		try {
-			stm = 	  "UPDATE template_themes " +
-					  "   SET name = ?, descr = ?, "+
-					  "       date_modified = now(), user_modified = \"current_user\"() " +
-				      " WHERE id = ? " +
-				      ";";
-			pst = con.prepareStatement(stm);
-			pst.setString(1, p.getName());
-			pst.setString(2, p.getDescr());
-			pst.setLong  (3, p.getId());
-			
-			pst.executeUpdate();
-            pst.close();
-		} catch (SQLException ex) {
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при изменении темы шаблонов.");
 		}
 	}
 	/* <<<  OLD TEMPLATE ################################################################### */	

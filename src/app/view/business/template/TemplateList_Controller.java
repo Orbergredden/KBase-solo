@@ -343,13 +343,73 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     @FXML
     private void handleButtonDeleteItem() {
+    	TreeItem<TemplateSimpleItem> selectedItem = treeTableView_templates.getSelectionModel().getSelectedItem();
     	
+    	if (selectedItem == null) {
+    		params.setMsgToStatusBar("Ничего не выбрано для удаления.");
+    		return;
+    	}
     	
+    	TemplateSimpleItem tft = selectedItem.getValue();
     	
+    	if ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_ROOT) || 
+            (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) || 
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE) && 
+            (tft.getId() == 0)) ||
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL) && 
+            (tft.getId() == 0)) ||
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE) && 
+            (tft.getId() == 0)) ||
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE) && 
+            (tft.getId() == 0))) {
+            ShowAppMsg.showAlert("WARNING", "Не удаляется", 
+            				"\"" + tft.getName() + "\"", 
+            				"Данный элемент списка нельзя удалять.");
+            return;
+        }
     	
+    	TreeItem<TemplateSimpleItem> parentItem = selectedItem.getParent();
     	
+    	//======== get type of current item for delete
+    	switch (tft.getTypeItem()) {
+    	case TemplateSimpleItem.TYPE_ITEM_THEME :
+    		long countThemes = conn.db.templateThemeCount();
+    		String msgTheme1;
+    		String msgTheme2;
+    		
+    		if (countThemes > 1) {
+    			msgTheme1 = "\nСтили удаляться не будут.";
+    			msgTheme2 = "Удалить тему вместе со всеми ее файлами ?";
+    		}
+    		else {
+    			msgTheme1 = "";
+    			msgTheme2 = "Удалить тему вместе со всеми ее файлами и стилями ?";
+    		}
+    		
+    		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Удаление темы", 
+					  "Удаление темы '"+ tft.getName() +"'." + msgTheme1, 
+					  msgTheme2))
+    			return;
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		break;
     	
+
+    		
+    		
+    		
+    	
+    	}
+    	
+    	// выводим сообщение в статус бар
+    	params.setMsgToStatusBar("Элемент '" + tft.getName() + "' удален.");
     }
+    //TODO
     
     /**
      * Копирует текущий элемент в локальный буфер обмена
@@ -516,14 +576,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     	} catch (IOException e) {
             e.printStackTrace();
         }
-    	
-    	
-    	
-    	
-    	
-    	
     }
-    //TODO
     
     /**
 	 * уникальный ИД обьекта

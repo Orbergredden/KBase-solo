@@ -131,6 +131,8 @@ public class TemplateThemeEdit_Controller {
      */
     @FXML
     private void handleButtonOk() {
+    	TemplateThemeItem tip;
+    	
     	//-------- save stage position
     	prefs.putDouble("stageThemeEdit_Width", params.getStageCur().getWidth());
     	prefs.putDouble("stageThemeEdit_Height",params.getStageCur().getHeight());
@@ -147,7 +149,6 @@ public class TemplateThemeEdit_Controller {
     	//-------- Сохраняем
     	switch (actionType) {
     	case ACTION_TYPE_ADD :
-    		TemplateThemeItem tip;
 			long newId = conn.db.templateThemeNextId();
 			
 			tip = new TemplateThemeItem (
@@ -157,27 +158,40 @@ public class TemplateThemeEdit_Controller {
 			);
 			conn.db.templateThemeAdd(tip);             // обьект-тему добавляем в БД
 			tip = conn.db.templateThemeGetById(newId); // get full info
-			tip.setThemeId(tip.getId());
-			tip.setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
+			//tip.setThemeId(tip.getId());
+			//tip.setTypeItem(TemplateSimpleItem.TYPE_ITEM_THEME);
 			
 			//--- добавляем в контрол-дерево
 			resultItem = new TreeItem<>(tip);
 			//((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root.getChildren().add(item);
 			editedItem_ti.getChildren().add(resultItem);
     		
-    		
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Тема шаблонов '" + tip.getName() + "' добавлена.");
     		
     		break;
     	case ACTION_TYPE_EDIT :
-    	
-    	
-    		
+			// create theme object and update it into db
+			tip = new TemplateThemeItem (
+					editedItem.getId(),
+					textField_Name.getText(),
+					textField_Descr.getText()
+			);
+			conn.db.templateThemeUpdate(tip);
+			tip = conn.db.templateThemeGetById(editedItem.getId()); // get full info
+
+			// update in TreeTableView
+			editedItem_ti.setValue(null);
+			editedItem_ti.setValue(tip);
+
+			// определяем текущий активный итем
+			resultItem = editedItem_ti;
+
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Тема '" + tip.getName() + "' изменена.");
     	
     		break;
     	}
-    	
-    	
-    	
     	
     	//-------- close window
     	// get a handle to the stage
