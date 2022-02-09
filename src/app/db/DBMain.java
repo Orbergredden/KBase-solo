@@ -2797,10 +2797,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 			String subSql = "";
 			if (parentItem.getId() == 0) {
 				switch (parentItem.getTypeItem()) {
-				case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE :
+				case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
 					subSql = " and type < 10 ";
 					break;
-				case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+				case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
 					subSql = " and type >= 10 ";
 					break;
 				default :
@@ -2837,16 +2837,16 @@ public static int getRowCount(ResultSet set) throws SQLException
 					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE;
 					break;
 				case 1 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE;
+					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE;
 					break;
 				case 10 :
 					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL;
 					break;
 				case 11 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL;
+					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL;
 					break;
 				default :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_FILE;  // что нибудь присвоим
+					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE;  // что нибудь присвоим
 				}
 				
 				retVal.add(new TemplateSimpleItem(
@@ -2929,7 +2929,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 					break;
 				case  1 :
 				case 11 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE;
+					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_STYLE;
 					break;
 				default :
 					typeItem = parentItem.getTypeItem();  // что нибудь присвоим
@@ -3198,7 +3198,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	         			rs.getString("descr"),
 	         			0,
 	         			((rs.getInt("type")==0)||(rs.getInt("type")==10)) ? 
-	         					TemplateSimpleItem.TYPE_ITEM_TEMPLATE : TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE,
+	         					TemplateSimpleItem.TYPE_ITEM_TEMPLATE : TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE,
 	         			rs.getInt("type"),
 	         			rs.getLong("flag"),
 						dateTmpCre, 

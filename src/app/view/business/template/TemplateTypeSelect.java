@@ -175,20 +175,20 @@ public class TemplateTypeSelect {
     	treeTableView_types.getSelectionModel().select(siTheme); // делаем активной, что бы что то было выбрано в начале
 
     	// File
-    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE) ||
+    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE) ||
     		(currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE)) {
     		TreeItem<SimpleItem> siFileDir = 
-    				new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_SECTION_FILE, "Директория файлов",""));
+    				new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_DIR_FILE, "Директория файлов",""));
         	tiRoot.getChildren().add(siFileDir);
     		
         	TreeItem<SimpleItem> siFile = 
     				new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_FILE, "Файл",""));
         	tiRoot.getChildren().add(siFile);
     	}
-    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL) ||
+    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL) ||
     		(currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL)) {
     		TreeItem<SimpleItem> siFileDir = 
-    				new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL, 
+    				new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL, 
     						"Директория необязательных файлов",""));
         	tiRoot.getChildren().add(siFileDir);
     		
@@ -198,10 +198,10 @@ public class TemplateTypeSelect {
     	}
     	
     	// Style
-    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE) ||
+    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) ||
         	(currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE)) {
         	TreeItem<SimpleItem> siStyleDir = 
-        			new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, "Директория стилей",""));
+        			new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_DIR_STYLE, "Директория стилей",""));
            	tiRoot.getChildren().add(siStyleDir);
         		
            	TreeItem<SimpleItem> siStyle = 
@@ -210,10 +210,10 @@ public class TemplateTypeSelect {
         }
     	
     	// Template
-    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE) ||
+    	if ((currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE) ||
            	(currentItem.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_TEMPLATE)) {
            	TreeItem<SimpleItem> siTemplateDir = 
-           			new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, "Директория шаблонов",""));
+           			new TreeItem<>(new SimpleItem(TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE, "Директория шаблонов",""));
         	tiRoot.getChildren().add(siTemplateDir);
             		
            	TreeItem<SimpleItem> siTemplate = 
@@ -239,25 +239,25 @@ public class TemplateTypeSelect {
 				try {
 					row = getTreeTableRow().getItem();
 					switch ((int)row.getId()) {
-						case TemplateSimpleItem.TYPE_ITEM_SECTION_THEME :
+						case TemplateSimpleItem.TYPE_ITEM_DIR_THEME :
 						case TemplateSimpleItem.TYPE_ITEM_THEME : 
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
 							break;
-						case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE : 
-						case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+						case TemplateSimpleItem.TYPE_ITEM_DIR_FILE : 
+						case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_file_16.png"));
 							break;
 						case TemplateSimpleItem.TYPE_ITEM_FILE : 
 						case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
 							break;
-						case TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE :
+						case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
 							break;
 						case TemplateSimpleItem.TYPE_ITEM_STYLE :
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 							break;
-						case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
+						case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
 							graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
 							break;
 						case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :

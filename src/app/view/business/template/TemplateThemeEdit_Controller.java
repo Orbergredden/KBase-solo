@@ -1,18 +1,18 @@
 package app.view.business.template;
 
-import java.util.prefs.Preferences;
-
 import app.lib.DateConv;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
+
+import java.util.prefs.Preferences;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -199,7 +199,6 @@ public class TemplateThemeEdit_Controller {
         // do what you have to do
         stage.close();
     }
-    //TODO
     
     /**
      * Вызывается при нажатии на кнопке "Отмена"

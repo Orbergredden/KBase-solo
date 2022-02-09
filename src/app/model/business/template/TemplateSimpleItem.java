@@ -18,15 +18,15 @@ import javafx.beans.property.SimpleLongProperty;
 public class TemplateSimpleItem extends SimpleItem {
 	// for "typeItem"
 	public static final int TYPE_ITEM_ROOT                  = 0;
-	public static final int TYPE_ITEM_SECTION_THEME         = 10;
+	public static final int TYPE_ITEM_DIR_THEME             = 10;
 	public static final int TYPE_ITEM_THEME                 = 1;
-	public static final int TYPE_ITEM_SECTION_FILE          = 2;
+	public static final int TYPE_ITEM_DIR_FILE              = 2;
 	public static final int TYPE_ITEM_FILE                  = 3;
-	public static final int TYPE_ITEM_SECTION_FILE_OPTIONAL = 4;
+	public static final int TYPE_ITEM_DIR_FILE_OPTIONAL     = 4;
 	public static final int TYPE_ITEM_FILE_OPTIONAL         = 5;
-	public static final int TYPE_ITEM_SECTION_STYLE         = 6;
+	public static final int TYPE_ITEM_DIR_STYLE             = 6;
 	public static final int TYPE_ITEM_STYLE                 = 7;
-	public static final int TYPE_ITEM_SECTION_TEMPLATE      = 8;
+	public static final int TYPE_ITEM_DIR_TEMPLATE          = 8;
 	public static final int TYPE_ITEM_TEMPLATE              = 9;
 	
 	// subtypeItem for files

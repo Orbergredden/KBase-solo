@@ -219,80 +219,19 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_THEME :
     		editTheme (0);
     		break;
-    	
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+    		editSection (0);
+    		break;
+    		
+    		
     	
     	
     	}
-    	//TODO 
-    	
-    	/* не туда понесло - потом удалить
-    	 
-    	// ищем родительский элемент куда будем вставлять
-    	targetItem = treeTableView_templates.getSelectionModel().getSelectedItem();
-    	while ((targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE) ||
-    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL) ||
-    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE) ||
-    		   (targetItem.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_TEMPLATE)) {
-    		targetItem = targetItem.getParent();
-    	}
-    	//System.out.println("type = "+ typeNew +" ; targetId = "+ targetItem.getValue().getId() +" ; targetType = "+ targetItem.getValue().getTypeItem());
-    	
-    	//======== добавление директории или темы
-    	
-    	
-
-    	//TODO add directory or theme
-    	*/
-/*    	
-    	try {
-	    	// Загружаем fxml-файл и создаём новую сцену
-			// для всплывающего диалогового окна.
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/templates/TemplateEdit_Layout.fxml"));
-			AnchorPane page = loader.load();
-		
-			// Создаём диалоговое окно Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Добавление нового шаблона или файла");
-			dialogStage.initModality(Modality.NONE);
-			//dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(params.getMainStage());
-			Scene scene = new Scene(page);
-			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
-			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_CatalogTemplates_16.png"));
-			
-			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
-	    	dialogStage.setWidth(prefs.getDouble("stageTemplatesEdit_Width", 700));
-			dialogStage.setHeight(prefs.getDouble("stageTemplatesEdit_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageTemplatesEdit_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageTemplatesEdit_PosY", 0));
-*/
-/*			
-			// Даём контроллеру доступ к главному прилодению.
-			TemplateEdit_Controller controller = loader.getController();
-	        //controller.setParrentObj(this, 1, treeTableView_templates.getSelectionModel().getSelectedItem(), dialogStage);
-			
-			Params params = new Params(this.params);
-			params.setParentObj(this);
-			params.setStageCur(dialogStage);
-	        
-	        controller.setParams(params, 1, treeTableView_templates.getSelectionModel().getSelectedItem());
-*/	        
-	        
-	        
-/*	        
-	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
-	        //dialogStage.showAndWait();
-			dialogStage.show();
-	        
-	        //
-	        ///////////treeTableView_sections.refresh();
-    	} catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
     }
+    //TODO
     
     /**
      * Изменяем текущий элемент в справочнике
@@ -309,14 +248,14 @@ public class TemplateList_Controller implements AppItem_Interface {
     	}
     	
     	if ((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_ROOT) || 
-        	(treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) || 
-        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE) && 
+        	(treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_THEME) || 
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE) && 
         	 (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
-        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL) && 
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL) && 
              (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
-        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE) && 
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) && 
              (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0)) ||
-        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE) && 
+        	((treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE) && 
              (treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getId() == 0))) {
         		ShowAppMsg.showAlert("WARNING", "Не редактируется", 
         				"\"" + treeTableView_templates.getSelectionModel().getSelectedItem().getValue().getName() + "\"", 
@@ -330,6 +269,12 @@ public class TemplateList_Controller implements AppItem_Interface {
     	switch (typeEdit) {
     	case TemplateSimpleItem.TYPE_ITEM_THEME :
     		editTheme (1);
+    		break;
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+    		editSection (1);
     		break;
     	
     	
@@ -353,14 +298,14 @@ public class TemplateList_Controller implements AppItem_Interface {
     	TemplateSimpleItem tft = selectedItem.getValue();
     	
     	if ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_ROOT) || 
-            (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) || 
-           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE) && 
+            (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_THEME) || 
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE) && 
             (tft.getId() == 0)) ||
-           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL) && 
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL) && 
             (tft.getId() == 0)) ||
-           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE) && 
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) && 
             (tft.getId() == 0)) ||
-           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE) && 
+           ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE) && 
             (tft.getId() == 0))) {
             ShowAppMsg.showAlert("WARNING", "Не удаляется", 
             				"\"" + tft.getName() + "\"", 
@@ -524,7 +469,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case 0 :     // add
     		// ищем корень тем
     		for (TreeItem<TemplateSimpleItem> i : treeViewCtrl.root.getChildren()) {
-    			if (i.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_SECTION_THEME) {
+    			if (i.getValue().getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_THEME) {
     				ti = i;
     			}
     		}
@@ -577,6 +522,82 @@ public class TemplateList_Controller implements AppItem_Interface {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Добавление редактирование директории файлов, стилей или шаблонов
+     * actionType : 0 - добавить, 1 - редактировать
+     * @param actionType
+     */
+    private void editSection (int actionType) {
+    	TreeItem<TemplateSimpleItem> ti = null;
+    	TemplateSimpleItem tiv = null;
+    	
+    	//-------- ищем корневой элемент с темами (куда вставлять)
+    	switch (actionType) {
+    	case 0 :     // add
+    		// ищем первую вышестоящую директорию
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		tiv = ti.getValue();
+    		
+    		while ((tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_FILE) &&
+    			   (tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL) &&
+    			   (tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) &&	
+    			   (tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE)) {
+    			ti = ti.getParent();
+        		tiv = ti.getValue();
+    		}
+    		break;
+    	case 1 :     // edit
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		break;
+    	}
+    	
+    	/*
+    	//-------- open stage
+    	try {
+    		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(Main.class.getResource("view/business/template/TemplateThemeEdit.fxml"));
+    		AnchorPane page = loader.load();
+    		
+    		// Создаём диалоговое окно Stage.
+    		Stage dialogStage = new Stage();
+			dialogStage.setTitle(((actionType == 0) ? "Добавление" : "Редактирование") +" темы");
+			dialogStage.initModality(Modality.NONE);
+			//dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
+  
+			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
+	    	dialogStage.setWidth(prefs.getDouble("stageThemeEdit_Width", 700));
+			dialogStage.setHeight(prefs.getDouble("stageThemeEdit_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageThemeEdit_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageThemeEdit_PosY", 0));
+    		
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateThemeEdit_Controller controller = loader.getController();
+    					
+    		Params params = new Params(this.params);
+    		params.setParentObj(this);
+    		params.setStageCur(dialogStage);
+	        
+	        controller.setParams(params, actionType, ti);
+    			        
+	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+			//dialogStage.show();
+    			        
+	        //
+	        ///////////treeTableView_sections.refresh();
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    	*/
+    }
+    //TODO
     
     /**
 	 * уникальный ИД обьекта
@@ -761,7 +782,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			if (f == null)  return;
 			
 			TreeItem<TemplateSimpleItem> sectionThemeItem = new TreeItem<>(new TemplateSimpleItem(
-					0, "Темы", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_THEME, 0, 0));
+					0, "Темы", "", 0, TemplateSimpleItem.TYPE_ITEM_DIR_THEME, 0, 0));
 			ti.getChildren().add(sectionThemeItem);
 			
 			List<TemplateThemeItem> themesList = conn.db.templateThemesList();
@@ -774,20 +795,20 @@ public class TemplateList_Controller implements AppItem_Interface {
 				
 				//======== files
 				TreeItem<TemplateSimpleItem> fileDirReqItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Файлы обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE, 1, 0));
+						0, "Файлы обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_DIR_FILE, 1, 0));
 				themeItem.getChildren().add(fileDirReqItem);
 				
 				initTreeItemsFilesRecursive (fileDirReqItem);
 				
 				TreeItem<TemplateSimpleItem> fileDirOptItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL, 10, 0));
+						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL, 10, 0));
 				themeItem.getChildren().add(fileDirOptItem);
 				
 				initTreeItemsFilesRecursive (fileDirOptItem);
 				
 				//======== styles
 				TreeItem<TemplateSimpleItem> styleDirResItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Стили зарезервированные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 11, 0));
+						0, "Стили зарезервированные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_DIR_STYLE, 11, 0));
 				themeItem.getChildren().add(styleDirResItem);
 				
 				initTreeItemsStylesRecursive (styleDirResItem);
@@ -796,7 +817,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 				for (InfoTypeItem iInfo : listInfoTypes) {
 					TreeItem<TemplateSimpleItem> styleInfoTypeItem = new TreeItem<>(new TemplateSimpleItem(
 							0, "Стиль \""+iInfo.getName()+"\"", iInfo.getDescr(), i.getId(), 
-							TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE, 1, 
+							TemplateSimpleItem.TYPE_ITEM_DIR_STYLE, 1, 
 							iInfo.getId()));
 					themeItem.getChildren().add(styleInfoTypeItem);
 					
@@ -806,7 +827,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 			
 			//======== Templates
 			TreeItem<TemplateSimpleItem> sectionTemplateItem = new TreeItem<>(new TemplateSimpleItem(
-					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE, 0, 0));
+					0, "Шаблоны", "", 0, TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE, 0, 0));
 			ti.getChildren().add(sectionTemplateItem);
 			
 			initTreeItemsTemplatesRecursive (sectionTemplateItem);
@@ -887,12 +908,12 @@ public class TemplateList_Controller implements AppItem_Interface {
 							case TemplateSimpleItem.TYPE_ITEM_ROOT :                      // 0 - корень
 								graphic = null;
 								break;
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_THEME :
+							case TemplateSimpleItem.TYPE_ITEM_DIR_THEME :
 							case TemplateSimpleItem.TYPE_ITEM_THEME : 
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
 								break;
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE : 
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_FILE_OPTIONAL :
+							case TemplateSimpleItem.TYPE_ITEM_DIR_FILE : 
+							case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_file_16.png"));
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_FILE : 
@@ -909,7 +930,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 									break;
 								}
 								break;
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_STYLE :
+							case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_STYLE :
@@ -925,7 +946,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 									isDefault = true;
 								}
 								break;
-							case TemplateSimpleItem.TYPE_ITEM_SECTION_TEMPLATE :
+							case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
 								graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_template_16.png"));
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
