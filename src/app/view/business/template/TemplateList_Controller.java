@@ -552,40 +552,60 @@ public class TemplateList_Controller implements AppItem_Interface {
     		break;
     	}
     	
-    	/*
     	//-------- open stage
     	try {
     		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
     		FXMLLoader loader = new FXMLLoader();
-    		loader.setLocation(Main.class.getResource("view/business/template/TemplateThemeEdit.fxml"));
+    		loader.setLocation(Main.class.getResource("view/business/template/TemplateDirEdit.fxml"));
     		AnchorPane page = loader.load();
+    	
+    		String title = ((actionType == 0) ? "Добавление" : "Редактирование") +" директории ";
+    		String iconFileName = null;
+    		switch (ti.getValue().getTypeItem()) {
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    			title = title + "файлов";
+    			iconFileName = "icon_section_file_16.png";
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    			title = title + "необязательных файлов";
+    			iconFileName = "icon_section_file_16.png";
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+    			title = title + "стилей";
+    			iconFileName = "icon_section_style_16.png";
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+    			title = title + "шаблонов";
+    			iconFileName = "icon_section_template_16.png";
+    			break;
+    		}
     		
     		// Создаём диалоговое окно Stage.
     		Stage dialogStage = new Stage();
-			dialogStage.setTitle(((actionType == 0) ? "Добавление" : "Редактирование") +" темы");
+			dialogStage.setTitle(title);
 			dialogStage.initModality(Modality.NONE);
 			//dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(params.getMainStage());
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
 			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_theme_16.png"));
-  
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/"+iconFileName));
+
 			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
-	    	dialogStage.setWidth(prefs.getDouble("stageThemeEdit_Width", 700));
-			dialogStage.setHeight(prefs.getDouble("stageThemeEdit_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageThemeEdit_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageThemeEdit_PosY", 0));
-    		
+	    	dialogStage.setWidth(prefs.getDouble ("stageTemplateDirEdit_Width", 700));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateDirEdit_Height", 600));
+			dialogStage.setX(prefs.getDouble     ("stageTemplateDirEdit_PosX", 0));
+			dialogStage.setY(prefs.getDouble     ("stageTemplateDirEdit_PosY", 0));
+
 			// Даём контроллеру доступ к главному прилодению.
-			TemplateThemeEdit_Controller controller = loader.getController();
-    					
+			TemplateDirEdit_Controller controller = loader.getController();
+
     		Params params = new Params(this.params);
     		params.setParentObj(this);
     		params.setStageCur(dialogStage);
 	        
 	        controller.setParams(params, actionType, ti);
-    			        
+    		
 	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
 	        dialogStage.showAndWait();
 			//dialogStage.show();
@@ -595,7 +615,6 @@ public class TemplateList_Controller implements AppItem_Interface {
     	} catch (IOException e) {
             e.printStackTrace();
         }
-    	*/
     }
     //TODO
     

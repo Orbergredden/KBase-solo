@@ -3,14 +3,18 @@ package app.view.business.template;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
+import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateThemeItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -77,19 +81,85 @@ public class TemplateDirEdit_Controller {
     @FXML
     private void initialize() {         }
 	    
+    /**
+     * Вызывается родительским обьектом, которое даёт на себя ссылку.
+     * Инициализирует контролы на слое.
+     * 
+     * @param 
+     *        actionType : 0 - добавить ; 1 - редактировать
+     */
+    public void setParams(Params params, int actionType, 
+    		TreeItem<TemplateSimpleItem> editedItem_ti) {
+    	this.params     = params;
+    	this.conn       = params.getConCur();
+    	this.actionType = actionType;
+        this.editedItem_ti = editedItem_ti;
+        if (editedItem_ti != null) this.editedItem = editedItem_ti.getValue();
+        else                       this.editedItem = null;
+        initControlsValue();
+    }
 	
-	
+    /**
+     * Инициализирует контролы значениями из главного класса
+     */
+    private void initControlsValue() {
+    	
+    	if (actionType == 0) {                 // add
+    		label_Id.setText("");
+    		label_DateCreated.setText("");
+    		label_DateModified.setText("");
+    		label_UserCreated.setText("");
+    		label_UserModified.setText("");
+    	} else if (actionType == 1) {         // update
+    		label_Id.setText(Long.toString(editedItem.getId()));
+			textField_Name.setText(editedItem.getName());
+			textField_Descr.setText(editedItem.getDescr());
+			label_DateCreated.setText(dateConv.dateTimeToStr(editedItem.getDateCreated()));
+			label_DateModified.setText(dateConv.dateTimeToStr(editedItem.getDateModified()));
+			label_UserCreated.setText(editedItem.getUserCreated());
+			label_UserModified.setText(editedItem.getUserModified());
+    	}
+    	
+    	//======== buttons
+    	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
+    	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
+    }
 	
     /**
      * Вызывается при нажатии на кнопке "Ok"
      */
     @FXML
     private void handleButtonOk() {
+    	TemplateThemeItem tip;
+    	
+    	//-------- save stage position
+    	prefs.putDouble("stageTemplateDirEdit_Width", params.getStageCur().getWidth());
+    	prefs.putDouble("stageTemplateDirEdit_Height",params.getStageCur().getHeight());
+    	prefs.putDouble("stageTemplateDirEdit_PosX",  params.getStageCur().getX());
+    	prefs.putDouble("stageTemplateDirEdit_PosY",  params.getStageCur().getY());
+    	
+    	//---------- check data in fields
+    	if ((textField_Name.getText().equals("") || (textField_Name.getText() == null))) {
+    		ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Название директории", "Укажите Название директории");
+    		return;
+    		//throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Название темы", this);
+    	}
     	
     	
     	
+    	
+    	
+    	
+    	
+    	
+    	//TODO
+    	
+    	//-------- close window
+    	// get a handle to the stage
+        Stage stage = (Stage) button_Cancel.getScene().getWindow();
+        // do what you have to do
+        stage.close();
     }
-    //TODO
     
     /**
      * Вызывается при нажатии на кнопке "Отмена"
