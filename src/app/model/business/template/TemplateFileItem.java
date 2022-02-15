@@ -61,7 +61,11 @@ public class TemplateFileItem extends TemplateSimpleItem {
 	public TemplateFileItem(
 			long id, long parentId, long themeId, int type, int fileType, String fileName, String descr, 
 			String body, Image bodyImage) {
-		super(id, "", descr, themeId, ((type < 10) ? TYPE_ITEM_FILE : TYPE_ITEM_FILE_OPTIONAL), 0);
+		super(id, fileName, descr, themeId, 
+				((type < 10) ? ((type == 0) ? TYPE_ITEM_FILE : TYPE_ITEM_DIR_FILE) : 
+					((type == 10) ? TYPE_ITEM_FILE_OPTIONAL : TYPE_ITEM_DIR_FILE_OPTIONAL)), 
+				0);
+		//TODO
 		this.parentId         = new SimpleLongProperty(parentId);
 		this.type             = new SimpleIntegerProperty(type);
 		this.fileType         = new SimpleIntegerProperty(fileType);
@@ -78,8 +82,12 @@ public class TemplateFileItem extends TemplateSimpleItem {
 			long id, long parentId, long themeId, int type, int fileType, String fileName, String descr, 
 			String body, Image bodyImage, 
 			Date dateCreated, Date dateModified, String userCreated, String userModified) {
-		super(id, "", descr, themeId, ((type < 10) ? TYPE_ITEM_FILE : TYPE_ITEM_FILE_OPTIONAL), 0,
+		super(id, fileName, descr, themeId, 
+				((type < 10) ? ((type == 0) ? TYPE_ITEM_FILE : TYPE_ITEM_DIR_FILE) : 
+					((type == 10) ? TYPE_ITEM_FILE_OPTIONAL : TYPE_ITEM_DIR_FILE_OPTIONAL)), 
+				0,
 			  dateCreated, dateModified, userCreated, userModified);
+		//TODO
 		this.parentId         = new SimpleLongProperty(parentId);
 		this.type             = new SimpleIntegerProperty(type);
 		this.fileType         = new SimpleIntegerProperty(fileType);

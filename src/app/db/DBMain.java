@@ -12,6 +12,7 @@ import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateItem;
@@ -2785,6 +2786,94 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Директория Файлов для шаблонов. Добавление новой.
+	 */
+	public void templateFileAdd (TemplateFileItem i) {
+		PreparedStatement pst = null;
+		
+		try {
+			if ((i.getType() == 1) || (i.getType() == 11)) {
+				String stm = "INSERT INTO template_files (id, parent_id, theme_id, type, file_type, file_name, descr) " + 
+      			         "VALUES(?, ?, ?, ?, ?, ?, ?)";
+				pst = con.prepareStatement(stm);
+				pst.setLong  (1, i.getId());
+				pst.setLong  (2, i.getParentId());
+				pst.setLong  (3, i.getThemeId());
+				pst.setInt   (4, i.getType());
+				pst.setInt   (5, i.getFileType());
+				pst.setString(6, i.getFileName());
+				pst.setString(7, i.getDescr());
+			
+				pst.executeUpdate();
+				pst.close();
+			}
+		} catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при добавлении нового файла шаблонов.");
+		}
+	}
+	
+	/**
+	 * Файл (или директория) для шаблона. Получение информации по id
+	 */
+	public TemplateFileItem templateFileGetById (long id) {
+		TemplateFileItem retVal = null;
+		Image isImage = null;
+	
+		try {
+			String stm = "SELECT id, parent_id, theme_id, type, file_type, file_name, descr, body, body_bin, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+				         "  FROM template_files " +
+				         " WHERE id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			if (rs.getInt("file_type") == TemplateFileItem.FILE_TYPE_IMAGE) 
+				isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
+			
+			retVal = new TemplateFileItem (
+					rs.getLong("id"), 
+					rs.getLong("parent_id"),
+         			rs.getLong("theme_id"),
+         			rs.getInt("type"),
+         			rs.getInt("file_type"),
+         			rs.getString("file_name"),
+         			rs.getString("descr"),
+         			rs.getString("body"),
+         			isImage,
+					dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified")
+					);
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		System.out.println("get templateFile info : execute query Failed");
+    		e.printStackTrace();
+    	}
+		
+		return retVal;
+	}
+	//TODO
+	
+	/**
 	 * Возващает список файлов и директорий по id родительской директории. 
 	 * @param parentId
 	 * @return
@@ -2869,6 +2958,32 @@ public static int getRowCount(ResultSet set) throws SQLException
 			e.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "templateFileListByParent("+parentItem.getId()+")");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
+	 * Выдает следующий Id для добавления нового файла (или директории) для шаблонов
+	 */
+	public long templateFileNextId () {
+		long retVal = -1;
+		
+		try {
+			String stm = "select nextval('seq_template_files');";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+            retVal = rs.getLong(1);
+
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "select nextval('seq_template_files');");
     	}
 		
 		return retVal;
@@ -3484,61 +3599,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Файл для шаблона. Получение информации по id
-	 */
-	public TemplateRequiredFileItem templateFileGetById (long id) {
-		TemplateRequiredFileItem retVal = null;
-		Image isImage = null;
-	
-		try {
-			String stm = "SELECT id, theme_id, file_name, descr, type, file_type, body, body_bin, " +
-		                 "       date_created, date_modified, user_created, user_modified " +
-				         "  FROM template_required_files " +
-				         " WHERE id = ?";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, id);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			java.util.Date dateTmpCre;
-			Timestamp timestampCr = rs.getTimestamp("date_created");
-			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-			else                      dateTmpCre = null;
-			
-			java.util.Date dateTmpMod;
-			Timestamp timestampMo = rs.getTimestamp("date_modified");
-			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-			else                      dateTmpMod = null;
-			
-			if (rs.getInt("file_type") == 2) 
-				isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
-			
-			retVal = new TemplateRequiredFileItem (
-					rs.getLong("id"), 
-         			rs.getLong("theme_id"),
-         			rs.getString("file_name"),
-         			rs.getString("descr"),
-         			rs.getString("body"),
-         			isImage,
-         			rs.getInt("type"),
-         			rs.getInt("file_type"),
-					dateTmpCre, 
-         			dateTmpMod,
-         			rs.getString("user_created"),
-         			rs.getString("user_modified")
-					);
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		System.out.println("get templateFile info : execute query Failed");
-    		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
-	
-	/**
 	 * Возвращает типизированный файл по для указанной темы по типу.
 	 */
 	public TemplateRequiredFileItem templateFileGetByType(long themeId, int type) {
@@ -3758,32 +3818,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     	}
 	
-		return retVal;
-	}
-	
-	/**
-	 * Выдает следующий Id для добавления нового обязательного файла для шаблонов
-	 */
-	public long templateFileNextId () {
-		long retVal = -1;
-		
-		try {
-			String stm = "select nextval('seq_template_required_files');";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.next();
-            retVal = rs.getLong(1);
-
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "select nextval('seq_template_required_files');");
-    	}
-		
 		return retVal;
 	}
 	

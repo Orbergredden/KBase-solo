@@ -223,7 +223,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
     	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
-    		editSection (0);
+    		editDir (0);
     		break;
     		
     		
@@ -274,7 +274,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
     	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
-    		editSection (1);
+    		editDir (1);
     		break;
     	
     	
@@ -528,7 +528,7 @@ public class TemplateList_Controller implements AppItem_Interface {
      * actionType : 0 - добавить, 1 - редактировать
      * @param actionType
      */
-    private void editSection (int actionType) {
+    private void editDir (int actionType) {
     	TreeItem<TemplateSimpleItem> ti = null;
     	TemplateSimpleItem tiv = null;
     	
@@ -616,7 +616,6 @@ public class TemplateList_Controller implements AppItem_Interface {
             e.printStackTrace();
         }
     }
-    //TODO
     
     /**
 	 * уникальный ИД обьекта

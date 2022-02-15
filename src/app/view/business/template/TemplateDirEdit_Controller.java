@@ -6,6 +6,7 @@ import app.lib.DateConv;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
+import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
 import javafx.fxml.FXML;
@@ -130,7 +131,7 @@ public class TemplateDirEdit_Controller {
      */
     @FXML
     private void handleButtonOk() {
-    	TemplateThemeItem tip;
+    	TemplateFileItem tip;
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateDirEdit_Width", params.getStageCur().getWidth());
@@ -145,13 +146,67 @@ public class TemplateDirEdit_Controller {
     		//throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Название темы", this);
     	}
     	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+    	//-------- Сохраняем
+    	switch (actionType) {
+    	case ACTION_TYPE_ADD :
+    		long newId = conn.db.templateFileNextId();
+    		
+    		switch (editedItem.getTypeItem()) {
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    			tip = new TemplateFileItem(
+    					newId, editedItem.getId(), editedItem.getThemeId(), editedItem.getTypeItem(), 0, 
+    					textField_Name.getText(), textField_Descr.getText(), null, null
+    					);
+    			conn.db.templateFileAdd (tip);             // обьект-директорию добавляем в БД
+/*    			tip = conn.db.templateFileGetById(newId);  // get full info
+    			
+    			//--- добавляем в контрол-дерево
+    			resultItem = new TreeItem<>(tip);
+    			//((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root.getChildren().add(item);
+    			editedItem_ti.getChildren().add(resultItem);
+        		
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' добавлена.");
+*/    			
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+
+    			
+    			
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+
+    			
+    			
+    			break;
+    		}
+    		break;
+    	case ACTION_TYPE_EDIT :
+    		switch (editedItem.getTypeItem()) {
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+
+    			
+    			
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+
+    			
+    			
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+
+    			
+    			
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+
+    			
+    			
+    			break;
+    		}
+    		break;
+    	}
     	//TODO
     	
     	//-------- close window
