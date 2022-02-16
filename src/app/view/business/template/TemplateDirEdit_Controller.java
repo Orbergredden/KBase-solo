@@ -155,11 +155,11 @@ public class TemplateDirEdit_Controller {
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
     			tip = new TemplateFileItem(
-    					newId, editedItem.getId(), editedItem.getThemeId(), editedItem.getTypeItem(), 0, 
+    					newId, editedItem.getId(), editedItem.getThemeId(), (int)editedItem.getSubtypeItem(), 0, 
     					textField_Name.getText(), textField_Descr.getText(), null, null
     					);
     			conn.db.templateFileAdd (tip);             // обьект-директорию добавляем в БД
-/*    			tip = conn.db.templateFileGetById(newId);  // get full info
+    			tip = conn.db.templateFileGetById(newId);  // get full info
     			
     			//--- добавляем в контрол-дерево
     			resultItem = new TreeItem<>(tip);
@@ -168,7 +168,7 @@ public class TemplateDirEdit_Controller {
         		
     			// выводим сообщение в статус бар
     			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' добавлена.");
-*/    			
+    			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
 

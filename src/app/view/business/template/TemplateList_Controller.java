@@ -819,7 +819,7 @@ public class TemplateList_Controller implements AppItem_Interface {
 				initTreeItemsFilesRecursive (fileDirReqItem);
 				
 				TreeItem<TemplateSimpleItem> fileDirOptItem = new TreeItem<>(new TemplateSimpleItem(
-						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL, 10, 0));
+						0, "Файлы не обязательные", "", i.getId(), TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL, 11, 0));
 				themeItem.getChildren().add(fileDirOptItem);
 				
 				initTreeItemsFilesRecursive (fileDirOptItem);

@@ -57,6 +57,7 @@ public class TemplateSimpleItem extends SimpleItem {
 	protected final LongProperty subtypeItem;
 	/**
 	 * для различного использования в разных типах обьектов
+	 * Для файла - тип файла или дирктории
 	 * Для стиля - ид инфо блока или 0 для зарезервированных
 	 */
 	protected LongProperty flag;

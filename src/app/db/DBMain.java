@@ -2806,6 +2806,9 @@ public static int getRowCount(ResultSet set) throws SQLException
 			
 				pst.executeUpdate();
 				pst.close();
+			} else {
+				ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+			             "Ошибка при добавлении нового файла шаблонов : тип " + i.getType() + " не определен.");
 			}
 		} catch (SQLException ex) {
             //Logger lgr = Logger.getLogger(Prepared.class.getName());

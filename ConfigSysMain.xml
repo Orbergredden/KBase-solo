@@ -13,10 +13,10 @@
         <id>-1284171031</id>
         <isEditable>true</isEditable>
         <isShow>true</isShow>
-        <lastModified>2022-02-10</lastModified>
+        <lastModified>2022-02-15</lastModified>
         <name>version</name>
         <sectionName>AboutProgram</sectionName>
-        <value>1.03.04.530</value>
+        <value>1.03.04.531</value>
     </ConfigMainItem>
     <ConfigMainItem>
         <id>-1284171032</id>
@@ -31,10 +31,10 @@
         <id>-1284171033</id>
         <isEditable>true</isEditable>
         <isShow>true</isShow>
-        <lastModified>2022-02-10</lastModified>
+        <lastModified>2022-02-15</lastModified>
         <name>EndDate</name>
         <sectionName>AboutProgram</sectionName>
-        <value>10.02.2022</value>
+        <value>15.02.2022</value>
     </ConfigMainItem>
     <ConfigMainItem>
         <id>-1284171034</id>
