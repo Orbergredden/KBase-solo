@@ -2808,14 +2808,14 @@ public static int getRowCount(ResultSet set) throws SQLException
 				pst.close();
 			} else {
 				ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			             "Ошибка при добавлении нового файла шаблонов : тип " + i.getType() + " не определен.");
+			             "Ошибка при добавлении новой директории файлов шаблонов : тип " + i.getType() + " не определен.");
 			}
 		} catch (SQLException ex) {
             //Logger lgr = Logger.getLogger(Prepared.class.getName());
             //lgr.log(Level.SEVERE, ex.getMessage(), ex);
         	ex.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при добавлении нового файла шаблонов.");
+					             "Ошибка при добавлении новой директории файлов шаблонов.");
 		}
 	}
 	
@@ -2947,7 +2947,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	         			rs.getString("descr"),
 	         			rs.getLong("theme_id"),
 	         			typeItem,
-	         			rs.getInt("file_type"),
+	         			rs.getInt("type"),
 						dateTmpCre, 
 	         			dateTmpMod,
 	         			rs.getString("user_created"),
@@ -2991,6 +2991,45 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Обновление информации директории файлов для шаблонов
+	 */
+	public void templateFileUpdate (TemplateFileItem tf) {
+		PreparedStatement pst = null;
+		String stm;
+		
+		try {
+			if ((tf.getType() == 1) || (tf.getType() == 11)) {
+				stm = 	"UPDATE template_files " +
+						"   SET parent_id = ?, theme_id = ?, type = ?, file_type = ?, " +
+						"       file_name = ?, descr = ?, date_modified = now(), user_modified = \"current_user\"() " +
+						" WHERE id = ? " +
+						";";
+				pst = con.prepareStatement(stm);
+				pst.setLong  (1, tf.getParentId());
+				pst.setLong  (2, tf.getThemeId());
+				pst.setInt   (3, tf.getType());
+				pst.setInt   (4, tf.getFileType());
+				pst.setString(5, tf.getFileName());
+				pst.setString(6, tf.getDescr());
+				pst.setLong  (7, tf.getId());
+				
+				pst.executeUpdate();
+				pst.close();
+			} else {
+				ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+			             "Ошибка при обновлении директории файлов шаблонов : тип " + tf.getType() + " не определен.");
+			}
+		} catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при обновлении директории файлов шаблонов.");
+		}
+	}
+	//TODO
 	
 	/**
 	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 

@@ -185,13 +185,31 @@ public class TemplateDirEdit_Controller {
     	case ACTION_TYPE_EDIT :
     		switch (editedItem.getTypeItem()) {
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
-
-    			
-    			
-    			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
-
+    			// create theme object and update it into db
+    			tip = new TemplateFileItem(
+    					editedItem.getId(), 
+    					editedItem_ti.getParent().getValue().getId(), 
+    					editedItem.getThemeId(), 
+    					(int)editedItem.getSubtypeItem(), 
+    					0, 
+    					textField_Name.getText(), 
+    					textField_Descr.getText(), 
+    					null, 
+    					null
+    					);
+    			conn.db.templateFileUpdate(tip);
+    			tip = conn.db.templateFileGetById(editedItem.getId()); // get full info
     			
+    			// update in TreeTableView
+    			editedItem_ti.setValue(null);
+    			editedItem_ti.setValue(tip);
+
+    			// определяем текущий активный итем
+    			resultItem = editedItem_ti;
+
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' изменена.");
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
