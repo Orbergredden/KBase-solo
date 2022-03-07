@@ -8,6 +8,7 @@ import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -132,6 +133,7 @@ public class TemplateDirEdit_Controller {
     @FXML
     private void handleButtonOk() {
     	TemplateFileItem tip;
+    	TemplateStyleItem sip;
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateDirEdit_Width", params.getStageCur().getWidth());
@@ -149,11 +151,13 @@ public class TemplateDirEdit_Controller {
     	//-------- Сохраняем
     	switch (actionType) {
     	case ACTION_TYPE_ADD :
-    		long newId = conn.db.templateFileNextId();
+    		long newId;
     		
     		switch (editedItem.getTypeItem()) {
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    			newId = conn.db.templateFileNextId();
+    			
     			tip = new TemplateFileItem(
     					newId, editedItem.getId(), editedItem.getThemeId(), (int)editedItem.getSubtypeItem(), 0, 
     					textField_Name.getText(), textField_Descr.getText(), null, null
@@ -171,8 +175,29 @@ public class TemplateDirEdit_Controller {
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
-
+    			newId = conn.db.templateStyleNextId();
     			
+    			//-------- add to DB
+    			sip = new TemplateStyleItem(
+    					newId,
+    					editedItem.getId(),
+    					(int)editedItem.getSubtypeItem(),  // type
+    					editedItem.getFlag(),         // infoTypeId
+    					textField_Name.getText(),
+    					textField_Descr.getText(),
+    					"");                          // tag
+    			conn.db.templateStyleAdd(sip);  // стиль добавляем в БД
+    			sip = conn.db.templateStyleGet(newId);                   // get full info by Id
+    			
+    			// добавляем в контрол-дерево. Добавляем во все темы.
+    			((TemplateList_Controller)params.getParentObj()).treeViewCtrl.addStyleItemRecursive(
+    					((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root,
+    					sip);
+    			// раскрываем текущий элемент
+    			editedItem_ti.setExpanded(true);
+    			
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Стиль '" + sip.getName() + "' добавлен.");
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :

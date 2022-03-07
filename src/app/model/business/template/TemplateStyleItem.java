@@ -45,7 +45,9 @@ public class TemplateStyleItem extends TemplateSimpleItem {
 	 * @param
 	 */
 	public TemplateStyleItem(long id, long parentId, int type, long infoTypeId, String name, String descr, String tag) {
-		super(id, name, descr, 0, TYPE_ITEM_STYLE, ((type < 10) ? infoTypeId : -1));
+		super(id, name, descr, 0,
+				(((type == 0)||(type == 10)) ? TYPE_ITEM_STYLE : TYPE_ITEM_DIR_STYLE),
+				type, infoTypeId);
 		this.parentId     = new SimpleLongProperty(parentId);
 		this.type         = new SimpleIntegerProperty(type);
 		this.infoTypeId   = new SimpleLongProperty(infoTypeId);
@@ -58,7 +60,10 @@ public class TemplateStyleItem extends TemplateSimpleItem {
 	 */
 	public TemplateStyleItem(long id, long parentId, int type, long infoTypeId, String name, String descr, String tag,
                   			 Date dateCreated, Date dateModified, String userCreated, String userModified) {
-		super(id, name, descr, 0, TYPE_ITEM_STYLE, ((type < 10) ? infoTypeId : -1));
+		super(id, name, descr, 0,
+				(((type == 0)||(type == 10)) ? TYPE_ITEM_STYLE : TYPE_ITEM_DIR_STYLE),
+				type, infoTypeId,
+				dateCreated, dateModified, userCreated, userModified);
 		this.parentId     = new SimpleLongProperty(parentId);
 		this.type         = new SimpleIntegerProperty(type);
 		this.infoTypeId   = new SimpleLongProperty(infoTypeId);

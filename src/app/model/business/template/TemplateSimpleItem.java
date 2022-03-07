@@ -51,16 +51,19 @@ public class TemplateSimpleItem extends SimpleItem {
 	 *  9 - шаблон
 	 */
 	protected final IntegerProperty typeItem;
+	
 	/**
-	 * Подтип записи. В случае стиля содежит тип из таблицы template_style
+	 * Подтип записи.
+	 * Для файла, стиля - тип файла или дирктории 
 	 */
 	protected final LongProperty subtypeItem;
+	
 	/**
 	 * для различного использования в разных типах обьектов
-	 * Для файла - тип файла или дирктории
 	 * Для стиля - ид инфо блока или 0 для зарезервированных
 	 */
 	protected LongProperty flag;
+
 	/**
 	 * для различного использования в разных типах обьектов
 	 * Для стиля - ид шаблона или 0 если нет связки с шаблоном

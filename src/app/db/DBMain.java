@@ -14,6 +14,7 @@ import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
 import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
 import app.model.business.templates_old.TemplateItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
@@ -892,33 +893,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	//TODO OLD STYLE
 	//########################################################## OLD STYLE
 	/**
-	 * Стиль шаблонов. Добавление нового.
-	 */
-	public void infoTypeStyleAdd (InfoTypeStyleItem i) {
-		PreparedStatement pst = null;
-		
-		try {
-            String stm = "INSERT INTO infotype_style (id, parent_id, infotype_id, name, descr) " + 
-            			 "VALUES(?, ?, ?, ?, ?)";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, i.getId());
-            pst.setLong  (2, i.getParentId());
-            pst.setLong  (3, i.getInfoTypeId());
-            pst.setString(4, i.getName());
-            pst.setString(5, i.getDescr());
-            
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при добавлении нового стиля шаблона.");
-		}
-	}
-	
-	/**
 	 * Подсчет количества стилей для указанного родительского стиля.
 	 * @param
 	 */
@@ -1325,32 +1299,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		} catch (SQLException e) {
     		System.out.println("execute query Failed (infoTypeStyleListByInfoTypeId)");
     		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Выдает следующий Id для добавления нового стиля шаблона
-	 */
-	public long infoTypeStyleNextId () {
-		long retVal = -1;
-		
-		try {
-			String stm = "select nextval('seq_infotype_style');";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.next();
-            retVal = rs.getLong(1);
-
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "select nextval('seq_infotype_style');");
     	}
 		
 		return retVal;
@@ -2874,7 +2822,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO
 	
 	/**
 	 * Возващает список файлов и директорий по id родительской директории. 
@@ -3029,6 +2976,87 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при обновлении директории файлов шаблонов.");
 		}
 	}
+	
+	/**
+	 * Стиль шаблонов. Добавление нового.
+	 */
+	public void templateStyleAdd (TemplateStyleItem i) {
+		PreparedStatement pst = null;
+		
+		try {
+            String stm = "INSERT INTO template_style (id, parent_id, type, infotype_id, name, descr, tag) " + 
+            			 "VALUES(?, ?, ?, ?, ?, ?, ?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, i.getId());
+            pst.setLong  (2, i.getParentId());
+            pst.setLong  (3, i.getType());
+            pst.setLong  (4, i.getInfoTypeId());
+            pst.setString(5, i.getName());
+            pst.setString(6, i.getDescr());
+            pst.setString(7, i.getTag());
+            
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при добавлении нового стиля шаблона.");
+		}
+	}
+	
+	/**
+	 * Стиль шаблонов. Получение информации по id
+	 */
+	public TemplateStyleItem templateStyleGet (long id) {
+		TemplateStyleItem retVal = null;
+	
+		try {
+			String stm = "SELECT id, parent_id, type, infotype_id, name, descr, tag, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+				         "  FROM template_style " +
+				         " WHERE id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			retVal = new TemplateStyleItem (
+					rs.getLong("id"), 
+         			rs.getLong("parent_id"),
+         			rs.getInt("type"),
+         			rs.getLong("infotype_id"),
+         			rs.getString("name"),
+         			rs.getString("descr"),
+         			rs.getString("tag"),
+					dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified")
+					);
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("infoTypeStyleGet : execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных , templateStyleGet ("+id+")", 
+		             e.getMessage());
+    	}
+		
+		return retVal;
+	}
 	//TODO
 	
 	/**
@@ -3114,7 +3142,33 @@ public static int getRowCount(ResultSet set) throws SQLException
 		} catch (SQLException e) {
 			e.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "templateFileListByParent("+parentItem.getId()+")");
+					             "templateStyleListByParent("+parentItem.getId()+")");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
+	 * Выдает следующий Id для добавления нового стиля шаблона
+	 */
+	public long templateStyleNextId () {
+		long retVal = -1;
+		
+		try {
+			String stm = "select nextval('seq_template_style');";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+            retVal = rs.getLong(1);
+
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "select nextval('seq_template_style');");
     	}
 		
 		return retVal;

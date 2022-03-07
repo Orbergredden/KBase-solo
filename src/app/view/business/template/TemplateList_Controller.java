@@ -13,6 +13,7 @@ import app.model.business.InfoTypeItem;
 //import app.model.business.template.TemplateItem;
 //import app.model.business.templates_old.TemplateRequiredFileItem;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
 import app.view.business.Container_Interface;
 import app.view.business.SectionEdit_Controller;
@@ -1049,6 +1050,47 @@ public class TemplateList_Controller implements AppItem_Interface {
 			return msg;
 		}
 		
-		
+		/**
+	     * Добавляет новый стиль в дерево-контрол во все темы
+	     */
+	    void addStyleItemRecursive (TreeItem<TemplateSimpleItem> parentTI, TemplateStyleItem new_sip) {
+	    	// получаем список дочерних элементов
+	    	List<TreeItem<TemplateSimpleItem>> oList = parentTI.getChildren(); 
+
+	    	// делаем цикл по дочерним элементам
+	    	for (TreeItem<TemplateSimpleItem> i : oList) {
+	    		//TemplateSimpleItem tft = new TemplateSimpleItem(i.getValue());
+	            TemplateSimpleItem tft = i.getValue();
+	    		boolean isFound = false;
+	    		
+	    		// проверяем элемент на нужный стиль : по typeItem, flag (infoTypeId)
+	    		if ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) && 
+		    		(tft.getId() == new_sip.getParentId()) && 
+		    		(tft.getFlag() == new_sip.getInfoTypeId()))
+		    		isFound = true;
+	    		
+	    		// создаем элемент для вставки. Вставляем новый элемент как его дочерний с нужным ИД темы
+	    		if (isFound) {
+	    			TreeItem<TemplateSimpleItem> item = new TreeItem<>(new TemplateSimpleItem(
+	        				new_sip.getId(),        // style id
+	        				new_sip.getName(),
+	        				new_sip.getDescr(),
+	        				tft.getThemeId(),
+	        				new_sip.getTypeItem(),
+	        				new_sip.getSubtypeItem(),
+	        				new_sip.getInfoTypeId(),
+	        				new_sip.getDateCreated(),
+	        				new_sip.getDateModified(),
+	        				new_sip.getUserCreated(),
+	        				new_sip.getUserModified()
+	                		));
+	    			i.getChildren().add(item);
+	    		}
+	    		
+	    		// вызываем эту ф-цию для проверки элементов следующей глубины вложения для текущего элемента
+	    		addStyleItemRecursive (i, new_sip);
+	    	}
+	    }
+	    //TODO
 	}
 }
