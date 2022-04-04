@@ -1091,6 +1091,46 @@ public class TemplateList_Controller implements AppItem_Interface {
 	    		addStyleItemRecursive (i, new_sip);
 	    	}
 	    }
+	    
+	    /**
+	     * Изменяет стиль в дереве-контроле во всех темах
+	     */
+	    void updateStyleItemRecursive (TreeItem<TemplateSimpleItem> parentTI, TemplateStyleItem new_sip) {
+	    	// получаем список дочерних элементов
+	    	List<TreeItem<TemplateSimpleItem>> oList = parentTI.getChildren(); 
+
+	    	// делаем цикл по дочерним элементам
+	    	for (TreeItem<TemplateSimpleItem> i : oList) {
+	    		//TemplateSimpleItem tft = new TemplateSimpleItem(i.getValue());
+	    		TemplateSimpleItem tft = i.getValue();
+	    		
+	    		// проверяем элемент на нужный стиль
+	    		if (((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) ||
+	    			 (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE)) &&
+	    		    (tft.getId() == new_sip.getId())) {
+	    			
+	    			// создаем элемент для замены. Вставляем новый элемент с нужным ИД темы
+	    			TemplateSimpleItem ttt = new TemplateSimpleItem(
+	        				new_sip.getId(),        // style id
+	        				new_sip.getName(),
+	        				new_sip.getDescr(),
+	        				tft.getThemeId(),
+	        				new_sip.getTypeItem(),
+	        				new_sip.getSubtypeItem(),
+	        				new_sip.getInfoTypeId(),
+	        				new_sip.getDateCreated(),
+	        				new_sip.getDateModified(),
+	        				new_sip.getUserCreated(),
+	        				new_sip.getUserModified()
+	                		);
+	    			i.setValue(null);
+	        		i.setValue(ttt);
+	    		}
+
+	    		// вызываем эту ф-цию для проверки элементов следующей глубины вложения для текущего элемента
+	    		updateStyleItemRecursive (i, new_sip);
+	    	}
+	    }
 	    //TODO
 	}
 }

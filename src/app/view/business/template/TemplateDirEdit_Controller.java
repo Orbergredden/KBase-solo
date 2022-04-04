@@ -9,7 +9,6 @@ import app.model.Params;
 import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateStyleItem;
-import app.model.business.template.TemplateThemeItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -238,8 +237,35 @@ public class TemplateDirEdit_Controller {
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
-
+    			sip = conn.db.templateStyleGet(editedItem.getId());
     			
+    			//-------- create style object and update it into db
+    			sip = new TemplateStyleItem(
+    					sip.getId(),
+    					sip.getParentId(),
+    					sip.getType(),
+    					sip.getInfoTypeId(),
+    					textField_Name.getText(),
+    					textField_Descr.getText(),
+    					sip.getTag(),
+    					sip.getDateCreated(),
+    					null,
+    					sip.getUserCreated(),
+    					null
+    					);
+    			conn.db.templateStyleUpdate(sip);
+    			sip = conn.db.templateStyleGet(sip.getId());                   // get full info by Id
+    			
+    			// update in TreeTableView. Изменяем во всех темах
+    			((TemplateList_Controller)params.getParentObj()).treeViewCtrl.updateStyleItemRecursive(
+    					((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root,
+    					sip);
+
+    			// определяем текущий активный итем
+    			resultItem = editedItem_ti;
+
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Стиль '" + sip.getName() + "' змінений.");
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :

@@ -1347,34 +1347,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             e.getMessage());
 		}
 	}
-	
-	/**
-	 * Стиль шаблонов. Изменение.
-	 */
-	public void infoTypeStyleUpdate (InfoTypeStyleItem p) {
-		PreparedStatement pst;
-		String stm;
-		
-		try {
-			stm = 	  "UPDATE infotype_style " +
-					  "   SET name = ?, descr = ?, parent_id = ?, " +
-					  "       date_modified = now(), user_modified = \"current_user\"() " +
-				      " WHERE id = ? " +
-				      ";";
-			pst = con.prepareStatement(stm);
-			pst.setString(1, p.getName());
-			pst.setString(2, p.getDescr());
-			pst.setLong  (3, p.getParentId());
-			pst.setLong  (4, p.getId());
-			
-			pst.executeUpdate();
-            pst.close();
-		} catch (SQLException ex) {
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при изменении стиля шаблонов (infoTypeStyleUpdate).");
-		}
-	}
 	//TODO OLD STYLE end
 	//########################################################## OLD STYLE
 
@@ -3057,7 +3029,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO
 	
 	/**
 	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 
@@ -3173,6 +3144,35 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Стиль шаблонов. Изменение.
+	 */
+	public void templateStyleUpdate (TemplateStyleItem p) {
+		PreparedStatement pst;
+		String stm;
+		
+		try {
+			stm = 	  "UPDATE template_style " +
+					  "   SET name = ?, descr = ?, parent_id = ?, " +
+					  "       date_modified = now(), user_modified = \"current_user\"() " +
+				      " WHERE id = ? " +
+				      ";";
+			pst = con.prepareStatement(stm);
+			pst.setString(1, p.getName());
+			pst.setString(2, p.getDescr());
+			pst.setLong  (3, p.getParentId());
+			pst.setLong  (4, p.getId());
+			
+			pst.executeUpdate();
+            pst.close();
+		} catch (SQLException ex) {
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при изменении стиля шаблонов (templateStyleUpdate).");
+		}
+	}
+	//TODO style update
 	
 	/**
 	 * Тема для шаблонов. Добавление новой.
