@@ -16,7 +16,7 @@ import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
-import app.model.business.templates_old.TemplateItem;
+import app.model.business.template.TemplateItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
 
 import java.io.ByteArrayInputStream;
@@ -3172,7 +3172,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при изменении стиля шаблонов (templateStyleUpdate).");
 		}
 	}
-	//TODO style update
 	
 	/**
 	 * Тема для шаблонов. Добавление новой.
@@ -3373,6 +3372,85 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Шаблон. Добавление нового.
+	 */
+	public void templateAdd (TemplateItem i) {
+		PreparedStatement pst = null;
+		
+		try {
+				String stm = "INSERT INTO template (id, parent_id, type, name, descr, body) " + 
+           			         "VALUES(?, ?, ?, ?, ?, ?)";
+				pst = con.prepareStatement(stm);
+	            pst.setLong  (1, i.getId());
+	            pst.setLong  (2, i.getParentId());
+	            pst.setInt   (3, i.getType());
+	            pst.setString(4, i.getName());
+	            pst.setString(5, i.getDescr());
+				pst.setString(6, i.getBody());
+				
+				pst.executeUpdate();
+	            pst.close();
+        } catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при добавлении нового шаблона.");
+		}
+	}
+	
+	/**
+	 * Шаблон. Получение информации по id
+	 */
+	public TemplateItem templateGet (long id) {
+		TemplateItem retVal = null;
+	
+		try {
+			String stm = "SELECT t.id, t.parent_id, t.type, t.name, t.descr, t.body, "+
+					     "       t.date_created, t.date_modified, t.user_created, t.user_modified " +
+					     "  FROM template t " +
+					     " WHERE t.id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			retVal = new TemplateItem (
+					rs.getLong("id"), 
+         			rs.getLong("parent_id"),
+         			rs.getInt("type"),
+         			rs.getString("name"),
+         			rs.getString("descr"),
+         			rs.getString("body"),
+					dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified")
+					);
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		System.out.println("get template info : execute query Failed");
+    		e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateGet ("+ id +")");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Возващает список шаблонов и директорий шаблонов по id родительской директории. 
 	 * @param parentId
 	 * @return
@@ -3431,40 +3509,63 @@ public static int getRowCount(ResultSet set) throws SQLException
 		return retVal;
 	}
 	
+	/**
+	 * Выдает следующий Id для добавления нового шаблона
+	 */
+	public long templateNextId () {
+		long retVal = -1;
+		
+		try {
+			String stm = "select nextval('seq_template');";
+			PreparedStatement pst = con.prepareStatement(stm);
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+            retVal = rs.getLong(1);
+
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		//System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "select nextval('seq_template');");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
+	 * Обновление шаблона
+	 */
+	public void templateUpdate (TemplateItem tip) {
+		PreparedStatement pst = null;
+		String stm;
+	
+		try {
+			stm = 	"UPDATE template " +
+					"   SET name = ?, descr = ?, body = ?, " +
+					"       date_modified = now(), user_modified = \"current_user\"() " +
+					" WHERE id = ? " +
+					";";
+			pst = con.prepareStatement(stm);
+			pst.setString(1, tip.getName());
+			pst.setString(2, tip.getDescr());
+			pst.setString(3, tip.getBody());
+			pst.setLong  (4, tip.getId());
+			
+			pst.executeUpdate();
+            pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при обновлении шаблона.");
+		}
+	}
+	//TODO templateUpdate
 	
 	//TODO OLD TEMPLATE
 	/* >>>  OLD TEMPLATE ################################################################### */
-	/**
-	 * Шаблон. Добавление нового.
-	 */
-	public void templateAdd (TemplateItem i) {
-		PreparedStatement pst = null;
-		
-		try {
-				String stm = "INSERT INTO templates (id, theme_id, infotype_id, infotype_style_id, " +
-						     "                       name, file_name, descr, body) " + 
-           			         "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-				pst = con.prepareStatement(stm);
-	            pst.setLong  (1, i.getId());
-	            pst.setLong  (2, i.getThemeId());
-	            pst.setLong  (3, i.getInfoTypeId());
-	            pst.setLong  (4, i.getInfoTypeStyleId());
-	            pst.setString(5, i.getName());
-	            pst.setString(6, i.getFileName());
-	            pst.setString(7, i.getDescr());
-				pst.setString(8, i.getBody());
-				
-				pst.executeUpdate();
-	            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при добавлении нового шаблона.");
-		}
-	}
-	
 	/**
 	 * Подсчет количества шаблонов для указанной темы указанного типа.
 	 * @param
@@ -4024,61 +4125,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Шаблон. Получение информации по id
-	 */
-	public TemplateItem templateGet (long id) {
-		TemplateItem retVal = null;
-	
-		try {
-			String stm = "SELECT id, theme_id, infotype_id, infotype_style_id, name, file_name, descr, body, " +
-		                 "       date_created, date_modified, user_created, user_modified " +
-				         "  FROM templates " +
-				         " WHERE id = ?";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, id);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			java.util.Date dateTmpCre;
-			Timestamp timestampCr = rs.getTimestamp("date_created");
-			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-			else                      dateTmpCre = null;
-			
-			java.util.Date dateTmpMod;
-			Timestamp timestampMo = rs.getTimestamp("date_modified");
-			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-			else                      dateTmpMod = null;
-			
-			retVal = new TemplateItem (
-					rs.getLong("id"), 
-         			rs.getLong("theme_id"),
-         			rs.getLong("infotype_id"),
-         			rs.getLong("infotype_style_id"),
-         			rs.getString("name"),
-         			rs.getString("file_name"),
-         			rs.getString("descr"),
-         			rs.getString("body"),
-					dateTmpCre, 
-         			dateTmpMod,
-         			rs.getString("user_created"),
-         			rs.getString("user_modified")
-					);
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		System.out.println("get template info : execute query Failed");
-    		e.printStackTrace();
-    	}
-		
-		return retVal;
-	}
-	
-	/**
 	 * Шаблон. Получение информации по themeId и infoTypeStyleId
 	 */
-	public TemplateItem templateGet (long themeId, long infoTypeStyleId) {
-		TemplateItem retVal = null;
+	public app.model.business.templates_old.TemplateItem templateGet (long themeId, long infoTypeStyleId) {
+		app.model.business.templates_old.TemplateItem retVal = null;
 	
 		try {
 			String stm = "SELECT id, theme_id, infotype_id, infotype_style_id, name, file_name, descr, body, " +
@@ -4103,7 +4153,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
 				else                      dateTmpMod = null;
 				
-				retVal = new TemplateItem (
+				retVal = new app.model.business.templates_old.TemplateItem (
 						rs.getLong("id"), 
 	         			rs.getLong("theme_id"),
 	         			rs.getLong("infotype_id"),
@@ -4132,9 +4182,9 @@ public static int getRowCount(ResultSet set) throws SQLException
 	/**
 	 * Шаблон. Получение информации по themeId и InfoHeaderItem
 	 */
-	public TemplateItem templateGet (long themeId, InfoHeaderItem infoHeader) {
+	public app.model.business.templates_old.TemplateItem templateGet (long themeId, InfoHeaderItem infoHeader) {
 		long infoTypeStyleId = 0;
-		TemplateItem retVal = null;
+		app.model.business.templates_old.TemplateItem retVal = null;
 		
 		if (infoHeader.getInfoTypeStyleId() <= 0) {
 			infoTypeStyleId = infoTypeStyleGetDefault(themeId, infoHeader.getInfoTypeId()).getId();
@@ -4150,8 +4200,8 @@ public static int getRowCount(ResultSet set) throws SQLException
 	/**
 	 * Возвращает список шаблонов для показа
 	 */
-	public List<TemplateItem> templateList (long themeId, long infoTypeId) {
-		List<TemplateItem> retVal = new ArrayList<TemplateItem>();
+	public List<app.model.business.templates_old.TemplateItem> templateList (long themeId, long infoTypeId) {
+		List<app.model.business.templates_old.TemplateItem> retVal = new ArrayList<app.model.business.templates_old.TemplateItem>();
 	
 		try {
 			String stm = "SELECT id, theme_id, infotype_id, infotype_style_id, name, file_name, descr, body, " +
@@ -4175,7 +4225,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
 				else                      dateTmpMod = null;
 				
-				retVal.add(new TemplateItem(
+				retVal.add(new app.model.business.templates_old.TemplateItem(
 	         			rs.getLong("id"),
 	         			rs.getLong("theme_id"),
 	         			rs.getLong("infotype_id"),
@@ -4200,61 +4250,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 	
 		return retVal;
-	}
-	
-	/**
-	 * Выдает следующий Id для добавления нового шаблона
-	 */
-	public long templateNextId () {
-		long retVal = -1;
-		
-		try {
-			String stm = "select nextval('seq_templates');";
-			PreparedStatement pst = con.prepareStatement(stm);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.next();
-            retVal = rs.getLong(1);
-
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "select nextval('seq_templates');");
-    	}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Обновление шаблона
-	 */
-	public void templateUpdate (TemplateItem tip) {
-		PreparedStatement pst = null;
-		String stm;
-	
-		try {
-			stm = 	"UPDATE templates " +
-					"   SET name = ?, file_name = ?, descr = ?, body = ?, " +
-					"       date_modified = now(), user_modified = \"current_user\"() " +
-					" WHERE id = ? " +
-					";";
-			pst = con.prepareStatement(stm);
-			pst.setString(1, tip.getName());
-			pst.setString(2, tip.getFileName());
-			pst.setString(3, tip.getDescr());
-			pst.setString(4, tip.getBody());
-			pst.setLong  (5, tip.getId());
-			
-			pst.executeUpdate();
-            pst.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при обновлении шаблона.");
-		}
 	}
 	
 	/**

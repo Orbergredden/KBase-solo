@@ -54,7 +54,7 @@ public class TemplateSimpleItem extends SimpleItem {
 	
 	/**
 	 * Подтип записи.
-	 * Для файла, стиля - тип файла или дирктории 
+	 * Для файла, стиля, шаблона - тип файла или директории 
 	 */
 	protected final LongProperty subtypeItem;
 	

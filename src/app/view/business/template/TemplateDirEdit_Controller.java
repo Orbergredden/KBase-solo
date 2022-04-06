@@ -1,5 +1,6 @@
 package app.view.business.template;
 
+import java.util.Date;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
@@ -7,6 +8,7 @@ import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateFileItem;
+import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateStyleItem;
 import javafx.fxml.FXML;
@@ -133,6 +135,7 @@ public class TemplateDirEdit_Controller {
     private void handleButtonOk() {
     	TemplateFileItem tip;
     	TemplateStyleItem sip;
+    	TemplateItem ti;
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateDirEdit_Width", params.getStageCur().getWidth());
@@ -200,8 +203,27 @@ public class TemplateDirEdit_Controller {
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
-
+    			newId = conn.db.templateNextId();
     			
+    			ti = new TemplateItem(
+    					newId,
+    					editedItem.getId(),
+    					1, //(int)editedItem.getSubtypeItem(),  // type - директория, без разницы зарезервированная или нет
+    					textField_Name.getText(),
+    					textField_Descr.getText(),
+    					"");
+    			conn.db.templateAdd(ti);             // обьект-директорию добавляем в БД
+    			ti = conn.db.templateGet(newId);     // get full info
+    			
+    			//--- добавляем в контрол-дерево
+    			resultItem = new TreeItem<>(ti);
+    			editedItem_ti.getChildren().add(resultItem);
+        		
+    			// раскрываем текущий элемент
+    			editedItem_ti.setExpanded(true);
+    			
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Директория шаблонов '" + ti.getName() + "' добавлена.");
     			
     			break;
     		}
@@ -269,8 +291,22 @@ public class TemplateDirEdit_Controller {
     			
     			break;
     		case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
-
+    			// create template object and update it into db
+    			ti = conn.db.templateGet(editedItem.getId());
+    			ti.setName(textField_Name.getText());
+    			ti.setDescr(textField_Descr.getText());
+    			conn.db.templateUpdate(ti);
+    			ti = conn.db.templateGet(ti.getId());     // get full info
     			
+    			// update in TreeTableView
+    			editedItem_ti.setValue(null);
+    			editedItem_ti.setValue(ti);
+
+    			// определяем текущий активный итем
+    			resultItem = editedItem_ti;
+
+    			// выводим сообщение в статус бар
+    			params.setMsgToStatusBar("Директория шаблонов '" + ti.getName() + "' изменена.");
     			
     			break;
     		}
