@@ -312,7 +312,6 @@ public class TemplateDirEdit_Controller {
     		}
     		break;
     	}
-    	//TODO
     	
     	//-------- close window
     	// get a handle to the stage

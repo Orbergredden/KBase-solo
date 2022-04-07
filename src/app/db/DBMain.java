@@ -2867,6 +2867,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	         			rs.getLong("theme_id"),
 	         			typeItem,
 	         			rs.getInt("type"),
+	         			rs.getInt("file_type"),
 						dateTmpCre, 
 	         			dateTmpMod,
 	         			rs.getString("user_created"),
@@ -3562,7 +3563,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при обновлении шаблона.");
 		}
 	}
-	//TODO templateUpdate
 	
 	//TODO OLD TEMPLATE
 	/* >>>  OLD TEMPLATE ################################################################### */

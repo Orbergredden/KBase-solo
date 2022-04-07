@@ -937,7 +937,8 @@ public class TemplateList_Controller implements AppItem_Interface {
 								break;
 							case TemplateSimpleItem.TYPE_ITEM_FILE : 
 							case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
-								switch ((int)row.getSubtypeItem()) {
+								//switch ((int)row.getSubtypeItem()) {
+								switch ((int)row.getFlag()) {
 								case TemplateSimpleItem.SUBTYPE_FILE_TEXT :                  // 1 - текстовый
 									graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_file_text_16.png"));
 									break;
@@ -1131,6 +1132,5 @@ public class TemplateList_Controller implements AppItem_Interface {
 	    		updateStyleItemRecursive (i, new_sip);
 	    	}
 	    }
-	    //TODO
 	}
 }

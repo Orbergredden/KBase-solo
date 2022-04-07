@@ -65,6 +65,7 @@ public class TemplateFileItem extends TemplateSimpleItem {
 				((type < 10) ? ((type == 0) ? TYPE_ITEM_FILE : TYPE_ITEM_DIR_FILE) : 
 					((type == 10) ? TYPE_ITEM_FILE_OPTIONAL : TYPE_ITEM_DIR_FILE_OPTIONAL)), 
 				type);
+		flag = new SimpleLongProperty(fileType);
 
 		this.parentId         = new SimpleLongProperty(parentId);
 		this.type             = new SimpleIntegerProperty(type);
@@ -87,6 +88,7 @@ public class TemplateFileItem extends TemplateSimpleItem {
 					((type == 10) ? TYPE_ITEM_FILE_OPTIONAL : TYPE_ITEM_DIR_FILE_OPTIONAL)), 
 				type,
 			  dateCreated, dateModified, userCreated, userModified);
+		flag = new SimpleLongProperty(fileType);
 
 		this.parentId         = new SimpleLongProperty(parentId);
 		this.type             = new SimpleIntegerProperty(type);
