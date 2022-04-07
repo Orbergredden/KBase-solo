@@ -2842,37 +2842,22 @@ public static int getRowCount(ResultSet set) throws SQLException
 				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
 				else                      dateTmpMod = null;
 				
-				int typeItem;
-				switch (rs.getInt("type")) {
-				case 0 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE;
-					break;
-				case 1 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE;
-					break;
-				case 10 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL;
-					break;
-				case 11 :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL;
-					break;
-				default :
-					typeItem = TemplateSimpleItem.TYPE_ITEM_DIR_FILE;  // что нибудь присвоим
-				}
-				
-				retVal.add(new TemplateSimpleItem(
-	         			rs.getLong("id"),
-	         			rs.getString("file_name"),
-	         			rs.getString("descr"),
+				TemplateFileItem tfi = new TemplateFileItem (
+						rs.getLong("id"), 
+						parentItem.getId(),
 	         			rs.getLong("theme_id"),
-	         			typeItem,
 	         			rs.getInt("type"),
 	         			rs.getInt("file_type"),
+	         			rs.getString("file_name"),
+	         			rs.getString("descr"),
+	         			"",
+	         			null,
 						dateTmpCre, 
 	         			dateTmpMod,
 	         			rs.getString("user_created"),
 	         			rs.getString("user_modified")
-						));
+						);
+				retVal.add(tfi);
 			}
 			
             rs.close();
