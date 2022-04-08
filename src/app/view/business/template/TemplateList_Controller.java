@@ -226,6 +226,11 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
     		editDir (0);
     		break;
+    	case TemplateSimpleItem.TYPE_ITEM_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
+    		editFile (0);
+    		break;
+    		
     		
     		
     	
@@ -276,6 +281,10 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
     		editDir (1);
+    		break;
+    	case TemplateSimpleItem.TYPE_ITEM_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
+    		editFile (1);
     		break;
     	
     	
@@ -531,11 +540,12 @@ public class TemplateList_Controller implements AppItem_Interface {
      */
     private void editDir (int actionType) {
     	TreeItem<TemplateSimpleItem> ti = null;
-    	TemplateSimpleItem tiv = null;
     	
     	//-------- ищем корневой элемент с темами (куда вставлять)
     	switch (actionType) {
     	case 0 :     // add
+    		TemplateSimpleItem tiv = null;
+    		
     		// ищем первую вышестоящую директорию
     		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
     		tiv = ti.getValue();
@@ -617,6 +627,79 @@ public class TemplateList_Controller implements AppItem_Interface {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Добавление/редактирование файла шаблонів
+     * actionType : 0 - добавить, 1 - редактировать
+     * @param actionType
+     */
+    private void editFile (int actionType) {
+    	TreeItem<TemplateSimpleItem> ti = null;
+    	
+    	//-------- ищем корневой элемент с темами (куда вставлять)
+    	switch (actionType) {
+    	case 0 :     // add
+    		TemplateSimpleItem tiv = null;
+    		
+    		// ищем первую вышестоящую директорию
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		tiv = ti.getValue();
+    		
+    		while ((tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_FILE) &&
+    			   (tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL)) {
+    			ti = ti.getParent();
+        		tiv = ti.getValue();
+    		}
+    		break;
+    	case 1 :     // edit
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		break;
+    	}
+    	
+    	//-------- open stage
+    	try {
+    		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(Main.class.getResource("view/business/template/TemplateFileEdit.fxml"));
+    		AnchorPane page = loader.load();
+    	
+    		String title = ((actionType == 0) ? "Додавання" : "Редагування") +" файла для шаблонів";
+    		String iconFileName = "icon_file_text_16.png";
+    		
+    		// Создаём диалоговое окно Stage.
+    		Stage dialogStage = new Stage();
+			dialogStage.setTitle(title);
+			dialogStage.initModality(Modality.NONE);
+			//dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/"+iconFileName));
+
+			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
+	    	dialogStage.setWidth(prefs.getDouble ("stageTemplateFileEdit_Width", 700));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateFileEdit_Height", 600));
+			dialogStage.setX(prefs.getDouble     ("stageTemplateFileEdit_PosX", 0));
+			dialogStage.setY(prefs.getDouble     ("stageTemplateFileEdit_PosY", 0));
+
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateFileEdit_Controller controller = loader.getController();
+
+    		Params params = new Params(this.params);
+    		params.setParentObj(this);
+    		params.setStageCur(dialogStage);
+	        
+	        controller.setParams(params, actionType, ti);
+    		
+	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+			//dialogStage.show();
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //TODO editFile()
     
     /**
 	 * уникальный ИД обьекта
