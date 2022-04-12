@@ -1,8 +1,11 @@
 package app.view.business.template;
 
+import java.io.File;
 import java.util.prefs.Preferences;
 
+import app.exceptions.KBase_ReadTextFileUTFEx;
 import app.lib.DateConv;
+import app.lib.FileUtil;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
@@ -10,6 +13,7 @@ import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateStyleItem;
+import app.model.business.template.TemplateThemeItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,9 +22,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -48,6 +54,8 @@ public class TemplateFileEdit_Controller {
 	 * Результирующий итем в дереве после создания/изменения
 	 */
 	private TreeItem<TemplateSimpleItem> resultItem;
+	
+	private TemplateThemeItem curThemeItem;
 
 	// controls
 	@FXML
@@ -100,7 +108,7 @@ public class TemplateFileEdit_Controller {
      * Конструктор вызывается раньше метода initialize().
      */
     public TemplateFileEdit_Controller () {
-    	prefs = Preferences.userNodeForPackage(TemplateDirEdit_Controller.class);
+    	prefs = Preferences.userNodeForPackage(TemplateFileEdit_Controller.class);
     	dateConv = new DateConv();
     }
     
@@ -133,6 +141,8 @@ public class TemplateFileEdit_Controller {
      * Инициализирует контролы значениями из главного класса
      */
     private void initControlsValue() {
+    	curThemeItem = conn.db.templateThemeGetById(editedItem.getThemeId());
+    	
     	OList_FileType = FXCollections.observableArrayList();
 		OList_FileType.add("Текстовый");
 		OList_FileType.add("Картинка");
@@ -140,59 +150,158 @@ public class TemplateFileEdit_Controller {
 		comboBox_FileType.setItems(OList_FileType);
 		
 		if (actionType == ACTION_TYPE_ADD) {                 
+    		switch (editedItem.getTypeItem()) {
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    			label_Title.setText("Обов'язковий файл");
+    			break;
+    		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    			label_Title.setText("Необов'язковий файл");
+    			break;
+    		default :
+    			label_Title.setText("Об'єкт невідомого типу");
+    		}
     		
-			
-			/*
- 				if (tiTheme != null)  
-    			label_FileThemeId.setText(tiTheme.getValue().getName() +" ("+ Long.toString(tiTheme.getValue().getId()) +")");
+    		label_ThemeId.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
     		label_FileNameNew.setText("");
-    		
     		comboBox_FileType.setValue(OList_FileType.get(0));    // первый эдемент в списке
     		
-    		label_FileDateCreated.setText("");
-    		label_FileDateModified.setText("");
-    		label_FileUserCreated.setText("");
-    		label_FileUserModified.setText("");
-			 */
-			
-			
+    		label_DateCreated.setText("");
+    		label_DateModified.setText("");
+    		label_UserCreated.setText("");
+    		label_UserModified.setText("");
     	} else if (actionType == ACTION_TYPE_EDIT) {
-
+    		TemplateFileItem fi = conn.db.templateFileGetById(editedItem.getId());
     		
+    		label_Title.setText("Файл " + editedItem.getName() +" ("+ editedItem.getId() +")");
+    		label_ThemeId.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
+    		textField_FileName.setText(fi.getFileName());
+    		textField_Descr.setText(fi.getDescr());
+    		label_FileNameNew.setText("");
     		
-    		
-    		
-    		
+    		switch (fi.getFileType()) {
+    		case TemplateFileItem.FILE_TYPE_TEXT : 
+    			comboBox_FileType.setValue(OList_FileType.get(0));
+    			textArea_FileContent.appendText(fi.getBody());
+    			break;
+    		case TemplateFileItem.FILE_TYPE_IMAGE : 
+    			comboBox_FileType.setValue(OList_FileType.get(1));
+    			textArea_FileContent.appendText("Ширина : "+ fi.bodyImage.getWidth() +"\n");
+        		textArea_FileContent.appendText("Высота : "+ fi.bodyImage.getHeight() +"\n");
+    			imageView_FileContent.setImage(fi.bodyImage);
+    			break;
+    		}
+        		
+       		label_DateCreated.setText(dateConv.dateTimeToStr(fi.getDateCreated()));
+       		label_DateModified.setText(dateConv.dateTimeToStr(fi.getDateModified()));
+       		label_UserCreated.setText(fi.getUserCreated());
+       		label_UserModified.setText(fi.getUserModified()); 
     	}
     	
     	//======== buttons
+    	button_FileTextOpen.setGraphic(new ImageView(new Image("file:resources/images/icon_file_open_16.png")));
+    	button_FileTextOpen.setTooltip(new Tooltip("Открыть файл..."));
+    	button_FileTextSaveToDisk.setGraphic(new ImageView(new Image("file:resources/images/icon_SaveToFile_16.png")));
+    	button_FileTextSaveToDisk.setTooltip(new Tooltip("Сохранить файл на диске..."));
+    	
+    	button_FileImageOpen.setGraphic(new ImageView(new Image("file:resources/images/icon_file_open_16.png")));
+    	button_FileImageOpen.setTooltip(new Tooltip("Открыть файл..."));
+    	button_FileImageSaveToDisk.setGraphic(new ImageView(new Image("file:resources/images/icon_SaveToFile_16.png")));
+    	button_FileImageSaveToDisk.setTooltip(new Tooltip("Сохранить файл на диске..."));
+    	
     	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
     	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
     }
-    //TODO initControlsValue
     
     /**
 	 * Вызывается для открытия тестового файла
 	 */
 	@FXML
 	private void handleButtonFileTextOpen() {
-    
+		FileChooser fileChooser = new FileChooser();
+		String curDir;
 		
+		// Задаём фильтр расширений
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTML файли (*.html)", "*.html"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JavaScript файли (*.js)", "*.js"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSS файли (*.css)", "*.css"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстові файли (*.txt)", "*.txt"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Усі файли (*.*)", "*.*"));
 		
+	    // set directory
+	    curDir = prefs.get("SelectFileDir_Text", "");
+	    if (! curDir.equals("")) 
+	    	fileChooser.setInitialDirectory(new File(curDir));
+	    
+	    // Показываем диалог загрузки файла
+	    File file = fileChooser.showOpenDialog(params.getStageCur());
+		
+	    if (file != null) {
+	    	int fileType = FileUtil.getFileTypeByExt (file.toString());// return 0 - тип не определен ; 1 - текстовый ; 2 - картинка
+	    	
+	    	if (fileType == 0) {                   // 0 - тип не определен
+	    		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка тестового файла", "Тип загружаемого файла не определен !");
+	    		return;
+	    	}
 	
+	    	if (fileType == 1) {                   // 1 - текстовый
+	    		try {
+	    			textArea_FileContent.clear();
+	    			textArea_FileContent.appendText(FileUtil.readTextFileToString(file.toString()));
+				} catch (KBase_ReadTextFileUTFEx e) {
+					//e.printStackTrace();
+					ShowAppMsg.showAlert("WARNING", "Чтение тестового файла", e.msg, "Чтение файла прервано.");
+	    			return;
+				}
+	    	}
+	    	
+	    	if (fileType == 2) {                   // 2 - image
+	    		//textArea_TemplateContent.appendText("Картинки использовать нельзя!" +"\n");
+	    		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка тестового файла", "Картинки здесь использовать нельзя!");
+	    		return;
+	    	}
+	    	
+	    	// save dir name
+	    	curDir = file.getAbsolutePath();
+	    	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+	    	prefs.put("SelectFileDir_Text", curDir);
+	    }
 	}
-	//TODO handleButtonFileTextOpen
 	
 	/**
 	 * Вызывается для сохранения тестового файла на диске
 	 */
 	@FXML
 	private void handleButtonFileTextSave() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Сохранение текста в файл");
+		  
+	    //Set extension filter
+	    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("HTML файл (*.html)", "*.html");
+	    fileChooser.getExtensionFilters().add(extFilter);
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JavaScript файли (*.js)", "*.js"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSS файлы (*.css)", "*.css"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстовые файлы (*.txt)", "*.txt"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Все файлы (*.*)", "*.*"));
+	    
+	    fileChooser.setInitialFileName(textField_FileName.getText());
+	    
+	    // set current dir
+	    String curDir = prefs.get("SelectFileDir_Text", "");
+	    if (! curDir.equals("")) 
+	    	fileChooser.setInitialDirectory(new File(curDir));
+	    
+	    //Show save file dialog
+	    File file = fileChooser.showSaveDialog(params.getStageCur());
 		
-		
-		
+	    if (file != null) {
+	    	FileUtil.writeTextFile(file.toString(), textArea_FileContent.getText());
+	    	
+	        // save dir name
+	    	curDir = file.getAbsolutePath();
+	    	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+	    	prefs.put("SelectFileDir_Text", curDir);
+	    }
 	}
-    //TODO handleButtonFileTextSave
 	
 	/**
 	 * Вызывается для открытия файла с картинкой
