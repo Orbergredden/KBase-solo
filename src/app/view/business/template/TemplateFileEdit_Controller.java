@@ -308,25 +308,84 @@ public class TemplateFileEdit_Controller {
 	 */
 	@FXML
 	private void handleButtonFileImageOpen() {
+		FileChooser fileChooser = new FileChooser();
+		String curDir;
 		
+		// Задаём фильтр расширений
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG файлы (*.png)", "*.png"));
+	    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Изображения (*.png,*.gif,*.jpg,*.jpeg)", "*.png","*.gif","*.jpg","*.jpeg"));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Все файлы (*.*)", "*.*"));
 		
+		// set directory
+	    curDir = prefs.get("SelectFileDir_Image", "");
+	    if (! curDir.equals("")) 
+	    	fileChooser.setInitialDirectory(new File(curDir));
+	    
+	    // Показываем диалог загрузки файла
+	    File file = fileChooser.showOpenDialog(params.getStageCur());
+	    
+	    if (file != null) {
+	    	// обновляем контролы
+	    	label_FileNameNew.setText(file.toString());
 		
-		
-		
+	    	int fileType = FileUtil.getFileTypeByExt (file.toString());// return 0 - тип не определен ; 1 - текстовый ; 2 - картинка
+	    	
+	    	if (fileType == 0) {                   // 0 - тип не определен
+	    		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка картинки из файла", "Тип загружаемого файла не определен !");
+	    		return;
+	    	}
+	    	if (fileType == 1) {                   // 1 - текстовый
+	    		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка картинки из файла", 
+	    				"Текстовый файл здесь использовать нельзя!");
+	    		return;
+	    	}
+	    	
+	    	if (fileType == 2) {                   // 2 - image
+	    		Image img = new Image(file.toURI().toString());           // not resize
+	    		imageView_FileContent.setImage(img);
+	    		textArea_FileContent.appendText("Ширина : "+ img.getWidth() +"\n");
+	    		textArea_FileContent.appendText("Высота : "+ img.getHeight() +"\n");
+	    		//comboBox_FileType.setValue(OList_FileType.get(1));
+	    	}
+	    	
+	    	// save dir name
+	    	curDir = file.getAbsolutePath();
+	    	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+	    	prefs.put("SelectFileDir_Image", curDir);
+	    }
 	}
-	//TODO handleButtonFileImageOpen
 	
 	/**
 	 * Вызывается для сохранения файла с картинкой на диске
 	 */
 	@FXML
 	private void handleButtonFileImageSave() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Сохранение картинки в файл");
+		  
+	    //Set extension filter
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG файлы (*.png)", "*.png"));
+	    //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Изображения (*.png,*.gif,*.jpg,*.jpeg)", "*.png","*.gif","*.jpg","*.jpeg"));
+		//fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Все файлы (*.*)", "*.*"));
+	    fileChooser.setInitialFileName(textField_FileName.getText());
+	    
+	    // set current dir
+	    String curDir = prefs.get("SelectFileDir_Image", "");
+	    if (! curDir.equals("")) 
+	    	fileChooser.setInitialDirectory(new File(curDir));
+	    
+	    //Show save file dialog
+	    File file = fileChooser.showSaveDialog(params.getStageCur());
 		
-		
-		
-		
+	    if (file != null) {
+	    	FileUtil.writeImageFile(file.toString(), imageView_FileContent.getImage());
+			
+	        // save dir name
+	    	curDir = file.getAbsolutePath();
+	    	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+	    	prefs.put("SelectFileDir_Image", curDir);
+	    }
 	}
-	//TODO handleButtonFileImageSave
 	
     /**
      * Вызывается при нажатии на кнопке "Ok"
@@ -334,6 +393,7 @@ public class TemplateFileEdit_Controller {
     @FXML
     private void handleButtonOk() {
     	TemplateFileItem fi;
+    	int fileType = 0;
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateFileEdit_Width", params.getStageCur().getWidth());
@@ -341,10 +401,61 @@ public class TemplateFileEdit_Controller {
     	prefs.putDouble("stageTemplateFileEdit_PosX",  params.getStageCur().getX());
     	prefs.putDouble("stageTemplateFileEdit_PosY",  params.getStageCur().getY());
     	
-
+		switch (comboBox_FileType.getSelectionModel().getSelectedItem()) {
+			case "Текстовый" :
+				fileType = TemplateSimpleItem.SUBTYPE_FILE_TEXT;
+				break;
+			case "Картинка" :
+				fileType = TemplateSimpleItem.SUBTYPE_FILE_IMAGE;
+				break;
+		}
+		
+		//---------- check data in fields
+		if ((textField_FileName.getText().equals("") || (textField_FileName.getText() == null))) {
+			ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Имя файла", "Укажите Имя файла");
+			return;
+			//throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Имя файла", this);
+		}
+		if ((fileType == TemplateSimpleItem.SUBTYPE_FILE_TEXT) &&
+			((textArea_FileContent.getText().equals("")) || (textArea_FileContent.getText() == null))) {
+			ShowAppMsg.showAlert("WARNING", "Нет данных", "Нет текста файла", "Укажите текст файла.");
+			return;
+			//throw new KBase_Ex (1, "Ошибка при сохранении", "Нет текста файла", this);
+		}
+		if ((fileType == TemplateSimpleItem.SUBTYPE_FILE_IMAGE) && (imageView_FileContent.getImage() == null)) {
+			ShowAppMsg.showAlert("WARNING", "Нет данных", "Нет картинки", "Выберите картинку для файла.");
+			return;
+			//throw new KBase_Ex (1, "Ошибка при сохранении", "Нет картинки", this);
+		}
+		
+		//-------- Сохраняем
+    	switch (actionType) {
+    	case ACTION_TYPE_ADD :
+    		
+    		
+    		
+    		///////////// зробити перевірку для директорії (обов'язкових і необов'язкових файлів)
+    		
+    		
+    		// проверка на уникальность имени файла в обов'язкових файлах вказаної схеми
+    		if (conn.db.templateFileIsExistNameInTheme(curThemeItem.getId(), textField_FileName.getText())) {
+    			ShowAppMsg.showAlert("WARNING", "Добавление файла.",
+    					"Файл с таким именем уже существует в обов'язкових файлах вказаної схеми.",
+    					"Добавление прервано.");
+    			return;
+			}
+    		
+    		
+    		
+    		
+    		break;
+    	case ACTION_TYPE_EDIT :
     	
     	
-    	
+    		
+    		
+    		break;
+    	}
 //TODO Ok    	
     	
     	//-------- close window

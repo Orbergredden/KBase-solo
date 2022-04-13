@@ -2796,6 +2796,38 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает true, если в указанной теме есть обов'язковий файл с таким имененм.
+	 */
+	public boolean templateFileIsExistNameInTheme (long themeId, String fileName) {
+		boolean retVal = true;
+	
+		try {
+			String stm = "SELECT count(*) CountR "+
+					     "  FROM template_files f "+
+					     " WHERE f.theme_id = ? "+
+					     "   AND f.file_name = ? "+
+					     "   AND f.type > 10 ";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setString(2, fileName);
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+            retVal = (rs.getInt("CountR") > 0) ? true : false;
+
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		//System.out.println("execute query Failed");
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateFileIsExistNameInTheme()");
+    		e.printStackTrace();
+    	}
+		return retVal;
+	}
+	//TODO templateFileIsExistNameInTheme
+	
+	/**
 	 * Возващает список файлов и директорий по id родительской директории. 
 	 * @param parentId
 	 * @return
@@ -3915,33 +3947,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     	}
 		
-		return retVal;
-	}
-	
-	/**
-	 * Возвращает true, если в указанной теме есть файл с таким имененм.
-	 */
-	public boolean templateFileIsExistNameInTheme (long themeId, String fileName) {
-		boolean retVal = true;
-	
-		try {
-			String stm = "SELECT count(*) CountR FROM template_required_files WHERE theme_id = ? AND file_name = ? ";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, themeId);
-			pst.setString(2, fileName);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.next();
-            retVal = (rs.getInt("CountR") > 0) ? true : false;
-
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		//System.out.println("execute query Failed");
-    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "templateFileIsExistNameInTheme()");
-    		e.printStackTrace();
-    	}
 		return retVal;
 	}
 	
