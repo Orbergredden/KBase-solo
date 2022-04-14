@@ -431,20 +431,24 @@ public class TemplateFileEdit_Controller {
 		//-------- Сохраняем
     	switch (actionType) {
     	case ACTION_TYPE_ADD :
+    		long newId = conn.db.templateFileNextId();
     		
-    		
-    		
-    		///////////// зробити перевірку для директорії (обов'язкових і необов'язкових файлів)
-    		
-    		
-    		// проверка на уникальность имени файла в обов'язкових файлах вказаної схеми
-    		if (conn.db.templateFileIsExistNameInTheme(curThemeItem.getId(), textField_FileName.getText())) {
+    		// проверка на уникальность имени файла в директорії
+    		//System.out.println("textField_FileName.getText() = "+ textField_FileName.getText());
+    		if (conn.db.templateFileIsExistNameInDir(
+    				newId, 
+    				editedItem.getId(),              // parent_id
+    				editedItem.getThemeId(),
+    				(int)editedItem.getSubtypeItem(),     // type
+    				textField_FileName.getText())) {
     			ShowAppMsg.showAlert("WARNING", "Добавление файла.",
-    					"Файл с таким именем уже существует в обов'язкових файлах вказаної схеми.",
+    					"Файл с таким именем уже существует у вказаної директорії.",
     					"Добавление прервано.");
     			return;
 			}
     		
+    		
+   		
     		
     		
     		

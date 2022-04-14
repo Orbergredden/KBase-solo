@@ -2796,20 +2796,29 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Возвращает true, если в указанной теме есть обов'язковий файл с таким имененм.
+	 * Возвращает true, если в указанной директорії є файл (чи директорія) с таким именем.
 	 */
-	public boolean templateFileIsExistNameInTheme (long themeId, String fileName) {
+	public boolean templateFileIsExistNameInDir (
+			long curFileId, long parentId, long themeId, int type, String fileName) {
 		boolean retVal = true;
+		
+		String subQuery = (type < 10) ? " and f.type < 10 " : " and f.type >= 10 "; 
 	
 		try {
-			String stm = "SELECT count(*) CountR "+
+			String stm = "select count(*) CountR "+
 					     "  FROM template_files f "+
-					     " WHERE f.theme_id = ? "+
-					     "   AND f.file_name = ? "+
-					     "   AND f.type > 10 ";
+					     " where f.id <> ? "+
+					     "   and f.parent_id = ? "+
+					     "   and f.theme_id = ? "+
+					     //"   and f.type = ? "+
+					     subQuery +
+					     "   and upper(f.file_name) = upper(?) ";
 			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, themeId);
-			pst.setString(2, fileName);
+			pst.setLong  (1, curFileId);
+			pst.setLong  (2, parentId);
+			pst.setLong  (3, themeId);
+			//pst.setInt   (4, type);
+			pst.setString(4, fileName);
 			ResultSet rs = pst.executeQuery();
 			
 			rs.next();
@@ -2820,12 +2829,12 @@ public static int getRowCount(ResultSet set) throws SQLException
     	} catch (SQLException e) {
     		//System.out.println("execute query Failed");
     		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             "templateFileIsExistNameInTheme()");
+		             "templateFileIsExistNameInDir()");
     		e.printStackTrace();
     	}
 		return retVal;
 	}
-	//TODO templateFileIsExistNameInTheme
+	//TODO templateFileIsExistNameInDir
 	
 	/**
 	 * Возващает список файлов и директорий по id родительской директории. 
