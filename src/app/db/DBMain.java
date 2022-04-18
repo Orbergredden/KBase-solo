@@ -2707,6 +2707,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	
 	/**
 	 * Директория Файлов для шаблонов. Добавление новой.
+	 * Додається без боді.
 	 */
 	public void templateFileAdd (TemplateFileItem i) {
 		PreparedStatement pst = null;
@@ -2736,6 +2737,67 @@ public static int getRowCount(ResultSet set) throws SQLException
         	ex.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "Ошибка при добавлении новой директории файлов шаблонов.");
+		}
+	}
+	
+	/**
+	 * Файл для шаблонов. Добавление нового.
+	 */
+	public void templateFileAdd (TemplateFileItem i, String fileName) {
+		PreparedStatement pst = null;
+		
+		try {
+			if (i.getFileType() == TemplateFileItem.FILE_TYPE_TEXT) {          // text file
+				String stm = "insert into template_files (id, parent_id, theme_id, type, file_type, file_name, descr, body) " +
+						     "values (?, ?, ?, ?, ?, ?, ?, ?)";
+				pst = con.prepareStatement(stm);
+	            pst.setLong  (1, i.getId());
+	            pst.setLong  (2, i.getParentId());
+	            pst.setLong  (3, i.getThemeId());
+	            pst.setInt   (4, i.getType());
+	            pst.setInt   (5, i.getFileType());
+	            pst.setString(6, i.getFileName());
+	            pst.setString(7, i.getDescr());
+				pst.setString(8, i.getBody());
+				
+				pst.executeUpdate();
+	            pst.close();
+			} else if (i.getFileType() == TemplateFileItem.FILE_TYPE_IMAGE) {   // picture file
+				String stm = "INSERT INTO template_files (id, parent_id, theme_id, type, file_type, file_name, descr, body_bin) " + 
+      			         	 "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+				pst = con.prepareStatement(stm);
+				pst.setLong  (1, i.getId());
+	            pst.setLong  (2, i.getParentId());
+	            pst.setLong  (3, i.getThemeId());
+	            pst.setInt   (4, i.getType());
+	            pst.setInt   (5, i.getFileType());
+	            pst.setString(6, i.getFileName());
+	            pst.setString(7, i.getDescr());
+           
+				try {
+					File file = new File(fileName);
+					FileInputStream fis = new FileInputStream(file);
+					pst.setBinaryStream(8, fis, (int)file.length());
+					
+					pst.executeUpdate();
+	           		pst.close();
+	           		fis.close();
+				} catch (FileNotFoundException ex) {
+					ShowAppMsg.showAlert("ERROR", "Добавление файла для шаблона", 
+										 "Файл "+ fileName +" не найден", "Добавление файла в БД прервано.");
+				} catch (IOException ex) {
+					ShowAppMsg.showAlert("ERROR", "Добавление файла для шаблона", 
+							 "Не получается прочитать файл "+ fileName, "Добавление файла в БД прервано.");
+				} finally {
+					pst.close();
+				}
+			}
+        } catch (SQLException ex) {
+            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "Ошибка при добавлении нового файла шаблонов.");
 		}
 	}
 	
@@ -2834,7 +2896,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		return retVal;
 	}
-	//TODO templateFileIsExistNameInDir
 	
 	/**
 	 * Возващает список файлов и директорий по id родительской директории. 
@@ -3676,65 +3737,6 @@ public static int getRowCount(ResultSet set) throws SQLException
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 		             ex.getMessage());
         }
-	}
-	
-	/**
-	 * Файл для шаблонов. Добавление нового.
-	 */
-	public void templateFileAdd (TemplateRequiredFileItem i, String fileName) {
-		PreparedStatement pst = null;
-		
-		try {
-			if (i.getFileTypeExt() == TemplateRequiredFileItem.FILETYPEEXT_TEXT) {          // text file
-				String stm = "INSERT INTO template_required_files (id, theme_id, file_name, descr, type, file_type, body) " + 
-           			         "VALUES(?, ?, ?, ?, ?, ?, ?)";
-				pst = con.prepareStatement(stm);
-	            pst.setLong  (1, i.getId());
-	            pst.setLong  (2, i.getThemeId());
-	            pst.setString(3, i.getFileName());
-	            pst.setString(4, i.getDescr());
-				pst.setLong  (5, i.getFileType());
-				pst.setInt   (6, i.getFileTypeExt());
-				pst.setString(7, i.getBody());
-				
-				pst.executeUpdate();
-	            pst.close();
-			} else if (i.getFileTypeExt() == TemplateRequiredFileItem.FILETYPEEXT_IMAGE) {   // picture file
-				String stm = "INSERT INTO template_required_files (id, theme_id, file_name, descr, type, file_type, body_bin) " + 
-      			         	 "VALUES(?, ?, ?, ?, ?, ?, ?)";
-				pst = con.prepareStatement(stm);
-	            pst.setLong  (1, i.getId());
-	            pst.setLong  (2, i.getThemeId());
-	            pst.setString(3, i.getFileName());
-	            pst.setString(4, i.getDescr());
-				pst.setLong  (5, i.getFileType());
-				pst.setInt   (6, i.getFileTypeExt());
-           
-				try {
-					File file = new File(fileName);
-					FileInputStream fis = new FileInputStream(file);
-					pst.setBinaryStream(7, fis, (int)file.length());
-					
-					pst.executeUpdate();
-	           		pst.close();
-	           		fis.close();
-				} catch (FileNotFoundException ex) {
-					ShowAppMsg.showAlert("ERROR", "Добавление обязательного файла для шаблона", 
-										 "Файл "+ fileName +" не найден", "Добавление файла в БД прервано.");
-				} catch (IOException ex) {
-					ShowAppMsg.showAlert("ERROR", "Добавление обязательного файла для шаблона", 
-							 "Не получается прочитать файл "+ fileName, "Добавление файла в БД прервано.");
-				} finally {
-					pst.close();
-				}
-			}
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при добавлении нового файла шаблонов.");
-		}
 	}
 	
 	/**

@@ -447,8 +447,32 @@ public class TemplateFileEdit_Controller {
     			return;
 			}
     		
+    		fi = new TemplateFileItem(
+    				newId,
+    				editedItem.getId(),              // parent_id
+    				editedItem.getThemeId(),
+    				((int)editedItem.getSubtypeItem() == 1) ? 0 : 10,  // type
+    				fileType,
+    				textField_FileName.getText().trim(),
+    				textField_Descr.getText(),
+    				textArea_FileContent.getText(),
+					imageView_FileContent.getImage()
+    				);
+    		conn.db.templateFileAdd(fi, label_FileNameNew.getText());  // обьект-файл добавляем в БД
+    		fi = conn.db.templateFileGetById(newId);                   // get full info
     		
-   		
+    		//--- добавляем в контрол-дерево
+			// Prepare a new TreeItem with a new templateTheme object
+			TreeItem<TemplateSimpleItem> item = new TreeItem<>(fi);
+			// Add the new item as children to the parent item
+			// Make sure the new item is visible
+			editedItem_ti.getChildren().add(item);
+			editedItem_ti.setExpanded(true);
+			
+			// определяем текущий активный итем
+			resultItem = item;
+			
+			
     		
     		
     		
