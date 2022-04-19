@@ -5,6 +5,7 @@ import java.util.prefs.Preferences;
 
 import app.exceptions.KBase_ReadTextFileUTFEx;
 import app.lib.DateConv;
+import app.lib.FileCache;
 import app.lib.FileUtil;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
@@ -472,9 +473,22 @@ public class TemplateFileEdit_Controller {
 			// определяем текущий активный итем
 			resultItem = item;
 			
+			//--- при необходимости кешируем файл на диске
+			FileCache fileCache = new FileCache (conn, fi.getThemeId());
 			
-    		
-    		
+			
+			
+
+			//fileCache.updateRequredFile(fip);
+
+			
+			
+			
+			
+			
+			
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Файл для шаблона '" + fi.getFileName() + "' добавлен.");
     		
     		break;
     	case ACTION_TYPE_EDIT :

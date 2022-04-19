@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
+import app.lib.FileCache;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
@@ -171,6 +172,19 @@ public class TemplateDirEdit_Controller {
     			resultItem = new TreeItem<>(tip);
     			//((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root.getChildren().add(item);
     			editedItem_ti.getChildren().add(resultItem);
+    			
+    			//--- при необходимости кешируем файл на диске
+    			FileCache fileCache = new FileCache (conn, tip.getThemeId());
+    			
+    			
+    			
+
+    			//fileCache.updateRequredFile(fip);
+    			
+    			
+    			
+    			
+//TODO add cfche    			
         		
     			// выводим сообщение в статус бар
     			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' добавлена.");
@@ -254,6 +268,13 @@ public class TemplateDirEdit_Controller {
     			// определяем текущий активный итем
     			resultItem = editedItem_ti;
 
+    			
+    			
+    			
+    			
+    			
+//TODO edit cache
+    			
     			// выводим сообщение в статус бар
     			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' изменена.");
     			
