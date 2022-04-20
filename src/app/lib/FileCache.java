@@ -9,6 +9,7 @@ import app.model.business.IconItem;
 import app.model.business.InfoHeaderItem;
 import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
+import app.model.business.template.TemplateFileItem;
 import app.model.business.templates_old.TemplateRequiredFileItem;
 
 import java.io.File;
@@ -59,7 +60,7 @@ public class FileCache {
     }
 	
 	/**
-	 * Проверяет наличие директории. Если ее нет, тогда создаем директорию и обязательные файлы.
+	 * Проверяет наличие директории. Если ее нет, тогда создаем дерево директорій і файлів.
 	 */
 	public void createDirAndFiles() throws KBase_Ex {
 		File fDocDir = new File(path);
@@ -72,11 +73,27 @@ public class FileCache {
 			if (! fDocDirFiles.mkdirs()) 
 				throw new KBase_Ex (-2, "FileCache.createDirAndFiles", "Невозможно создать директорию "+ path +"_files/", this);
 			
-			// create required files
-			List<TemplateRequiredFileItem> filesList = 
-					conn.db.templateFileListByType(themeId, TemplateRequiredFileItem.FILETYPE_REQUIRED_FILE);
-			for (TemplateRequiredFileItem i : filesList) {       // cycle for files
-				i.saveToDisk(path+"_files/");
+			// create subdirectories and files
+			createDirAndFiles_Recursive(0, themeId, 0, path+"_files/");
+		}
+	}
+	
+	private void createDirAndFiles_Recursive (long parentId, long themeId, int type, String curPath) {
+		List<TemplateFileItem> filesList = conn.db.templateFileListByType(parentId, themeId, type);
+		
+		for (TemplateFileItem i : filesList) {
+			if ((i.getType() == 0) || (i.getType() == 10)) {   // file
+				i.saveToDisk(curPath);
+			} else {     // directory
+				String curPathNew = curPath+i.getFileName()+"/";
+				File fileDir = new File(curPathNew);
+				if (fileDir.mkdirs()) {
+					createDirAndFiles_Recursive (i.getId(), themeId, type, curPathNew);
+				} else {
+					ShowAppMsg.showAlert("ERROR", "error", 
+							"Помилка при створенні директорії на диску, FileCache.createDirAndFiles_Recursive", 
+							curPathNew);
+				}
 			}
 		}
 	}

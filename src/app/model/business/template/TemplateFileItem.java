@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
  * @version 2.00.00.001   06.04.2021
  */
 public class TemplateFileItem extends TemplateSimpleItem {
+	public static final int FILE_TYPE_DIR      = 0;
 	public static final int FILE_TYPE_TEXT     = 1;
 	public static final int FILE_TYPE_IMAGE    = 2;
 	public static final int FILE_TYPE_BINARY   = 3;

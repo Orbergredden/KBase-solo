@@ -2974,6 +2974,86 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает список під-директорій і файлів для вказаної директорії.
+	 * Элементы списка типа TemplateFileItem
+	 * type : 0 - обов'язкові файли з їх директоріями ; 10 - не обов'язкові
+	 */
+	public List<TemplateFileItem> templateFileListByType (long parentId, long themeId, int type) {
+		List<TemplateFileItem> retVal = new ArrayList<TemplateFileItem>();
+		Image isImage = null;
+	
+		try {
+			String subSql = "";
+			if (parentId == 0) {
+				switch (type) {
+				case 0 :
+					subSql = " and type < 10 ";
+					break;
+				case 10 :
+					subSql = " and type >= 10 ";
+					break;
+				default :
+					subSql = " and type < 10 ";    // что то присвоили на всякий случай
+				}
+			}
+			
+			String stm = 
+					 "select id, type, file_type, file_name, descr, body, body_bin, " +
+					 "       date_created, date_modified, user_created, user_modified " + 
+				     "  from template_files " +
+				     " where parent_id = ? " +
+				     "   and theme_id = ? " +
+				     subSql +
+				     " order by type desc, file_name ";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong(1, parentId);
+			pst.setLong(2, themeId);
+			ResultSet rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				if (rs.getInt("file_type") == TemplateFileItem.FILE_TYPE_IMAGE) 
+					isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
+				
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				retVal.add(new TemplateFileItem(
+						rs.getLong("id"),
+						parentId,
+						themeId,
+	         			rs.getInt("type"),
+	         			rs.getInt("file_type"),
+	         			rs.getString("file_name"),
+	         			rs.getString("descr"),
+	         			rs.getString("body"),
+	         			isImage,
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")));
+			}
+			
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		//System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateFileListByType()");
+    	}
+	
+		return retVal;
+	}
+	//TODO templateFileListByType
+	
+	/**
 	 * Выдает следующий Id для добавления нового файла (или директории) для шаблонов
 	 */
 	public long templateFileNextId () {
@@ -3958,64 +4038,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     	}
 		
-		return retVal;
-	}
-	
-	/**
-	 * Возвращает список для показа файлов различного типа.
-	 * Элементы списка типа TemplateRequiredFileItem
-	 */
-	public List<TemplateRequiredFileItem> templateFileListByType (long themeId, int type) {
-		List<TemplateRequiredFileItem> retVal = new ArrayList<TemplateRequiredFileItem>();
-		Image isImage = null;
-	
-		try {
-			String stm = "SELECT id, theme_id, file_name, descr, body, type, body_bin, file_type, " +
-					     "       date_created, date_modified, user_created, user_modified " +
-					     "  FROM template_required_files " +
-					     " WHERE theme_id = ? " +
-				         "   AND type = ?";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong(1, themeId);
-			pst.setInt (2, type);
-			ResultSet rs = pst.executeQuery();
-			
-			while (rs.next()) {
-				if (rs.getInt("file_type") == TemplateRequiredFileItem.FILETYPEEXT_IMAGE) 
-					isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
-				
-				java.util.Date dateTmpCre;
-				Timestamp timestampCr = rs.getTimestamp("date_created");
-				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-				else                      dateTmpCre = null;
-				
-				java.util.Date dateTmpMod;
-				Timestamp timestampMo = rs.getTimestamp("date_modified");
-				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-				else                      dateTmpMod = null;
-				
-				retVal.add(new TemplateRequiredFileItem(
-						rs.getLong("id"), 
-	         			rs.getLong("theme_id"),
-	         			rs.getString("file_name"),
-	         			rs.getString("descr"),
-	         			rs.getString("body"),
-	         			isImage,
-	         			rs.getInt("type"),
-	         			rs.getInt("file_type"),
-						dateTmpCre, 
-	         			dateTmpMod,
-	         			rs.getString("user_created"),
-	         			rs.getString("user_modified")));
-			}
-			
-            rs.close();
-            pst.close();
-    	} catch (SQLException e) {
-    		System.out.println("execute query Failed");
-    		e.printStackTrace();
-    	}
-	
 		return retVal;
 	}
 	
