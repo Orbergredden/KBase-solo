@@ -664,10 +664,51 @@ begin
 	raise notice 'v_result =  %', v_result;	
 end template_style_link_migrate $$;
 */
+--######## create function template_file_get_pathname ######################################
+CREATE OR REPLACE FUNCTION kbase.template_file_get_pathname(
+	p_id bigint,   -- id директорії чи файла для шаблонів
+	p_delimiter character varying DEFAULT '/'::character varying,
+	p_withFileName integer default 0) -- 0 - шлях з кінцевим іменем файла (директорії); 1 - без
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+-- get file's tree path
+DECLARE
+	l_i record;
+	v_retVal character varying (10000) := '';
+	v_isFirst boolean := true;
+BEGIN
+	FOR l_i IN (WITH RECURSIVE FilePath ( id, parent_id, file_name ) AS 
+                (SELECT f1.id, f1.parent_id, f1.file_name 
+                   FROM template_files f1
+                  WHERE f1.id = p_id
+                  UNION 
+                 SELECT f2.id, f2.parent_id, f2.file_name 
+                   FROM template_files f2
+                  INNER JOIN FilePath ON (FilePath.parent_id = f2.id) 
+                 ) 
+                 select * from FilePath --order by parent_id desc
+	           )
+	LOOP
+		IF v_isFirst THEN
+			v_isFirst := false;
+			if p_withFileName = 0 then
+				v_retVal := l_i.file_name;
+			end if;
+		ELSE
+			v_retVal := l_i.file_name || p_delimiter || v_retVal;
+		END IF;
+	END LOOP;
 
+    return v_retVal;
+END;
+$BODY$;
 
+ALTER FUNCTION kbase.template_file_get_pathname(bigint, character varying, integer)
+    OWNER TO kbase;
 
-
-
-
+COMMENT ON FUNCTION kbase.template_file_get_pathname(bigint, character varying, integer)
+    IS 'get file''s of templates tree path';
 --<<

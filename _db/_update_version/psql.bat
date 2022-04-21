@@ -5,7 +5,7 @@
 rem SET PGCLIENTENCODING=WIN1251
 chcp 1251
 
-c:\win64\_db\PostgreSQL\12\bin\psql --host localhost --port 5432 --username "postgres"
+c:\win64\_db\PostgreSQL\14\bin\psql --host localhost --port 5432 --username "postgres"
 
 pause
 @rem -- -

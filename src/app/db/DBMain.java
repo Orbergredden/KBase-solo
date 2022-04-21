@@ -3051,7 +3051,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	
 		return retVal;
 	}
-	//TODO templateFileListByType
 	
 	/**
 	 * Выдает следующий Id для добавления нового файла (или директории) для шаблонов
@@ -3078,6 +3077,37 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Возвращает цепочку имен директорій от указанного файла(директорії) до самого верхнего родителя.
+	 * withFileName - шлях з кінцевим іменем файла (директорії) чи без 
+	 */
+	public String templateFileGetPathName (long fileId, String delimiter, boolean withFileName) {
+		String retVal = "";
+		
+		try {
+			String stm = "SELECT template_file_get_pathname(?,?,?) AS path_name ;";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong  (1, fileId);
+			pst.setString(2, delimiter);
+			pst.setInt   (3, ((withFileName) ? 0 : 1));
+			ResultSet rs = pst.executeQuery();
+			
+			rs.next();
+			retVal = rs.getString("path_name");
+			
+            rs.close();
+            pst.close();
+    	} catch (SQLException e) {
+    		//System.out.println("execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "Ошибка при получении пути ( templateFileGetPathName() ).");
+    	}
+		
+		return retVal;
+	}
+	//TODO path
 	
 	/**
 	 * Обновление информации директории файлов для шаблонов

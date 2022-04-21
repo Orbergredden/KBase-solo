@@ -120,16 +120,34 @@ public class FileCache {
 	}
 	
 	/**
-	 * Если уже есть директория кеша с файлами, тогда записываем указанный файл.
-	 * Записываются только файлы из директории "_files" (type = TYPE_REQUIRED_FILE)
+	 * Если уже есть директория кеша с файлами, тогда записываем указанный файл (чи директорію).
 	 */
-	public void updateRequredFile (TemplateRequiredFileItem trf) {
+	public void updateTemplateFile (TemplateFileItem tf) {
 		File fDocDir = new File(path+"_files/");
+		String curPath = path +"_files/"+ conn.db.templateFileGetPathName(tf.getId(), "/", false);
 	
 		if (fDocDir.exists()) {
-			trf.saveToDisk(path+"_files/");
+			if ((tf.getType() == 0) || (tf.getType() == 10)) {   // file
+				tf.saveToDisk(curPath);
+			} else {     // directory
+				
+				
+				/*
+				String curPathNew = curPath+i.getFileName()+"/";
+				File fileDir = new File(curPathNew);
+				if (fileDir.mkdirs()) {
+					createDirAndFiles_Recursive (i.getId(), themeId, type, curPathNew);
+				} else {
+					ShowAppMsg.showAlert("ERROR", "error", 
+							"Помилка при створенні директорії на диску, FileCache.createDirAndFiles_Recursive", 
+							curPathNew);
+				}
+				*/
+				
+			}
 		}
 	}
+	//TODO updateRequredFile
 	
 	/**
 	 * Записывает файлы инфо блоков "Изображение" и "Файл" для указанного раздела.
