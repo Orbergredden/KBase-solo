@@ -173,18 +173,9 @@ public class TemplateDirEdit_Controller {
     			//((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root.getChildren().add(item);
     			editedItem_ti.getChildren().add(resultItem);
     			
-    			//--- при необходимости кешируем файл на диске
+    			// при необходимости кешируем директорію на диске
     			FileCache fileCache = new FileCache (conn, tip.getThemeId());
-    			
-    			
-    			
-
-    			//fileCache.updateRequredFile(fip);
-    			
-    			
-    			
-    			
-//TODO add cfche    			
+    			fileCache.createTemplateFile(tip);
         		
     			// выводим сообщение в статус бар
     			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' добавлена.");
@@ -268,12 +259,9 @@ public class TemplateDirEdit_Controller {
     			// определяем текущий активный итем
     			resultItem = editedItem_ti;
 
-    			
-    			
-    			
-    			
-    			
-//TODO edit cache
+    			// при необходимости кешируем директорію на диске
+    			FileCache fileCache = new FileCache (conn, tip.getThemeId());
+    			fileCache.createTemplateFile(tip);
     			
     			// выводим сообщение в статус бар
     			params.setMsgToStatusBar("Директория файлов для шаблонов '" + tip.getName() + "' изменена.");

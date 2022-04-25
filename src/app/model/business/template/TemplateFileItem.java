@@ -4,6 +4,7 @@ package app.model.business.template;
 import app.lib.FileUtil;
 import app.lib.ShowAppMsg;
 
+import java.io.File;
 import java.util.Date;
 
 import javafx.beans.property.IntegerProperty;
@@ -172,18 +173,28 @@ public class TemplateFileItem extends TemplateSimpleItem {
 	 * Сохраняем файл в дисковый кеш.
 	 */
 	public void saveToDisk (String path) {
-		switch (getFileType()) {
-		case FILE_TYPE_TEXT :
-			//FileUtil.writeTextFile(path+"_files/"+getFileName(), getBody());
-			FileUtil.writeTextFile(path+getFileName(), getBody());
-			break;
-		case FILE_TYPE_IMAGE :
-			//FileUtil.writeImageFile(path +"_files/"+ getFileName(), bodyImage);
-			FileUtil.writeImageFile(path + getFileName(), bodyImage);
-			break;
-		default :
-			ShowAppMsg.showAlert("WARNING", "Сохранение файла на диск", "Для данного типа файла сохранение не реализовано.", 
-		             "Файл не сохранен.");
+		String fullPath = path + getFileName();
+		
+		if ((getType() == 0) || (getType() == 10)) {   // file
+			switch (getFileType()) {
+			case FILE_TYPE_TEXT :
+				FileUtil.writeTextFile(fullPath, getBody());
+				break;
+			case FILE_TYPE_IMAGE :
+				FileUtil.writeImageFile(fullPath, bodyImage);
+				break;
+			default :
+				ShowAppMsg.showAlert("WARNING", "Сохранение файла на диск", "Для данного типа файла сохранение не реализовано.", 
+			             "Файл "+ fullPath +" не сохранен.");
+			}
+		} else {     // directory
+			File fileDir = new File(fullPath);
+			if (! fileDir.mkdirs()) {
+				ShowAppMsg.showAlert("ERROR", "error", 
+						"Помилка при створенні директорії на диску, TemplateFileItem.saveToDisk", 
+						fullPath);
+			}
 		}
 	}
+	//TODO saveToDisk
 }

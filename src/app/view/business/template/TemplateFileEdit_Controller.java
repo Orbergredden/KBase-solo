@@ -475,17 +475,7 @@ public class TemplateFileEdit_Controller {
 			
 			//--- при необходимости кешируем файл на диске
 			FileCache fileCache = new FileCache (conn, fi.getThemeId());
-			
-			
-			
-
-			//fileCache.updateRequredFile(fip);
-
-			
-			
-			
-			
-			
+			fileCache.createTemplateFile(fi);
 			
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Файл для шаблона '" + fi.getFileName() + "' добавлен.");
