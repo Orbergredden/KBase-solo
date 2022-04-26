@@ -161,6 +161,20 @@ public class TemplateDirEdit_Controller {
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
     			newId = conn.db.templateFileNextId();
     			
+    			// проверка на уникальность имени нової директорії в бальківській директорії
+        		//System.out.println("textField_FileName.getText() = "+ textField_FileName.getText());
+        		if (conn.db.templateFileIsExistNameInDir(
+        				newId, 
+        				editedItem.getId(),              // parent_id
+        				editedItem.getThemeId(),
+        				(int)editedItem.getSubtypeItem(),     // type
+        				textField_Name.getText())) {
+        			ShowAppMsg.showAlert("WARNING", "Додавання директорії файлів для шаблонів.",
+        					"Директорія або файл з такою назвою вже існує у вказаній батьківській директорії.",
+        					"Додавання перерване.");
+        			return;
+    			}
+    			
     			tip = new TemplateFileItem(
     					newId, editedItem.getId(), editedItem.getThemeId(), (int)editedItem.getSubtypeItem(), 0, 
     					textField_Name.getText(), textField_Descr.getText(), null, null
@@ -237,7 +251,20 @@ public class TemplateDirEdit_Controller {
     		switch (editedItem.getTypeItem()) {
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
     		case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
-    			// create theme object and update it into db
+    			// проверка на уникальность имени нової директорії в батьківській директорії
+        		if (conn.db.templateFileIsExistNameInDir(
+        				editedItem.getId(), 
+        				editedItem_ti.getParent().getValue().getId(),      // parent_id
+        				editedItem.getThemeId(),
+        				(int)editedItem.getSubtypeItem(),     // type
+        				textField_Name.getText())) {
+        			ShowAppMsg.showAlert("WARNING", "Редачування директорії файлів для шаблонів.",
+        					"Директорія або файл з такою назвою вже існує у вказаній батьківській директорії.",
+        					"Редачування перерване.");
+        			return;
+    			}
+    			
+    			// create directory of files object and update it into db
     			tip = new TemplateFileItem(
     					editedItem.getId(), 
     					editedItem_ti.getParent().getValue().getId(), 

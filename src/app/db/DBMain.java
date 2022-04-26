@@ -3107,7 +3107,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO path
 	
 	/**
 	 * Обновление информации директории файлов для шаблонов

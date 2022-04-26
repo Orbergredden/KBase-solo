@@ -482,7 +482,43 @@ public class TemplateFileEdit_Controller {
     		
     		break;
     	case ACTION_TYPE_EDIT :
-    	
+    		fi = conn.db.templateFileGetById(editedItem.getId()); // get full info
+    		
+    		//-------- дополнительные проверки
+			// только для текстового файла
+			if (	(fileType == TemplateSimpleItem.SUBTYPE_FILE_TEXT) &&
+					textArea_FileContent.getText().equals(fi.getBody()) &&
+					textField_FileName.getText().equals(editedItem.getName()) &&
+					textField_Descr.getText().equals(editedItem.getDescr())) {
+				ShowAppMsg.showAlert("WARNING", "Изменение файла", "Нет никаких изменений", "Укажите новые значения.");
+				return;
+				//throw new KBase_Ex (1, "Ошибка при сохранении", "Нет никаких изменений", this);
+			}
+			// проверка на дублирование имени файла
+			if (conn.db.templateFileIsExistNameInDir(
+					editedItem.getId(), 
+    				editedItem_ti.getParent().getValue().getId(),      // parent_id
+    				editedItem.getThemeId(),
+    				(int)editedItem.getSubtypeItem(),     // type
+    				textField_FileName.getText())) {
+    			ShowAppMsg.showAlert("WARNING", "Редачування файла для шаблонів.",
+    					"Директорія або файл з такою назвою вже існує у вказаній батьківській директорії.",
+    					"Редачування перерване.");
+    			return;
+			}
+			
+			// prepare
+			String body = textArea_FileContent.getText();
+			Image bodyImg = null;
+
+			if (	(fileType == TemplateSimpleItem.SUBTYPE_FILE_IMAGE) &&
+					(! label_FileNameNew.getText().equals("")) && (label_FileNameNew.getText() != null)) {
+				bodyImg = imageView_FileContent.getImage();
+			}
+
+			
+			
+    		
     	
     		
     		
