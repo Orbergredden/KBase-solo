@@ -1,8 +1,5 @@
 package app.view.business.template;
 
-import java.io.File;
-import java.util.prefs.Preferences;
-
 import app.exceptions.KBase_ReadTextFileUTFEx;
 import app.lib.DateConv;
 import app.lib.FileCache;
@@ -11,10 +8,12 @@ import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.template.TemplateFileItem;
-import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
-import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
+
+import java.io.File;
+import java.util.prefs.Preferences;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -535,13 +534,22 @@ public class TemplateFileEdit_Controller {
 			conn.db.templateFileUpdate (fi, label_FileNameNew.getText());
 			fi = conn.db.templateFileGetById(fi.getId()); // get full info
 			
-    		
-    	
-    		
+			// update in TreeTableView
+			editedItem_ti.setValue(null);
+			editedItem_ti.setValue(fi);
+			
+			// определяем текущий активный итем
+			resultItem = editedItem_ti;
+
+			//--- при необходимости кешируем файл на диске
+			FileCache fileCacheUpd = new FileCache (conn, fi.getThemeId());
+			fileCacheUpd.createTemplateFile(fi);
+			
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Файл '" + fi.getName() + "' изменен.");
     		
     		break;
     	}
-//TODO Ok    	
     	
     	//-------- close window
     	// get a handle to the stage
