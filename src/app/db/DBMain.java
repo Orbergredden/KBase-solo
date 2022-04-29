@@ -3147,6 +3147,98 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Обновление информации файла для шаблонов
+	 */
+	public void templateFileUpdate (TemplateFileItem fi, String fileNameImage) {
+		PreparedStatement pst = null;
+		String stm;
+		
+		if ((fi.getType() != 0) && (fi.getType() != 10)) {
+			ShowAppMsg.showAlert("WARNING", "db warning", "Ошибка при работе с базой данных", 
+		             "Ошибка при обновлении файлов шаблонов : тип " + fi.getType() + " не определен.");
+			return;
+		}
+	
+		if (fi.getFileType() == TemplateFileItem.SUBTYPE_FILE_TEXT) {              // обновляем с текстом
+			try {
+				stm = 	"update template_files " +
+						"   set file_type = ?, file_name = ?, descr = ?, body = ?, " +
+						"       date_modified = now(), user_modified = \"current_user\"() " +
+						" where id = ? " +
+						";";
+				pst = con.prepareStatement(stm);
+				pst.setInt   (1, fi.getFileType());
+				pst.setString(2, fi.getFileName());
+				pst.setString(3, fi.getDescr());
+				pst.setString(4, fi.getBody());
+				pst.setLong  (5, fi.getId());
+				
+				pst.executeUpdate();
+	            pst.close();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+						             "Ошибка при обновлении файла для шаблонов (с текстом).");
+			}
+		} else {
+			if (fileNameImage.equals("") || (fileNameImage == null)) {       // обновляем без содержимого файла картинки
+				try {
+					stm = 	"update template_files " +
+							"   set file_type = ?, file_name = ?, descr = ?, " +
+							"       date_modified = now(), user_modified = \"current_user\"() " +
+							" where id = ? " +
+							";";
+					pst = con.prepareStatement(stm);
+					pst.setInt   (1, fi.getFileType());
+					pst.setString(2, fi.getFileName());
+					pst.setString(3, fi.getDescr());
+					pst.setLong  (4, fi.getId());
+					
+					pst.executeUpdate();
+		            pst.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+		        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+							             "Ошибка при обновлении файла для шаблонов (без картинки).");
+				}
+			} else {
+				// обновляем с картинкой
+				try {
+					stm = 	"update template_files " +
+							"   set file_type = ?, file_name = ?, descr = ?, body_bin = ?, " +
+							"       date_modified = now(), user_modified = \"current_user\"() " +
+							" where id = ? " +
+							";";
+					pst = con.prepareStatement(stm);
+					pst.setInt   (1, fi.getFileType());
+					pst.setString(2, fi.getFileName());
+					pst.setString(3, fi.getDescr());
+					
+					File file = new File(fileNameImage);
+		            FileInputStream fis = new FileInputStream(file);
+		            pst.setBinaryStream(4, fis, (int)file.length());
+					
+		            pst.setLong  (5, fi.getId());
+					
+					pst.executeUpdate();
+		            pst.close();
+		            fis.close();
+				} catch (SQLException ex) {
+		            //Logger lgr = Logger.getLogger(Prepared.class.getName());
+		            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
+		        	ex.printStackTrace();
+		        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+							             "Ошибка при обновлении файла для шаблонов (с картинкой).");
+		        } catch (IOException e) {
+					e.printStackTrace();
+					ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+				             "Ошибка при изменении картинки для шаблонов.");
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Стиль шаблонов. Добавление нового.
 	 */
 	public void templateStyleAdd (TemplateStyleItem i) {
@@ -4068,86 +4160,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
-	}
-	
-	/**
-	 * Обновление информации файла для шаблонов
-	 */
-	public void templateFileUpdate (TemplateRequiredFileItem trf, String fileNameImage) {
-		PreparedStatement pst = null;
-		String stm;
-	
-		if (trf.getFileTypeExt() == TemplateRequiredFileItem.FILETYPEEXT_TEXT) {              // обновляем с текстом
-			try {
-				stm = 	"UPDATE template_required_files " +
-						"   SET file_name = ?, descr = ?, date_modified = now(), user_modified = \"current_user\"(), " +
-						"       body = ? " +
-						" WHERE id = ? " +
-						";";
-				pst = con.prepareStatement(stm);
-				pst.setString(1, trf.getFileName());
-				pst.setString(2, trf.getDescr());
-				pst.setString(3, trf.getBody());
-				pst.setLong  (4, trf.getId());
-				
-				pst.executeUpdate();
-	            pst.close();
-			} catch (SQLException ex) {
-	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-						             "Ошибка при обновлении файла для шаблонов (с текстом).");
-			}
-		} else {
-			if (fileNameImage.equals("") || (fileNameImage == null)) {       // обновляем без содержимого файла картинки
-				try {
-					stm = 	"UPDATE template_required_files " +
-							"   SET file_name = ?, descr = ?, date_modified = now(), user_modified = \"current_user\"() " +
-							" WHERE id = ? " +
-							";";
-					pst = con.prepareStatement(stm);
-					pst.setString(1, trf.getFileName());
-					pst.setString(2, trf.getDescr());
-					pst.setLong  (3, trf.getId());
-					
-					pst.executeUpdate();
-		            pst.close();
-				} catch (SQLException ex) {
-		        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-							             "Ошибка при обновлении файла для шаблонов.");
-				}
-			} else {
-				// обновляем с картинкой
-				try {
-					stm = 	"UPDATE template_required_files " +
-							"   SET file_name = ?, descr = ?, date_modified = now(), user_modified = \"current_user\"(), " +
-							"       body_bin = ? " +
-							" WHERE id = ? " +
-							";";
-					pst = con.prepareStatement(stm);
-					pst.setString(1, trf.getFileName());
-					pst.setString(2, trf.getDescr());
-					
-					File file = new File(fileNameImage);
-		            FileInputStream fis = new FileInputStream(file);
-		            pst.setBinaryStream(3, fis, (int)file.length());
-					
-					pst.setLong  (4, trf.getId());
-					
-					pst.executeUpdate();
-		            pst.close();
-		            fis.close();
-				} catch (SQLException ex) {
-		            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-		            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-		        	ex.printStackTrace();
-		        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-							             "Ошибка при обновлении файла для шаблонов (с картинкой).");
-		        } catch (IOException e) {
-					e.printStackTrace();
-					ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-				             "Ошибка при изменении картинки для шаблонов.");
-				}
-			}
-		}
 	}
 	
 	/**

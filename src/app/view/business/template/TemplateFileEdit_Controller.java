@@ -516,7 +516,24 @@ public class TemplateFileEdit_Controller {
 				bodyImg = imageView_FileContent.getImage();
 			}
 
-			
+			// create file object and update it into db
+			fi = new TemplateFileItem (
+					fi.getId(),
+					fi.getParentId(),
+					fi.getThemeId(),
+					fi.getType(),
+					fileType,
+					textField_FileName.getText(),
+					textField_Descr.getText(),
+					body,
+					bodyImg,
+					fi.getDateCreated(),
+					null,
+					fi.getUserCreated(),
+					null
+			);
+			conn.db.templateFileUpdate (fi, label_FileNameNew.getText());
+			fi = conn.db.templateFileGetById(fi.getId()); // get full info
 			
     		
     	
