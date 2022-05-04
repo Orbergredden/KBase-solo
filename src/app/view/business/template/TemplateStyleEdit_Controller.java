@@ -10,6 +10,9 @@ import app.model.business.template.TemplateThemeItem;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -41,10 +44,32 @@ public class TemplateStyleEdit_Controller {
 	private TemplateThemeItem curThemeItem;
 	
 	// controls
-	
-	
-	
-	
+	@FXML
+	private Label label_StyleId;
+	@FXML
+	private Label label_StyleParentId;
+	@FXML
+	private Label label_StyleInfoTypeId;
+	@FXML
+	private TextField textField_StyleName;
+	@FXML
+	private TextField textField_StyleDescr;
+	@FXML
+	private Label label_StyleDateCreated;
+	@FXML
+	private Label label_StyleDateModified;
+	@FXML
+	private Label label_StyleUserCreated;
+	@FXML
+	private Label label_StyleUserModified;
+	@FXML
+	private ImageView imageView_StyleDef;
+	@FXML
+	private CheckBox checkBox_StyleDef;
+	@FXML
+	private Label label_StyleDefDate;
+	@FXML
+	private Label label_StyleDefCur;
 	@FXML
 	private Button button_Ok;
 	@FXML
