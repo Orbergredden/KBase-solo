@@ -3730,7 +3730,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			rs.close();
 			pst.close();
 		} catch (SQLException e) {
-    		System.out.println("get template info : execute query Failed");
+    		//System.out.println("get template info : execute query Failed");
     		e.printStackTrace();
         	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "templateGet ("+ id +")");
@@ -3738,6 +3738,38 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
+	 */
+	public boolean templateIsPresent (long id) {
+		boolean retVal = false;
+	
+		try {
+			String stm = "SELECT count(*) as cnt " +
+					     "  FROM template " +
+					     " WHERE id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			if (rs.getInt("cnt") > 0) {
+				retVal = true; 
+			}
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("get template info : execute query Failed");
+    		e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateIsPresent ("+ id +")");
+    	}
+		
+		return retVal;
+	}
+	//TODO is present
 	
 	/**
 	 * Возващает список шаблонов и директорий шаблонов по id родительской директории. 

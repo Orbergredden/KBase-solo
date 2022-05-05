@@ -5,6 +5,7 @@ import java.util.prefs.Preferences;
 import app.lib.DateConv;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
+import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
 import javafx.collections.ObservableList;
@@ -42,6 +43,7 @@ public class TemplateStyleEdit_Controller {
 	private TemplateSimpleItem editedItem;
 	
 	private TemplateThemeItem curThemeItem;
+	private TemplateItem curTemplateItem;
 	
 	// controls
 	@FXML
@@ -54,6 +56,10 @@ public class TemplateStyleEdit_Controller {
 	private TextField textField_StyleName;
 	@FXML
 	private TextField textField_StyleDescr;
+	@FXML
+	private TextField textField_TemplateId;
+	@FXML
+	private Label label_TemplateName;
 	@FXML
 	private Label label_StyleDateCreated;
 	@FXML
@@ -129,6 +135,25 @@ public class TemplateStyleEdit_Controller {
     }
 	//TODO initControlsValue
 	
+    /**
+     * Визивається при закінченні вводу id шаблона
+     */
+    @FXML
+    private void handleTextFieldTemplateId() {
+    	try {
+    		long templateId = Long.parseLong(textField_TemplateId.getText());
+        	
+        	if (conn.db.templateIsPresent(templateId)) {
+        		curTemplateItem = conn.db.templateGet(templateId);
+        		label_TemplateName.setText(curTemplateItem.getName());
+        	} else {
+        		label_TemplateName.setText("ШАБЛОН ПО ВКАЗАНОМУ id НЕ ЗНАЙДЕНО !!!");
+        	}
+    	} catch (NumberFormatException e) {
+    		label_TemplateName.setText("ВКАЗАН КОРЯВИЙ id ШАБЛОНА !!!");
+    	}
+    }
+    
     /**
      * Вызывается при нажатии на кнопке "Ok"
      */
