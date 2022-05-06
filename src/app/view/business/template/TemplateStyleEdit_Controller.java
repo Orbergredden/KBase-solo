@@ -5,6 +5,7 @@ import java.util.prefs.Preferences;
 import app.lib.DateConv;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
+import app.model.business.InfoTypeItem;
 import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateThemeItem;
@@ -43,9 +44,12 @@ public class TemplateStyleEdit_Controller {
 	private TemplateSimpleItem editedItem;
 	
 	private TemplateThemeItem curThemeItem;
+	private InfoTypeItem curInfoTypeItem; 
 	private TemplateItem curTemplateItem;
 	
 	// controls
+	@FXML
+	private Label label_Theme;
 	@FXML
 	private Label label_StyleId;
 	@FXML
@@ -123,11 +127,41 @@ public class TemplateStyleEdit_Controller {
      * Инициализирует контролы значениями из главного класса
      */
     private void initControlsValue() {
+    	long themeId;
+    	TreeItem<TemplateSimpleItem> ttsi = editedItem_ti;
     	
-
+    	//======== get current theme 
+    	while (ttsi.getValue().getThemeId() == 0) {
+    		ttsi = ttsi.getParent();
+    		themeId = ttsi.getValue().getThemeId();
+    	}
+    	curThemeItem = conn.db.templateThemeGetById(editedItem.getThemeId());
+    	label_Theme.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
     	
+    	//======== get info block type
+    	if (editedItem.getFlag() > 0) {
+    		curInfoTypeItem = conn.db.infoTypeGet(editedItem.getFlag());
+    		label_StyleInfoTypeId.setText(curInfoTypeItem.getName() +" ("+ Long.toString(curInfoTypeItem.getId()) +")");
+    	} else {
+    		label_StyleInfoTypeId.setText("Зарезервований стиль");
+    	}
     	
-    	
+    	//========
+    	if (actionType == ACTION_TYPE_ADD) { 
+    		label_StyleId.setText("");
+    		label_StyleParentId.setText(editedItem.getName() +" ("+ Long.toString(editedItem.getId()) +")");
+    		
+    		
+    		
+    		
+    		
+    	} else if (actionType == ACTION_TYPE_EDIT) {
+    		
+    		
+    		
+    		
+    		
+    	}
     	
     	//======== buttons
     	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
