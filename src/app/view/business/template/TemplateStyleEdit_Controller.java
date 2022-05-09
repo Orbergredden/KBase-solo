@@ -127,16 +127,9 @@ public class TemplateStyleEdit_Controller {
      * Инициализирует контролы значениями из главного класса
      */
     private void initControlsValue() {
-    	long themeId;
-    	TreeItem<TemplateSimpleItem> ttsi = editedItem_ti;
-    	
-    	//======== get current theme 
-    	while (ttsi.getValue().getThemeId() == 0) {
-    		ttsi = ttsi.getParent();
-    		themeId = ttsi.getValue().getThemeId();
-    	}
     	curThemeItem = conn.db.templateThemeGetById(editedItem.getThemeId());
     	label_Theme.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
+    	imageView_StyleDef.setImage(new Image("file:resources/images/icon_default_item_16.png"));
     	
     	//======== get info block type
     	if (editedItem.getFlag() > 0) {
@@ -145,16 +138,20 @@ public class TemplateStyleEdit_Controller {
     	} else {
     		label_StyleInfoTypeId.setText("Зарезервований стиль");
     	}
+
+    	
+    	
     	
     	//========
     	if (actionType == ACTION_TYPE_ADD) { 
     		label_StyleId.setText("");
     		label_StyleParentId.setText(editedItem.getName() +" ("+ Long.toString(editedItem.getId()) +")");
-    		
-    		
-    		
-    		
-    		
+    		label_TemplateName.setText("");
+    		label_StyleDateCreated.setText("");
+    		label_StyleDateModified.setText("");
+    		label_StyleUserCreated.setText("");
+    		label_StyleUserModified.setText("");
+    		label_StyleDefDate.setText("");
     	} else if (actionType == ACTION_TYPE_EDIT) {
     		
     		

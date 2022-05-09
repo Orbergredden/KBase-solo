@@ -3769,7 +3769,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO is present
 	
 	/**
 	 * Возващает список шаблонов и директорий шаблонов по id родительской директории. 
