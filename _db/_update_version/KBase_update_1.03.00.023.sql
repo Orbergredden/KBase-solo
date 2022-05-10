@@ -663,7 +663,7 @@ begin
 
 	raise notice 'v_result =  %', v_result;	
 end template_style_link_migrate $$;
-*/
+
 --######## create function template_file_get_pathname ######################################
 CREATE OR REPLACE FUNCTION kbase.template_file_get_pathname(
 	p_id bigint,   -- id директорії чи файла для шаблонів
@@ -711,4 +711,171 @@ ALTER FUNCTION kbase.template_file_get_pathname(bigint, character varying, integ
 
 COMMENT ON FUNCTION kbase.template_file_get_pathname(bigint, character varying, integer)
     IS 'get file''s of templates tree path';
+
+--######## rename kbase.current_style.infotype_style_id to template_style_id #######################
+--DROP INDEX IF EXISTS kbase.ind_current_style_styleid;
+
+--ALTER TABLE kbase.current_style DROP CONSTRAINT fk_current_style_template_style_id;
+
+alter table kbase.current_style rename column infotype_style_id to template_style_id;
+
+--CREATE INDEX ind_current_style_styleid ON kbase.current_style USING btree (template_style_id);
+	
+--ALTER TABLE kbase.current_style
+--   ADD CONSTRAINT fk_current_style_template_style_id FOREIGN KEY (template_style_id)
+--          REFERENCES kbase.template_style (id)
+--             MATCH SIMPLE
+--             ON DELETE CASCADE
+--             ON UPDATE CASCADE
+--          NOT DEFERRABLE INITIALLY IMMEDIATE
+--;	
+*/
+--######## modify functions infotypestyle_* ##########################################
+
+DROP FUNCTION IF EXISTS kbase.infotypestyle_getiddefault(bigint, bigint, integer);
+
+CREATE OR REPLACE FUNCTION kbase.templatestyle_getiddefault(
+	p_themeid bigint,
+	p_infotypeid bigint,
+	p_searchlevel integer)
+    RETURNS bigint
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- функция возвращает ид дефолтного стиля для указанных типа инфо блока и темы. 
+-- если не найден , то возвращает 0
+-- p_searchLevel :
+-- 		1 - ищем только для текущего пользователя
+--		2 - еще и для всех (без пользователя)
+--		3 - если ничего не найдено , возвращает стиль с минимальным ид
+	v_idDef      bigint;
+BEGIN
+	SELECT cs.template_style_id
+	  INTO v_idDef
+	  FROM template_style s, current_style cs
+     WHERE s.id = cs.template_style_id
+       AND cs.theme_id = p_themeId
+       AND s.infotype_id = p_infoTypeId
+       AND cs."user" = "current_user"()
+       AND cs.flag = 0
+	;
+	if (v_idDef is null) and (p_searchLevel > 1) then
+		SELECT cs.template_style_id
+	      INTO v_idDef
+	      FROM template_style s, current_style cs
+         WHERE s.id = cs.template_style_id
+           AND cs.theme_id = p_themeId
+           AND s.infotype_id = p_infoTypeId
+           AND cs."user" is null
+           AND cs.flag = 0
+		;
+	end if;
+
+	if (v_idDef is null) and (p_searchLevel > 2) then
+		-- ищем минимальный стиль (с шаблоном) в справочнике
+		select min(it.id)
+		  into v_idDef
+          from template_style it
+         where it.infotype_id = p_infoTypeId
+           and exists (select 1
+                         from template_style_link t
+                        where t.style_id = it.id
+			          )
+		;
+	end if;
+
+	return v_idDef;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatestyle_getiddefault(bigint, bigint, integer)
+    OWNER TO kbase;
+---------------------------------------------------------------
+DROP FUNCTION IF EXISTS kbase.infotypestyle_setdefault(bigint, bigint);
+
+CREATE OR REPLACE FUNCTION kbase.templatestyle_setdefault(
+	p_themeid bigint,
+	p_templatestyleid bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- функция устанавливает указанный стиль как дефолтный для указанной темы. 
+	v_infotype_id    bigint;
+	v_idDef          bigint;
+BEGIN
+	-- находим ид типа инфо блока
+	select t.infotype_id
+	  into v_infotype_id
+	  from template_style t
+	 where t.id = p_templatestyleid
+	;
+	
+	-- если нет деф. стиля без клиента - инсертим
+	v_idDef := templatestyle_getiddefault (p_themeId, v_infotype_id, 2);
+	
+	if v_idDef is null then
+		insert into current_style ("user", theme_id, template_style_id, flag)
+			values (null, p_themeId, p_templatestyleid, 0)
+		;
+	end if;
+	
+	-- ищем есть ли для него уже дефолтный стиль 
+	v_idDef := templatestyle_getiddefault (p_themeId, v_infotype_id, 1);
+	
+	-- если есть - апдейтим, если нет - инсертим, если совпадает - ничего не делаем
+	if v_idDef is null then
+		INSERT INTO current_style (theme_id, template_style_id, flag)
+			VALUES(p_themeId, p_templatestyleid, 0)
+		;
+	else
+		if v_idDef <> p_templatestyleid then
+			UPDATE current_style
+		       SET template_style_id = p_templatestyleid,
+		           date_modified = now()
+		     WHERE theme_id = p_themeId
+		       AND template_style_id = v_idDef
+		       AND "user" = "current_user"()
+			;
+		end if;
+	end if;
+
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatestyle_setdefault(bigint, bigint)
+    OWNER TO kbase;
+-------------------------------------------------------------
+DROP FUNCTION IF EXISTS kbase.infotypestyle_unsetdefault(bigint, bigint);
+
+CREATE OR REPLACE FUNCTION kbase.templatestyle_unsetdefault(
+	p_themeid bigint,
+	p_templatestyleid bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- функция удаляет указанный стиль как дефолтный для указанной темы. 
+	
+BEGIN
+	DELETE FROM current_style
+     WHERE theme_id = p_themeId
+       AND template_style_id = p_templatestyleid
+       AND "user" = "current_user"()
+       AND flag = 0
+    ;
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatestyle_unsetdefault(bigint, bigint)
+    OWNER TO kbase;
+
 --<<

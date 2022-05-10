@@ -982,7 +982,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			//-------- check record with the style for exist
 			stm = "SELECT count(cs.id) CountR " +
 			      "  FROM infotype_style s, current_style cs " + 
-                  " WHERE s.id = cs.infoType_style_id " +
+                  " WHERE s.id = cs.template_style_id " +
                   "   AND cs.theme_id = ? " +
                   "   AND s.infotype_id = ? " +
                   "   AND cs.\"user\" = \"current_user\"() " +
@@ -1002,7 +1002,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			
 			//-------- insert style
 			if (countR == 0) {
-				stm = "INSERT INTO current_style (theme_id, infotype_style_id, flag) " + 
+				stm = "INSERT INTO current_style (theme_id, template_style_id, flag) " + 
            			  "VALUES(?, ?, ?)";
 				pst = con.prepareStatement(stm);
 				pst.setLong (1, themeId);
@@ -1011,10 +1011,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 			} else {
 			//-------- update style
 				stm = 	  "UPDATE current_style " +
-						  "   SET infotype_style_id = ?, "+
+						  "   SET template_style_id = ?, "+
 						  "       date_modified = now() " +
 					      " WHERE theme_id = ? " +
-						  "   AND infotype_style_id = ? " +
+						  "   AND template_style_id = ? " +
 					      "   AND flag = ? " +
 					      ";";
 				pst = con.prepareStatement(stm);
@@ -1092,7 +1092,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			String stm = "SELECT s.id, s.parent_id, s.infotype_id, s.name, s.descr, " +
 		                 "       s.date_created, s.date_modified, s.user_created, s.user_modified " +
 				         "  FROM infotype_style s, current_style cs " + 
-                         " WHERE s.id = cs.infoType_style_id " +
+                         " WHERE s.id = cs.template_style_id " +
                          "   AND cs.theme_id = ? " +
                          "   AND s.infotype_id = ? " +
                          "   AND cs.\"user\" = \"current_user\"() " +
@@ -1178,7 +1178,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		try {
 			String stm = "SELECT cs.date_modified " +
 				         "  FROM current_style cs " + 
-                         " WHERE cs.infoType_style_id = ? " +
+                         " WHERE cs.template_style_id = ? " +
 				         "   AND cs.theme_id = ? " +
                          "   AND cs.\"user\" = \"current_user\"() " +
                          "   AND cs.flag = 0 " +
@@ -1214,7 +1214,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			String stm = "SELECT count(id) as CountR " +
 				         "  FROM current_style " +
 				         " WHERE theme_id = ? " +
-				         "   AND infoType_style_id = ? " +
+				         "   AND template_style_id = ? " +
 				         "   AND \"user\" = \"current_user\"() " +
                          "   AND flag = 0 " +
 				         ";";
@@ -1311,7 +1311,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		PreparedStatement pst = null;
 		
 		try {
-            String stm = "SELECT infotypestyle_setdefault (?, ?);";
+            String stm = "SELECT TemplateStyle_setdefault (?, ?);";
             pst = con.prepareStatement(stm);
             pst.setLong  (1, themeId);
             pst.setLong  (2, infoTypeStyleId);
@@ -1333,7 +1333,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		PreparedStatement pst = null;
 		
 		try {
-            String stm = "SELECT infotypestyle_unsetdefault (?, ?);";
+            String stm = "SELECT TemplateStyle_unsetdefault (?, ?);";
             pst = con.prepareStatement(stm);
             pst.setLong  (1, themeId);
             pst.setLong  (2, infoTypeStyleId);
@@ -3318,6 +3318,36 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Возвращает стиль по умолчанию в указанной теме для указанного типа инфо блока.
+	 * Если такого стиля нет, возвращается null.
+	 */
+	public TemplateStyleItem templateStyleGetDefault (long themeId, long infoTypeId) {
+		long styleId = -1;
+	
+		try {
+			String stm = "SELECT TemplateStyle_getIdDefault(?,?,3) AS id ;";
+     		PreparedStatement pst = con.prepareStatement(stm);
+	    	pst.setLong  (1, themeId);
+		    pst.setLong  (2, infoTypeId);
+		    ResultSet rs = pst.executeQuery();
+			
+		    rs.next();
+		    styleId = rs.getLong("id");
+		    
+		    rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", 
+    				"Ошибка при работе с базой данных , infoTypeStyleGetDefault ("+themeId+","+infoTypeId+")", 
+		            e.getMessage());
+    	}
+		
+		return templateStyleGet(styleId);
+	}
+	//TODO get def
 	
 	/**
 	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 
