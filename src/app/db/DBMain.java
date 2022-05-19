@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javafx.scene.image.Image;
@@ -3341,7 +3342,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		} catch (SQLException e) {
     		e.printStackTrace();
     		ShowAppMsg.showAlert("WARNING", "db error", 
-    				"Ошибка при работе с базой данных , infoTypeStyleGetDefault ("+themeId+","+infoTypeId+")", 
+    				"Ошибка при работе с базой данных , templateStyleGetDefault ("+themeId+","+infoTypeId+")", 
 		            e.getMessage());
     	}
 		
@@ -3768,6 +3769,99 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * Шаблон. Получение информации по themeId и templateStyleId
+	 */
+	public TemplateItem templateGet (long themeId, long templateStyleId) {
+		TemplateItem retVal = null;
+	
+		try {
+			String stm = "select t.id, t.parent_id, t.type, t.name, t.descr, t.body, " +
+					     "       t.date_created, t.date_modified, t.user_created, t.user_modified " +
+					     "  from template t " +
+					     "  join template_style_link tsl   on tsl.template_id = t.id " + 
+					 	 "                                and tsl.style_id = ? " +
+					 	 "                                and tsl.theme_id = ? " +
+					     ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, templateStyleId);
+			pst.setLong (2, themeId);
+			ResultSet rs = pst.executeQuery();
+			//rs.next();
+			
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				retVal = new TemplateItem (
+						rs.getLong("id"), 
+	         			rs.getLong("parent_id"),
+	         			rs.getInt("type"),
+						rs.getString("name"),
+	         			rs.getString("descr"),
+	         			rs.getString("body"),
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						);
+			}
+				
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateGet ("+ themeId +", "+ templateStyleId +")");
+    	}
+		
+		return retVal;
+	}
+	//TODO templateGet
+	
+	/**
+	 * Шаблон. Перевіряємо по themeId и templateStyleId чи існує звязок між стилем та шаблоном і такий шаблон
+	 */
+	public boolean templateIsLinkPresent (long themeId, long templateStyleId) {
+		boolean retVal = false;
+	
+		try {
+			String stm = "select count(*) as cnt " +
+				         "  from template t " +
+				         "  join template_style_link tsl   on tsl.template_id = t.id " + 
+				 	     "                                and tsl.style_id = ? " +
+				 	     "                                and tsl.theme_id = ? " +
+				         ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, templateStyleId);
+			pst.setLong (2, themeId);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			if (rs.getInt("cnt") > 0) {
+				retVal = true; 
+			}
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("get template info : execute query Failed");
+    		e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateIsLinkPresent ("+ themeId +", "+ templateStyleId +")");
+    	}
+		
+		return retVal;
+	}
+	//TODO templateIsLinkPresent
 	
 	/**
 	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
@@ -4252,7 +4346,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 	/**
 	 * Шаблон. Получение информации по themeId и infoTypeStyleId
 	 */
-	public app.model.business.templates_old.TemplateItem templateGet (long themeId, long infoTypeStyleId) {
+	public app.model.business.templates_old.TemplateItem templateGet__old (long themeId, long infoTypeStyleId) {
 		app.model.business.templates_old.TemplateItem retVal = null;
 	
 		try {
@@ -4317,7 +4411,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			infoTypeStyleId = infoHeader.getInfoTypeStyleId();
 		}
 		
-		retVal = templateGet (themeId, infoTypeStyleId);
+		retVal = templateGet__old (themeId, infoTypeStyleId);
 		
 		return retVal;
 	}

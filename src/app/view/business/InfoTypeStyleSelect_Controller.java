@@ -125,7 +125,7 @@ public class InfoTypeStyleSelect_Controller {
     	
     	// check for exist template for default style
     	if (styleDefault != null) {
-    		TemplateItem ti = conn.db.templateGet(themeId, styleDefault.getId());
+    		TemplateItem ti = conn.db.templateGet__old(themeId, styleDefault.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля по умолчанию "+styleDefault.getName()+" ("+styleDefault.getId()+") нет шаблона", 
@@ -149,7 +149,7 @@ public class InfoTypeStyleSelect_Controller {
     
     	// check for exist template for last style
     	if (styleLast != null) {
-    		TemplateItem ti = conn.db.templateGet(themeId, styleLast.getId());
+    		TemplateItem ti = conn.db.templateGet__old(themeId, styleLast.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для последнего стиля "+styleLast.getName()+" ("+styleLast.getId()+") нет шаблона", 
@@ -255,7 +255,7 @@ public class InfoTypeStyleSelect_Controller {
             	
             	try {
             		row = getTreeTableRow().getItem();
-            		TemplateItem ti = conn.db.templateGet(themeId, row.getId());
+            		TemplateItem ti = conn.db.templateGet__old(themeId, row.getId());
             		if (ti == null) {
             			graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
             		} else {
@@ -363,7 +363,7 @@ public class InfoTypeStyleSelect_Controller {
     	}
     	if (radioButton_inListStyle.isSelected() && (treeTableView_styles.getSelectionModel().getSelectedItem() != null)) {
     		TemplateSimpleItem tsi = treeTableView_styles.getSelectionModel().getSelectedItem().getValue();
-    		TemplateItem ti = conn.db.templateGet(themeId, tsi.getId());
+    		TemplateItem ti = conn.db.templateGet__old(themeId, tsi.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля "+tsi.getName()+" ("+tsi.getId()+") нет шаблона", 

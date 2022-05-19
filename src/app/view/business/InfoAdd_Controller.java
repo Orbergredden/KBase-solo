@@ -195,7 +195,7 @@ public class InfoAdd_Controller {
     	
     	// check for exist template for default style
     	if (styleDefault != null) {
-    		TemplateItem ti = params.getConCur().db.templateGet(themeDefId, styleDefault.getId());
+    		TemplateItem ti = params.getConCur().db.templateGet__old(themeDefId, styleDefault.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля по умолчанию "+styleDefault.getName()+" ("+styleDefault.getId()+") нет шаблона", 

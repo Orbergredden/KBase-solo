@@ -8,6 +8,7 @@ import app.model.Params;
 import app.model.business.InfoTypeItem;
 import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -128,6 +129,7 @@ public class TemplateStyleEdit_Controller {
      */
     private void initControlsValue() {
     	curThemeItem = conn.db.templateThemeGetById(editedItem.getThemeId());
+    	
     	label_Theme.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
     	imageView_StyleDef.setImage(new Image("file:resources/images/icon_default_item_16.png"));
     	
@@ -139,8 +141,8 @@ public class TemplateStyleEdit_Controller {
     		label_StyleInfoTypeId.setText("Зарезервований стиль");
     	}
 
-    	
-    	
+    	TemplateStyleItem defStyleItem = conn.db.templateStyleGetDefault(editedItem.getThemeId(), editedItem.getFlag());
+    	label_StyleDefCur.setText(defStyleItem.getName() +" ("+ Long.toString(defStyleItem.getId()) +")");
     	
     	//========
     	if (actionType == ACTION_TYPE_ADD) { 
@@ -153,8 +155,26 @@ public class TemplateStyleEdit_Controller {
     		label_StyleUserModified.setText("");
     		label_StyleDefDate.setText("");
     	} else if (actionType == ACTION_TYPE_EDIT) {
-    		
-    		
+    		label_StyleId.setText(Long.toString(editedItem.getId()));
+    		label_StyleParentId.setText(
+    				editedItem_ti.getParent().getValue().getName() +
+    				" ("+ Long.toString(editedItem_ti.getParent().getValue().getId()) +")");
+    		textField_StyleName.setText(editedItem.getName());
+        	textField_StyleDescr.setText(editedItem.getDescr());
+
+        	// template
+        	if (conn.db.templateIsLinkPresent(curThemeItem.getId(), editedItem.getId())) {
+        		curTemplateItem = conn.db.templateGet(curThemeItem.getId(), editedItem.getId());
+        		textField_TemplateId.setText(Long.toString(curTemplateItem.getId()));
+        		label_TemplateName.setText(curTemplateItem.getName());
+        	} else {
+        		label_TemplateName.setText("ШАБЛОН ПО ВКАЗАНОМУ id НЕ ЗНАЙДЕНО !!!");
+        	}
+        	
+        	label_StyleDateCreated.setText(dateConv.dateTimeToStr(editedItem.getDateCreated()));
+        	label_StyleDateModified.setText(dateConv.dateTimeToStr(editedItem.getDateModified()));
+        	label_StyleUserCreated.setText(editedItem.getUserCreated());
+        	label_StyleUserModified.setText(editedItem.getUserModified());
     		
     		
     		

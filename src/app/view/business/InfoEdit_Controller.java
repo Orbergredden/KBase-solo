@@ -200,7 +200,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
     		
         	// check for exist template for default style
         	if (styleDefault != null) {
-        		TemplateItem ti = conn.db.templateGet(themeDefId, styleDefault.getId());
+        		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleDefault.getId());
         		if (ti == null) {
         			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
         					"Для стиля по умолчанию "+styleDefault.getName()+" ("+styleDefault.getId()+") нет шаблона", 
@@ -220,7 +220,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
         		label_InfoTypeStyle.setText("");
     	} else {                                            // selected style
     		styleSelected = conn.db.infoTypeStyleGet(ihi.getInfoTypeStyleId());
-    		TemplateItem ti = conn.db.templateGet(themeDefId, styleSelected.getId());
+    		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleSelected.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля "+styleSelected.getName()+" ("+styleSelected.getId()+") нет шаблона", 
