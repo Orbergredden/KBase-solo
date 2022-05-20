@@ -262,7 +262,7 @@ public class InfoTypeStyleSelect_Controller {
             			graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
             		}
             		
-            		if (conn.db.infoTypeStyleIsDefault (row.getThemeId(), row.getId())) {
+            		if (conn.db.templateStyleIsDefault (row.getThemeId(), row.getId())) {
         				graphic_default = new ImageView(new Image("file:resources/images/icon_default_item_16.png"));
         				hBox = new HBox();
         				hBox.getChildren().addAll(graphic, graphic_default);

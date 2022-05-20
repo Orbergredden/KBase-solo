@@ -1206,38 +1206,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя
-	 */
-	public boolean infoTypeStyleIsDefault (long themeId, long infoTypeStyleId) { 
-		boolean retVal = false;
-	
-		try {
-			String stm = "SELECT count(id) as CountR " +
-				         "  FROM current_style " +
-				         " WHERE theme_id = ? " +
-				         "   AND template_style_id = ? " +
-				         "   AND \"user\" = \"current_user\"() " +
-                         "   AND flag = 0 " +
-				         ";";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, themeId);
-			pst.setLong (2, infoTypeStyleId);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-
-			retVal = (rs.getLong("CountR") > 0) ? true : false;
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		//System.out.println("count templates : execute query Failed");
-    		e.printStackTrace();
-			ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", e.getMessage());
-    	}
-		return retVal;
-	}
-	
-	/**
 	 * Возващает список стилей типов инфоблоков по id типа инфоблока 
 	 * или по id родительского стиля. 
 	 * Если infoTypeStyleId = 0, то это корневые стили типа инфоблока.
@@ -3348,7 +3316,39 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return templateStyleGet(styleId);
 	}
-	//TODO get def
+	
+	/**
+	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя
+	 */
+	public boolean templateStyleIsDefault (long themeId, long templateStyleId) { 
+		boolean retVal = false;
+	
+		try {
+			String stm = "SELECT count(id) as CountR " +
+				         "  FROM current_style " +
+				         " WHERE theme_id = ? " +
+				         "   AND template_style_id = ? " +
+				         "   AND \"user\" = \"current_user\"() " +
+                         "   AND flag = 0 " +
+				         ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setLong (2, templateStyleId);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+
+			retVal = (rs.getLong("CountR") > 0) ? true : false;
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("count templates : execute query Failed");
+    		e.printStackTrace();
+			ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", e.getMessage());
+    	}
+		return retVal;
+	}
+	//TODO templateStyleIsDefault
 	
 	/**
 	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 
@@ -3825,7 +3825,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO templateGet
 	
 	/**
 	 * Шаблон. Перевіряємо по themeId и templateStyleId чи існує звязок між стилем та шаблоном і такий шаблон
@@ -3861,7 +3860,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO templateIsLinkPresent
 	
 	/**
 	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)

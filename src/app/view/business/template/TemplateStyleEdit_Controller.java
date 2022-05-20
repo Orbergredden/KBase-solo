@@ -176,6 +176,27 @@ public class TemplateStyleEdit_Controller {
         	label_StyleUserCreated.setText(editedItem.getUserCreated());
         	label_StyleUserModified.setText(editedItem.getUserModified());
     		
+        	//--------default
+        	if (conn.db.templateStyleIsDefault (curThemeItem.getId(), editedItem.getId())) {
+        		checkBox_StyleDef.setSelected(true);
+        		
+        		
+        		
+//        		label_StyleDefDate.setText(dateConv.dateTimeToStr(
+//        				conn.db.infoTypeStyleGetDefaultDateModified(tiTheme.getValue().getThemeId(), sip.getId())));
+        	} else {
+        		label_StyleDefDate.setText("");
+        	}
+    		/*
+    		InfoTypeStyleItem iti = conn.db.infoTypeStyleGetDefault (tiTheme.getValue().getId(), tiTmplType.getValue().getId());
+    		if (iti == null) {
+    			label_StyleDefCur.setText("нету");
+    		} else {
+    			label_StyleDefCur.setText(iti.getName() +" ("+ iti.getId() +")");
+    		}
+    		*/
+    		
+    		
     		
     		
     	}
