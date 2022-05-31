@@ -3,6 +3,7 @@ package app.view.business.template;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
+import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.InfoTypeItem;
@@ -179,33 +180,17 @@ public class TemplateStyleEdit_Controller {
         	//--------default
         	if (conn.db.templateStyleIsDefault (curThemeItem.getId(), editedItem.getId())) {
         		checkBox_StyleDef.setSelected(true);
-        		
-        		
-        		
-//        		label_StyleDefDate.setText(dateConv.dateTimeToStr(
-//        				conn.db.infoTypeStyleGetDefaultDateModified(tiTheme.getValue().getThemeId(), sip.getId())));
+        		label_StyleDefDate.setText(dateConv.dateTimeToStr(
+        				conn.db.templateStyleGetDefaultDateModified(curThemeItem.getId(), editedItem.getId())));
         	} else {
         		label_StyleDefDate.setText("");
         	}
-    		/*
-    		InfoTypeStyleItem iti = conn.db.infoTypeStyleGetDefault (tiTheme.getValue().getId(), tiTmplType.getValue().getId());
-    		if (iti == null) {
-    			label_StyleDefCur.setText("нету");
-    		} else {
-    			label_StyleDefCur.setText(iti.getName() +" ("+ iti.getId() +")");
-    		}
-    		*/
-    		
-    		
-    		
-    		
     	}
     	
     	//======== buttons
     	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
     	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
     }
-	//TODO initControlsValue
 	
     /**
      * Визивається при закінченні вводу id шаблона
@@ -231,13 +216,48 @@ public class TemplateStyleEdit_Controller {
      */
     @FXML
     private void handleButtonOk() {
+    	long templateId = 0;
     	
+    	//---------- check data in fields
+    	if ((textField_StyleName.getText().equals("") || (textField_StyleName.getText() == null))) {
+			ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Название стиля", "Укажите Название стиля");
+			return;
+		}
     	
+    	if ((! textField_TemplateId.getText().equals("")) && (textField_TemplateId.getText() != null)) {
+    		try {
+    			templateId = Long.parseLong(textField_TemplateId.getText());
+    			if (! conn.db.templateIsPresent(templateId)) {
+    				ShowAppMsg.showAlert("WARNING", "Некоректні дані", "ШАБЛОН ПО ВКАЗАНОМУ id НЕ ЗНАЙДЕНО.", "Вкажіть коректне значення.");
+    				return;
+            	}
+    		} catch (NumberFormatException e) {
+    			ShowAppMsg.showAlert("WARNING", "Некоректні дані", "Некоректний id шаблона.", "Вкажіть коректне значення.");
+    			return;
+    		}
+    	}
     	
-    	
-    	
-    	
-    	
+    	//-------- Сохраняем
+    	switch (actionType) {
+    	case ACTION_TYPE_ADD :
+    		long newId = conn.db.templateStyleNextId();
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		break;
+    	case ACTION_TYPE_EDIT :
+    		
+    		
+    		
+    		
+    		
+    		
+    		break;
+    	}
     	//TODO handleButtonOk
     	
     	//-------- save stage position

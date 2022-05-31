@@ -1171,41 +1171,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Возвращает дату установки признака По умолчанию
-	 */
-	public java.util.Date infoTypeStyleGetDefaultDateModified (long themeId, long infoTypeStyleId) {
-		java.util.Date retVal = null;
-		
-		try {
-			String stm = "SELECT cs.date_modified " +
-				         "  FROM current_style cs " + 
-                         " WHERE cs.template_style_id = ? " +
-				         "   AND cs.theme_id = ? " +
-                         "   AND cs.\"user\" = \"current_user\"() " +
-                         "   AND cs.flag = 0 " +
-                         ";";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, infoTypeStyleId);
-			pst.setLong (2, themeId);
-			ResultSet rs = pst.executeQuery();
-			
-			while (rs.next()) {
-				Timestamp timestampMo = rs.getTimestamp("date_modified");
-				if (timestampMo != null)  retVal = new java.util.Date(timestampMo.getTime());
-			}
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		e.printStackTrace();
-    		ShowAppMsg.showAlert("WARNING", "db error", 
-    				"Ошибка при работе с базой данных , infoTypeStyleGetDefaultDateModified ("+infoTypeStyleId+")", 
-		            e.getMessage());
-    	}
-		return retVal;
-	}
-	
-	/**
 	 * Возващает список стилей типов инфоблоков по id типа инфоблока 
 	 * или по id родительского стиля. 
 	 * Если infoTypeStyleId = 0, то это корневые стили типа инфоблока.
@@ -3318,6 +3283,42 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает дату установки признака По умолчанию на стилі
+	 */
+	public java.util.Date templateStyleGetDefaultDateModified (long themeId, long templateStyleId) {
+		java.util.Date retVal = null;
+		
+		try {
+			String stm = "SELECT cs.date_modified " +
+				         "  FROM current_style cs " + 
+                         " WHERE cs.template_style_id = ? " +
+				         "   AND cs.theme_id = ? " +
+                         "   AND cs.\"user\" = \"current_user\"() " +
+                         "   AND cs.flag = 0 " +
+                         ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, templateStyleId);
+			pst.setLong (2, themeId);
+			ResultSet rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  retVal = new java.util.Date(timestampMo.getTime());
+			}
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", 
+    				"Ошибка при работе с базой данных , templateStyleGetDefaultDateModified ("+templateStyleId+")", 
+		            e.getMessage());
+    	}
+		return retVal;
+	}
+	//TODO templateStyleGetDefaultDateModified
+	
+	/**
 	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя
 	 */
 	public boolean templateStyleIsDefault (long themeId, long templateStyleId) { 
@@ -3348,7 +3349,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		return retVal;
 	}
-	//TODO templateStyleIsDefault
 	
 	/**
 	 * Возвращает список стилей и директорий родительской директории стилей или типа инфоблока. 
