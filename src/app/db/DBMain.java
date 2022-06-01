@@ -3316,7 +3316,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		return retVal;
 	}
-	//TODO templateStyleGetDefaultDateModified
 	
 	/**
 	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя

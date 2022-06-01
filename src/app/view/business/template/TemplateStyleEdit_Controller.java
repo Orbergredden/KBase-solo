@@ -45,6 +45,7 @@ public class TemplateStyleEdit_Controller {
     private TreeItem<TemplateSimpleItem> editedItem_ti;
 	private TemplateSimpleItem editedItem;
 	
+	private TemplateStyleItem curStyleItem;
 	private TemplateThemeItem curThemeItem;
 	private InfoTypeItem curInfoTypeItem; 
 	private TemplateItem curTemplateItem;
@@ -62,6 +63,8 @@ public class TemplateStyleEdit_Controller {
 	private TextField textField_StyleName;
 	@FXML
 	private TextField textField_StyleDescr;
+	@FXML
+	private TextField textField_StyleTag;
 	@FXML
 	private TextField textField_TemplateId;
 	@FXML
@@ -129,6 +132,7 @@ public class TemplateStyleEdit_Controller {
      * Инициализирует контролы значениями из главного класса
      */
     private void initControlsValue() {
+    	curStyleItem = conn.db.templateStyleGet(editedItem.getId());
     	curThemeItem = conn.db.templateThemeGetById(editedItem.getThemeId());
     	
     	label_Theme.setText(curThemeItem.getName() +" ("+ Long.toString(curThemeItem.getId()) +")");
@@ -162,6 +166,7 @@ public class TemplateStyleEdit_Controller {
     				" ("+ Long.toString(editedItem_ti.getParent().getValue().getId()) +")");
     		textField_StyleName.setText(editedItem.getName());
         	textField_StyleDescr.setText(editedItem.getDescr());
+        	textField_StyleTag.setText(curStyleItem.getTag());
 
         	// template
         	if (conn.db.templateIsLinkPresent(curThemeItem.getId(), editedItem.getId())) {
@@ -224,6 +229,21 @@ public class TemplateStyleEdit_Controller {
 			return;
 		}
     	
+    	//System.out.println(textField_StyleTag.getText());
+    	if ((textField_StyleTag.getText() == null) || textField_StyleTag.getText().equals("")) {
+    		if (editedItem.getSubtypeItem() >= 10) {
+    			ShowAppMsg.showAlert("WARNING", "Нет данных", "Не вказан Тег для зарезервованого стилю", "Вкажіть Тег");
+    			return;
+    		}
+		} else {
+			
+			
+
+			
+			
+			
+		}
+    	
     	if ((! textField_TemplateId.getText().equals("")) && (textField_TemplateId.getText() != null)) {
     		try {
     			templateId = Long.parseLong(textField_TemplateId.getText());
@@ -242,8 +262,20 @@ public class TemplateStyleEdit_Controller {
     	case ACTION_TYPE_ADD :
     		long newId = conn.db.templateStyleNextId();
     		
-    		
-    		
+    		//-------- add to DB
+			/*si = new TemplateStyleItem (
+					
+					
+					
+					newId,
+					parentId,
+					tiTmplType.getValue().getId(),
+					textField_StyleName.getText(),
+					textField_StyleDescr.getText()
+			);
+			conn.db.infoTypeStyleAdd(sip);  // стиль добавляем в БД
+			sip = conn.db.infoTypeStyleGet(newId);                   // get full info by Id
+    		*/
     		
     		
     		
