@@ -11,13 +11,11 @@ import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateSimpleItem;
 import app.model.business.template.TemplateStyleItem;
 import app.model.business.template.TemplateThemeItem;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -230,18 +228,24 @@ public class TemplateStyleEdit_Controller {
 		}
     	
     	//System.out.println(textField_StyleTag.getText());
-    	if ((textField_StyleTag.getText() == null) || textField_StyleTag.getText().equals("")) {
+    	if ((textField_StyleTag.getText() == null) || textField_StyleTag.getText().trim().equals("")) {
     		if (editedItem.getSubtypeItem() >= 10) {
     			ShowAppMsg.showAlert("WARNING", "Нет данных", "Не вказан Тег для зарезервованого стилю", "Вкажіть Тег");
     			return;
     		}
 		} else {
-			
-			
-
-			
-			
-			
+			TemplateStyleItem styleByTag = conn.db.templateStyleGetByTag(textField_StyleTag.getText().trim());
+			if (actionType == ACTION_TYPE_ADD) {
+				if (styleByTag != null) {
+					ShowAppMsg.showAlert("WARNING", "Перевірка Тега", "Такий Тег вже існує", "Вкажіть інший Тег");
+	    			return;
+				}
+			} else {
+				if ((styleByTag != null) && (editedItem.getId() != styleByTag.getId())) {
+					ShowAppMsg.showAlert("WARNING", "Перевірка Тега", "Такий Тег вже існує у іншого стиля", "Вкажіть інший Тег");
+	    			return;
+				}
+			}
 		}
     	
     	if ((! textField_TemplateId.getText().equals("")) && (textField_TemplateId.getText() != null)) {
@@ -263,22 +267,23 @@ public class TemplateStyleEdit_Controller {
     		long newId = conn.db.templateStyleNextId();
     		
     		//-------- add to DB
-			/*si = new TemplateStyleItem (
-					
-					
-					
-					newId,
-					parentId,
-					tiTmplType.getValue().getId(),
-					textField_StyleName.getText(),
-					textField_StyleDescr.getText()
+    		TemplateStyleItem si = new TemplateStyleItem (
+    				newId,
+    				editedItem.getId(),    // parentId 
+    				((curInfoTypeItem != null) && (curInfoTypeItem.getId() > 0)) ? 0 : 10,   // type
+    				(curInfoTypeItem != null) ? curInfoTypeItem.getId() : 0,  // infoTypeId
+    				textField_StyleName.getText(),
+					textField_StyleDescr.getText(),
+					textField_StyleTag.getText()
 			);
-			conn.db.infoTypeStyleAdd(sip);  // стиль добавляем в БД
-			sip = conn.db.infoTypeStyleGet(newId);                   // get full info by Id
-    		*/
+			conn.db.templateStyleAdd(si);  // стиль добавляем в БД
+			si = conn.db.templateStyleGet(newId);                   // get full info by Id
+
     		
     		
+    		// додати зв'язку стиль-шаблон
     		
+    		// обробити ситуацію дефолтного стилю
     		
     		break;
     	case ACTION_TYPE_EDIT :

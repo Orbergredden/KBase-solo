@@ -3254,6 +3254,60 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Стиль шаблонов. Получение информации по Тегу
+	 */
+	public TemplateStyleItem templateStyleGetByTag (String tag) {
+		TemplateStyleItem retVal = null;
+
+		if (! templateStyleTagIsPresent (tag)) return retVal;
+		
+		try {
+			String stm = "SELECT id, parent_id, type, infotype_id, name, descr, tag, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+				         "  FROM template_style " +
+				         " WHERE tag = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setString(1, tag);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			retVal = new TemplateStyleItem (
+					rs.getLong("id"), 
+         			rs.getLong("parent_id"),
+         			rs.getInt("type"),
+         			rs.getLong("infotype_id"),
+         			rs.getString("name"),
+         			rs.getString("descr"),
+         			rs.getString("tag"),
+					dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified")
+					);
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("infoTypeStyleGet : execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных , templateStyleGetByTag (\""+tag+"\")", 
+		             e.getMessage());
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Возвращает стиль по умолчанию в указанной теме для указанного типа инфо блока.
 	 * Если такого стиля нет, возвращается null.
 	 */
@@ -3459,6 +3513,35 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 		             "select nextval('seq_template_style');");
+    	}
+		
+		return retVal;
+	}
+	
+	/**
+	 * Стиль шаблонів. Чи існує вказаний тег стиля.
+	 */
+	public boolean templateStyleTagIsPresent (String tag) {
+		boolean retVal = false;
+		
+		try {
+			String stm = "SELECT count(*) as CountR " +
+				         "  FROM template_style " +
+				         " WHERE tag = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setString (1, tag);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+
+			if (rs.getInt("CountR") > 0)  retVal = true;
+			else                          retVal = false;
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("count templates : execute query Failed");
+    		e.printStackTrace();
+			ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных (templateStyleTagIsPresent)", e.getMessage());
     	}
 		
 		return retVal;
