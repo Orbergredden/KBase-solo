@@ -279,11 +279,24 @@ public class TemplateStyleEdit_Controller {
 			conn.db.templateStyleAdd(si);  // стиль добавляем в БД
 			si = conn.db.templateStyleGet(newId);                   // get full info by Id
 
-    		
-    		
     		// додати зв'язку стиль-шаблон
-    		
+			if (textField_TemplateId.getText().trim().length() > 0) {
+				templateId = Long.parseLong(textField_TemplateId.getText().trim());
+				TemplateItem ti = conn.db.templateGet (templateId);
+				
+				if ((ti.getType() == 0) || (ti.getType() == 10)) {
+					conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
+				} else {
+					ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
+				             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
+					return;
+				}
+			}
+
+			
     		// обробити ситуацію дефолтного стилю
+			
+			
     		
     		break;
     	case ACTION_TYPE_EDIT :
