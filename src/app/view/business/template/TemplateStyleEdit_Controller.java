@@ -145,18 +145,28 @@ public class TemplateStyleEdit_Controller {
     	}
 
     	TemplateStyleItem defStyleItem = conn.db.templateStyleGetDefault(editedItem.getThemeId(), editedItem.getFlag());
-    	label_StyleDefCur.setText(defStyleItem.getName() +" ("+ Long.toString(defStyleItem.getId()) +")");
+    	if (editedItem.getFlag() > 0) {
+    		label_StyleDefCur.setText(defStyleItem.getName() +" ("+ Long.toString(defStyleItem.getId()) +")");
+    	} else {
+    		label_StyleDefCur.setText("");
+    	}
     	
     	//========
     	if (actionType == ACTION_TYPE_ADD) { 
     		label_StyleId.setText("");
     		label_StyleParentId.setText(editedItem.getName() +" ("+ Long.toString(editedItem.getId()) +")");
+    		if (editedItem.getFlag() > 0) {
+    			textField_StyleTag.setDisable(true);
+    		}
     		label_TemplateName.setText("");
     		label_StyleDateCreated.setText("");
     		label_StyleDateModified.setText("");
     		label_StyleUserCreated.setText("");
     		label_StyleUserModified.setText("");
     		label_StyleDefDate.setText("");
+    		if (editedItem.getFlag() < 1) {
+        		checkBox_StyleDef.setDisable(true);
+        	}
     	} else if (actionType == ACTION_TYPE_EDIT) {
     		label_StyleId.setText(Long.toString(editedItem.getId()));
     		label_StyleParentId.setText(
@@ -164,7 +174,11 @@ public class TemplateStyleEdit_Controller {
     				" ("+ Long.toString(editedItem_ti.getParent().getValue().getId()) +")");
     		textField_StyleName.setText(editedItem.getName());
         	textField_StyleDescr.setText(editedItem.getDescr());
-        	textField_StyleTag.setText(curStyleItem.getTag());
+        	if (editedItem.getFlag() > 0) {
+    			textField_StyleTag.setDisable(true);
+    		} else {
+    			textField_StyleTag.setText(curStyleItem.getTag());
+    		}
 
         	// template
         	if (conn.db.templateIsLinkPresent(curThemeItem.getId(), editedItem.getId())) {
@@ -181,11 +195,16 @@ public class TemplateStyleEdit_Controller {
         	label_StyleUserModified.setText(editedItem.getUserModified());
     		
         	//--------default
-        	if (conn.db.templateStyleIsDefault (curThemeItem.getId(), editedItem.getId())) {
-        		checkBox_StyleDef.setSelected(true);
-        		label_StyleDefDate.setText(dateConv.dateTimeToStr(
-        				conn.db.templateStyleGetDefaultDateModified(curThemeItem.getId(), editedItem.getId())));
+        	if (editedItem.getFlag() > 0) {
+        		if (conn.db.templateStyleIsDefault (curThemeItem.getId(), editedItem.getId())) {
+        			checkBox_StyleDef.setSelected(true);
+        			label_StyleDefDate.setText(dateConv.dateTimeToStr(
+        					conn.db.templateStyleGetDefaultDateModified(curThemeItem.getId(), editedItem.getId())));
+        			} else {
+        			label_StyleDefDate.setText("");
+        		}
         	} else {
+        		checkBox_StyleDef.setDisable(true);
         		label_StyleDefDate.setText("");
         	}
     	}
@@ -195,6 +214,19 @@ public class TemplateStyleEdit_Controller {
     	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
     }
 	
+    /**
+     * Сохраняет значение по умолчанию для указанного стиля (в указанной теме для указанного пользователя)
+     */
+    private void styleSetDefault (long themeId, TemplateStyleItem itsi, boolean isSelected) {
+    	if ((curInfoTypeItem != null) && (curInfoTypeItem.getId() > 0)) {  // тільки для не зарезервованих стилів
+    		if (isSelected) {
+    			conn.db.templateStyleSetDefault(themeId, itsi.getId());
+    		} else {
+    			conn.db.templateStyleUnsetDefault(themeId, itsi.getId());
+    		}
+    	}
+    }
+    
     /**
      * Визивається при закінченні вводу id шаблона
      */
@@ -293,10 +325,18 @@ public class TemplateStyleEdit_Controller {
 				}
 			}
 
+			// set/unset default
+			styleSetDefault (curThemeItem.getId(), si, checkBox_StyleDef.isSelected());
+
+			// добавляем в контрол-дерево. Добавляем во все темы.
+			((TemplateList_Controller)params.getParentObj()).treeViewCtrl.addStyleItemRecursive(
+					((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root,
+					si);
+			// раскрываем текущий элемент
+			editedItem_ti.setExpanded(true);
 			
-    		// обробити ситуацію дефолтного стилю
-			
-			
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Стиль '" + si.getName() + "' добавлен.");
     		
     		break;
     	case ACTION_TYPE_EDIT :

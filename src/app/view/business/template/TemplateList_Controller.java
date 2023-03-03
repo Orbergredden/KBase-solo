@@ -1223,7 +1223,8 @@ public class TemplateList_Controller implements AppItem_Interface {
 	    		boolean isFound = false;
 	    		
 	    		// проверяем элемент на нужный стиль : по typeItem, flag (infoTypeId)
-	    		if ((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) && 
+	    		if (((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) || 
+	    			 (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE)) && 
 		    		(tft.getId() == new_sip.getParentId()) && 
 		    		(tft.getFlag() == new_sip.getInfoTypeId()))
 		    		isFound = true;

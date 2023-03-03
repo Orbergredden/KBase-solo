@@ -1237,50 +1237,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	
-	/**
-	 * функция устанавливает указанный стиль как дефолтный для указанной темы
-	 */
-	public void infoTypeStyleSetDefault (long themeId, long infoTypeStyleId) {
-		PreparedStatement pst = null;
-		
-		try {
-            String stm = "SELECT TemplateStyle_setdefault (?, ?);";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, themeId);
-            pst.setLong  (2, infoTypeStyleId);
-            ResultSet rs = pst.executeQuery();
-            
-            rs.close();
-            pst.close();
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных, infoTypeStyleSetDefault", 
-					             e.getMessage());
-		}
-	}
-	
-	/**
-	 * функция удаляет указанный стиль как дефолтный для указанной темы
-	 */
-	public void infoTypeStyleUnsetDefault (long themeId, long infoTypeStyleId) {
-		PreparedStatement pst = null;
-		
-		try {
-            String stm = "SELECT TemplateStyle_unsetdefault (?, ?);";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, themeId);
-            pst.setLong  (2, infoTypeStyleId);
-            ResultSet rs = pst.executeQuery();
-            
-            rs.close();
-            pst.close();
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных, infoTypeStyleUnsetDefault", 
-					             e.getMessage());
-		}
-	}
 	//TODO OLD STYLE end
 	//########################################################## OLD STYLE
 
@@ -3519,6 +3475,29 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * функция устанавливает указанный стиль как дефолтный для указанной темы
+	 */
+	public void templateStyleSetDefault (long themeId, long templateStyleId) {
+		PreparedStatement pst = null;
+		
+		try {
+            String stm = "SELECT TemplateStyle_setdefault (?, ?);";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, themeId);
+            pst.setLong  (2, templateStyleId);
+            ResultSet rs = pst.executeQuery();
+            
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных, templateStyleSetDefault", 
+					             e.getMessage());
+		}
+	}
+	//TODO
+	
+	/**
 	 * Стиль шаблонів. Чи існує вказаний тег стиля.
 	 */
 	public boolean templateStyleTagIsPresent (String tag) {
@@ -3546,6 +3525,29 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	
+	/**
+	 * функция удаляет указанный стиль как дефолтный для указанной темы
+	 */
+	public void templateStyleUnsetDefault (long themeId, long templateStyleId) {
+		PreparedStatement pst = null;
+		
+		try {
+            String stm = "SELECT TemplateStyle_unsetdefault (?, ?);";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, themeId);
+            pst.setLong  (2, templateStyleId);
+            ResultSet rs = pst.executeQuery();
+            
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных, templateStyleUnsetDefault", 
+					             e.getMessage());
+		}
+	}
+	//TODO
 	
 	/**
 	 * Стиль шаблонов. Изменение.
@@ -4104,7 +4106,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 			}
 		}
 	}
-	//TODO templateSetLink
 	
 	/**
 	 * Обновление шаблона
