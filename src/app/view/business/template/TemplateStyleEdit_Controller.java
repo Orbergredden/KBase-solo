@@ -252,6 +252,7 @@ public class TemplateStyleEdit_Controller {
     @FXML
     private void handleButtonOk() {
     	long templateId = 0;
+    	TemplateStyleItem si;
     	
     	//---------- check data in fields
     	if ((textField_StyleName.getText().equals("") || (textField_StyleName.getText() == null))) {
@@ -299,7 +300,7 @@ public class TemplateStyleEdit_Controller {
     		long newId = conn.db.templateStyleNextId();
     		
     		//-------- add to DB
-    		TemplateStyleItem si = new TemplateStyleItem (
+    		si = new TemplateStyleItem (
     				newId,
     				editedItem.getId(),    // parentId 
     				((curInfoTypeItem != null) && (curInfoTypeItem.getId() > 0)) ? 0 : 10,   // type
@@ -340,15 +341,38 @@ public class TemplateStyleEdit_Controller {
     		
     		break;
     	case ACTION_TYPE_EDIT :
+    		si = conn.db.templateStyleGet(editedItem.getId());
     		
+    		//-------- create style object and update it into db
+			si = new TemplateStyleItem(
+					si.getId(),
+					si.getParentId(),
+					si.getType(),
+					si.getInfoTypeId(),
+					textField_StyleName.getText(),
+					textField_StyleDescr.getText(),
+					textField_StyleTag.getText(),
+					si.getDateCreated(),
+					null,
+					si.getUserCreated(),
+					null
+					);
+			conn.db.templateStyleUpdate(si);
+			si = conn.db.templateStyleGet(si.getId());                   // get full info by Id
     		
+			// set/unset default
+			styleSetDefault (curThemeItem.getId(), si, checkBox_StyleDef.isSelected());
     		
+			// update in TreeTableView. Изменяем во всех темах
+			((TemplateList_Controller)params.getParentObj()).treeViewCtrl.updateStyleItemRecursive(
+					((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root,
+					si);
     		
-    		
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Стиль '" + si.getName() + "' змінений.");
     		
     		break;
     	}
-    	//TODO handleButtonOk
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateStyleEdit_Width", params.getStageCur().getWidth());

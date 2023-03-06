@@ -3495,7 +3495,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             e.getMessage());
 		}
 	}
-	//TODO
 	
 	/**
 	 * Стиль шаблонів. Чи існує вказаний тег стиля.
@@ -3547,7 +3546,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             e.getMessage());
 		}
 	}
-	//TODO
 	
 	/**
 	 * Стиль шаблонов. Изменение.
@@ -3558,15 +3556,16 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		try {
 			stm = 	  "UPDATE template_style " +
-					  "   SET name = ?, descr = ?, parent_id = ?, " +
+					  "   SET name = ?, descr = ?, tag = ?, parent_id = ?, " +
 					  "       date_modified = now(), user_modified = \"current_user\"() " +
 				      " WHERE id = ? " +
 				      ";";
 			pst = con.prepareStatement(stm);
 			pst.setString(1, p.getName());
 			pst.setString(2, p.getDescr());
-			pst.setLong  (3, p.getParentId());
-			pst.setLong  (4, p.getId());
+			pst.setString(3, p.getTag());
+			pst.setLong  (4, p.getParentId());
+			pst.setLong  (5, p.getId());
 			
 			pst.executeUpdate();
             pst.close();

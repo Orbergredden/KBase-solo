@@ -233,10 +233,9 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_STYLE :
     		editStyle(0);
     		break;
-    		
-    		
-    	
-    	
+    	case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+    		editTemplate(0);
+    		break;
     	}
     }
     //TODO
@@ -291,9 +290,9 @@ public class TemplateList_Controller implements AppItem_Interface {
     	case TemplateSimpleItem.TYPE_ITEM_STYLE :
     		editStyle(1);
     		break;
-    	
-    	
-    	
+    	case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+    		editTemplate(1);
+    		break;
     	}
     }
     //TODO
@@ -775,6 +774,53 @@ public class TemplateList_Controller implements AppItem_Interface {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Добавление/редактирование шаблона
+     * actionType : 0 - добавить, 1 - редактировать
+     * @param actionType
+     */
+    private void editTemplate (int actionType) {
+    	TreeItem<TemplateSimpleItem> ti = null;
+    	
+    	//-------- шукаємо директорію для вставки, при редагуванні берем поточний елемент
+    	switch (actionType) {
+    	case 0 :     // add
+    		TemplateSimpleItem tiv = null;
+    		
+    		// ищем первую вышестоящую директорию
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		tiv = ti.getValue();
+    		
+    		while (tiv.getTypeItem() != TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE) {
+    			ti = ti.getParent();
+        		tiv = ti.getValue();
+    		}
+    		break;
+    	case 1 :     // edit
+    		ti = treeTableView_templates.getSelectionModel().getSelectedItem();
+    		break;
+    	}
+    	
+    	//-------- open stage
+    	try {
+    		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
+    		FXMLLoader loader = new FXMLLoader();
+    		
+    		
+    	
+    		
+    		
+    		
+    		
+    		// Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+	        dialogStage.showAndWait();
+			//dialogStage.show();
+    	} catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //TODO
     
     /**
 	 * уникальный ИД обьекта
