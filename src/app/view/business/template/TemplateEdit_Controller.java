@@ -38,7 +38,7 @@ public class TemplateEdit_Controller {
 	
 	@FXML
 	private Label label_TemplateId;
-	@FXML
+/*	@FXML
 	private Label label_TemplateParentId;
 	@FXML
 	private TextField textField_TemplateName;
@@ -54,7 +54,7 @@ public class TemplateEdit_Controller {
 	private Label label_TemplateUserCreated;
 	@FXML
 	private Label label_TemplateUserModified;
-	
+	*/
 	@FXML
 	private Button button_TemplateFileOpen;
 	@FXML
@@ -88,13 +88,36 @@ public class TemplateEdit_Controller {
      */
     @FXML
     private void initialize() {         }
-	
-	
     
+    /**
+     * Вызывается родительским обьектом, которое даёт на себя ссылку.
+     * Инициализирует контролы на слое.
+     * 
+     * @param 
+     *        actionType : 0 - добавить ; 1 - редактировать
+     */
+    public void setParams(Params params, int actionType, 
+    		TreeItem<TemplateSimpleItem> editedItem_ti) {
+    	this.params     = params;
+    	this.conn       = params.getConCur();
+    	this.actionType = actionType;
+        this.editedItem_ti = editedItem_ti;
+        if (editedItem_ti != null) this.editedItem = editedItem_ti.getValue();
+        else                       this.editedItem = null;
+        initControlsValue();
+    }
     
-	
-	
-	
+    /**
+     * Инициализирует контролы значениями из главного класса
+     */
+    private void initControlsValue() {
+    	
+    	
+    	
+    	
+    	
+    }
+	//TODO
 	
 	/**
      * Вызывается для открытия тестового файла с тектом для шаблона

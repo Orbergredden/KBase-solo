@@ -807,11 +807,37 @@ public class TemplateList_Controller implements AppItem_Interface {
     		// Загружаем fxml-файл и создаём новую сцену для всплывающего диалогового окна.
     		FXMLLoader loader = new FXMLLoader();
     		
+    		loader.setLocation(Main.class.getResource("view/business/template/TemplateEdit.fxml"));
+    		AnchorPane page = loader.load();
     		
+    		String title = ((actionType == 0) ? "Додавання" : "Редагування") +" шаблона";
+    		String iconFileName = "icon_template_16.png";
+    		
+    		// Создаём диалоговое окно Stage.
+    		Stage dialogStage = new Stage();
+			dialogStage.setTitle(title);
+			dialogStage.initModality(Modality.NONE);
+			//dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(params.getMainStage());
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
+			dialogStage.setScene(scene);
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/"+iconFileName));
     	
-    		
-    		
-    		
+			Preferences prefs = Preferences.userNodeForPackage(TemplateList_Controller.class);
+	    	dialogStage.setWidth(prefs.getDouble ("stageTemplateEdit_Width", 700));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateEdit_Height", 600));
+			dialogStage.setX(prefs.getDouble     ("stageTemplateEdit_PosX", 0));
+			dialogStage.setY(prefs.getDouble     ("stageTemplateEdit_PosY", 0));
+			
+			// Даём контроллеру доступ к главному прилодению.
+			TemplateEdit_Controller controller = loader.getController();
+
+			Params params = new Params(this.params);
+			params.setParentObj(this);
+			params.setStageCur(dialogStage);
+				        
+			controller.setParams(params, actionType, ti);
     		
     		// Отображаем диалоговое окно и ждём, пока пользователь его не закроет
 	        dialogStage.showAndWait();
