@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -38,12 +40,10 @@ public class TemplateEdit_Controller {
 	
 	@FXML
 	private Label label_TemplateId;
-/*	@FXML
+	@FXML
 	private Label label_TemplateParentId;
 	@FXML
 	private TextField textField_TemplateName;
-	@FXML
-	private TextField textField_TemplateFileName;
 	@FXML
 	private TextField textField_TemplateDescr;
 	@FXML
@@ -54,7 +54,7 @@ public class TemplateEdit_Controller {
 	private Label label_TemplateUserCreated;
 	@FXML
 	private Label label_TemplateUserModified;
-	*/
+
 	@FXML
 	private Button button_TemplateFileOpen;
 	@FXML
@@ -65,7 +65,7 @@ public class TemplateEdit_Controller {
 	private TextArea textArea_TemplateContent;
 	
 	@FXML
-	private Button button_Next;
+	private Button button_Ok;
 	@FXML
 	private Button button_Cancel;
 	
@@ -112,12 +112,26 @@ public class TemplateEdit_Controller {
      */
     private void initControlsValue() {
     	
+    	//========
+    	if (actionType == ACTION_TYPE_ADD) {
+    		label_TemplateId.setText("");
+    		label_TemplateParentId.setText(editedItem.getName() +" ("+ Long.toString(editedItem.getId()) +")");
+    		label_TemplateDateCreated.setText("");
+    		label_TemplateDateModified.setText("");
+    		label_TemplateUserCreated.setText("");
+    		label_TemplateUserModified.setText("");
+    	} else if (actionType == ACTION_TYPE_EDIT) {
+    		
+    		
+    		
+    		
+    		//TODO
+    	}
     	
-    	
-    	
-    	
+    	//======== buttons
+    	button_Ok.setGraphic(new ImageView(new Image("file:resources/images/icon_save_16.png")));
+    	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
     }
-	//TODO
 	
 	/**
      * Вызывается для открытия тестового файла с тектом для шаблона

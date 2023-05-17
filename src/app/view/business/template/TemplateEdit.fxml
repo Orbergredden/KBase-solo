@@ -5,25 +5,34 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="699.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.business.template.TemplateEdit_Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="648.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.business.template.TemplateEdit_Controller">
 <children>
-	<TabPane layoutX="15.0" layoutY="40.0" prefHeight="581.0" prefWidth="690.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="40.0">
+	<TabPane layoutX="15.0" layoutY="40.0" prefHeight="648.0" prefWidth="690.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
         <tabs>
-        <Tab text="Основная">
+        <Tab text="Основна">
         	<content>
             	<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 	<children>
                     	<Label layoutX="18.0" layoutY="15.0" text="ID :" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0" />
                         <Label fx:id="label_TemplateId" layoutX="61.0" layoutY="10.0" text="null" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="5.0" />
-                    
-                    
-                    
-                    
-                    
-
+                        <Label layoutX="18.0" layoutY="30.0" text="parent ID :" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="30.0" />
+                        <Label fx:id="label_TemplateParentId" layoutX="61.0" layoutY="30.0" text="null" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="5.0" />
+                    	<Label layoutX="5.0" layoutY="55.0" text="Назва" AnchorPane.leftAnchor="5.0" />
+                        <Label layoutX="5.0" layoutY="84.0" text="Опис" AnchorPane.leftAnchor="5.0" />
+                    	<TextField fx:id="textField_TemplateName" layoutX="65.0" layoutY="51.0" prefHeight="25.0" prefWidth="611.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="14.0" />
+                        <TextField fx:id="textField_TemplateDescr" layoutX="65.0" layoutY="82.0" prefHeight="25.0" prefWidth="611.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="14.0" />
+                    	<Label layoutX="11.0" layoutY="119.0" text="Дата создания :" AnchorPane.leftAnchor="11.0" />
+                        <Label layoutX="11.0" layoutY="145.0" text="Дата изменения :" AnchorPane.leftAnchor="11.0" />
+                        <Label layoutX="11.0" layoutY="170.0" text="Кто создал :" AnchorPane.leftAnchor="11.0" />
+                        <Label layoutX="11.0" layoutY="195.0" text="Кто изменял :" AnchorPane.leftAnchor="11.0" />
+                        <Label fx:id="label_TemplateDateModified" layoutX="112.0" layoutY="145.0" text="Label" />
+                        <Label fx:id="label_TemplateDateCreated" layoutX="112.0" layoutY="119.0" text="Label" />
+                        <Label fx:id="label_TemplateUserCreated" layoutX="112.0" layoutY="170.0" text="Label" />
+                        <Label fx:id="label_TemplateUserModified" layoutX="112.0" layoutY="195.0" text="Label" />
                     </children>
             	</AnchorPane>
             </content>
