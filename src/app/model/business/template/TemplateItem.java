@@ -43,7 +43,7 @@ public class TemplateItem extends TemplateSimpleItem {
 	public TemplateItem(long id, long parentId, int type, String name, String descr, String body) {
 		super(id, name, descr, 0, 
 				(((type == 0)||(type == 10)) ? TYPE_ITEM_TEMPLATE : TYPE_ITEM_DIR_TEMPLATE),
-				0);
+				type, 0);
 		this.parentId       = new SimpleLongProperty(parentId);
 		this.type           = new SimpleIntegerProperty(type);
 		this.body           = new SimpleStringProperty(body);
@@ -57,7 +57,7 @@ public class TemplateItem extends TemplateSimpleItem {
 			            Date dateCreated, Date dateModified, String userCreated, String userModified) {
 		super(id, name, descr, 0, 
 				(((type == 0)||(type == 10)) ? TYPE_ITEM_TEMPLATE : TYPE_ITEM_DIR_TEMPLATE),
-				0, dateCreated, dateModified, userCreated, userModified);
+				type, 0, dateCreated, dateModified, userCreated, userModified);
 		this.parentId       = new SimpleLongProperty(parentId);
 		this.type           = new SimpleIntegerProperty(type);
 		this.body           = new SimpleStringProperty(body);

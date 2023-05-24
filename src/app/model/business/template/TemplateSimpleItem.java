@@ -62,6 +62,7 @@ public class TemplateSimpleItem extends SimpleItem {
 	 * для различного использования в разных типах обьектов
 	 * Для стиля - ид инфо блока или 0 для зарезервированных
 	 * Для файла - тип файла (fileType)
+	 * для шаблону - кількість звязків зі стилями
 	 */
 	protected LongProperty flag;
 
