@@ -33,6 +33,9 @@
                         <Label fx:id="label_TemplateDateCreated" layoutX="112.0" layoutY="119.0" text="Label" />
                         <Label fx:id="label_TemplateUserCreated" layoutX="112.0" layoutY="170.0" text="Label" />
                         <Label fx:id="label_TemplateUserModified" layoutX="112.0" layoutY="195.0" text="Label" />
+                        <Label layoutX="9.0" layoutY="233.0" text="Кількість зв'язків зі стилями : " AnchorPane.leftAnchor="11.0" />
+                        <Label fx:id="label_LinkCount" layoutX="173.0" layoutY="233.0" prefHeight="17.0" prefWidth="68.0" text="Label" AnchorPane.leftAnchor="173.0" />
+                        <TextArea fx:id="textArea_LinkList" layoutX="12.0" layoutY="256.0" prefHeight="120.0" prefWidth="369.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="256.0" />
                     </children>
             	</AnchorPane>
             </content>

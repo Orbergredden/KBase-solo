@@ -1,5 +1,6 @@
 package app.view.business.template;
 
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import app.lib.DateConv;
@@ -58,6 +59,10 @@ public class TemplateEdit_Controller {
 	private Label label_TemplateUserCreated;
 	@FXML
 	private Label label_TemplateUserModified;
+	@FXML
+	private Label label_LinkCount;
+	@FXML
+	private TextArea textArea_LinkList;
 
 	@FXML
 	private Button button_TemplateFileOpen;
@@ -124,7 +129,10 @@ public class TemplateEdit_Controller {
     		label_TemplateDateModified.setText("");
     		label_TemplateUserCreated.setText("");
     		label_TemplateUserModified.setText("");
+    		label_LinkCount.setText("0");
     	} else if (actionType == ACTION_TYPE_EDIT) {
+    		TemplateItem ti = conn.db.templateGet(editedItem.getId());
+    		
     		label_TemplateId.setText(Long.toString(editedItem.getId()));
     		label_TemplateParentId.setText(
     				editedItem_ti.getParent().getValue().getName() +
@@ -136,11 +144,11 @@ public class TemplateEdit_Controller {
         	label_TemplateUserCreated.setText(editedItem.getUserCreated());
         	label_TemplateUserModified.setText(editedItem.getUserModified());
     		
-    		
-    		
+        	label_LinkCount.setText(Long.toString(editedItem.getFlag()));
+        	textArea_LinkList.setText(String.join(System.lineSeparator(), conn.db.TemplateListLinks(editedItem.getId())));
+        	//textArea_LinkList.setDisable(true);
         	
-        	
-    		//TODO
+        	textArea_TemplateContent.appendText(ti.getBody());
     	}
     	
     	//======== buttons

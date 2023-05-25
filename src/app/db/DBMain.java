@@ -3943,6 +3943,39 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	/*
+	 * Шаблон. Повертає текстовий список стилів повязаних з цим шаблоном
+	 */
+	public List<String> TemplateListLinks (long id) {
+		List<String> retVal = new ArrayList<String>();
+		PreparedStatement pst = null;
+	
+		try {
+			String stm = "select l.style_id ||' '|| s.name ||'('|| t.name ||')' style "
+					+ "  from template_style_link l "
+					+ "  join template_style s      on s.id = l.style_id "
+					+ "  join template_themes t     on t.id = l.theme_id "
+					+ " where template_id = ? ";
+			pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				retVal.add(rs.getString("style"));
+			}
+			
+            rs.close();
+            pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "TemplateListLinks("+id+")");
+    		//System.out.println("execute query Failed (infoTypeStyleListByInfoTypeId)");
+		}
+		
+		return retVal;
+	}
 	
 	/**
 	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
