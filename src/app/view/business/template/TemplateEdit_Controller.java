@@ -1,10 +1,13 @@
 package app.view.business.template;
 
+import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import app.exceptions.KBase_ReadTextFileUTFEx;
 import app.lib.DateConv;
 import app.lib.FileCache;
+import app.lib.FileUtil;
 import app.lib.ShowAppMsg;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
@@ -19,6 +22,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -81,6 +85,7 @@ public class TemplateEdit_Controller {
 	//
 	private Preferences prefs;
 	private DateConv dateConv;
+	private String fileName;       // for save to disk
 
 	/**
      * Конструктор.
@@ -89,6 +94,7 @@ public class TemplateEdit_Controller {
     public TemplateEdit_Controller () {
     	prefs = Preferences.userNodeForPackage(TemplateEdit_Controller.class);
     	dateConv = new DateConv();
+    	fileName = "";
     }
     
     /**
@@ -168,45 +174,10 @@ public class TemplateEdit_Controller {
     	button_Cancel.setGraphic(new ImageView(new Image("file:resources/images/icon_cancel_16.png")));
     }
 	
-	/**
-     * Вызывается для открытия тестового файла с тектом для шаблона
-     */
-    @FXML
-    private void handleButtonTemplateFileOpen() {
-    	
-    	
-    	
-    	
-    }
-	//TODO
-    
     /**
-     * Вызывается для сохранения шаблона в файл на диске
+     * Функція збереження шаблона в БД
      */
-    @FXML
-    private void handleButtonTemplateFileSaveToDisk() {
-    	
-    	
-    	
-    }
-	//TODO
-    
-    /**
-	 * Вызывается для сохранения шаблона в БД
-	 */
-	@FXML
-	private void handleButtonTemplateFileSaveToDB() {
-		
-		
-		
-	}
-	//TODO
-	
-	/**
-     * Вызывается при нажатии на кнопке "Ok"
-     */
-    @FXML
-    private void handleButtonOk() {
+    private void save() {
     	TemplateItem ti;
     	
     	//---------- check data in fields
@@ -246,6 +217,11 @@ public class TemplateEdit_Controller {
 			editedItem_ti.getChildren().add(item);
 			editedItem_ti.setExpanded(true);
 			
+			// для наступних зберігань кнопкою на панелі ісходнику
+			actionType = ACTION_TYPE_EDIT;
+			editedItem_ti = item;
+			editedItem = editedItem_ti.getValue();
+			
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Новий шаблон '" + ti.getName() + "' доданий.");
     		
@@ -260,6 +236,115 @@ public class TemplateEdit_Controller {
     		
     		break;
     	}
+    }
+    
+	/**
+     * Вызывается для открытия тестового файла с тектом для шаблона
+     */
+    @FXML
+    private void handleButtonTemplateFileOpen() {
+    	FileChooser fileChooser = new FileChooser();
+    	String curDir;
+    	
+    	// Задаём фильтр расширений
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTML файлы (*.html)", "*.html"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстовые файлы (*.txt)", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Все файлы (*.*)", "*.*"));
+    	
+        // set directory
+        curDir = prefs.get("stageTemplateEdit_SelectTemplateDir", "");
+        if (! curDir.equals("")) 
+        	fileChooser.setInitialDirectory(new File(curDir));
+        
+        // Показываем диалог загрузки файла
+        File file = fileChooser.showOpenDialog(params.getStageCur());
+    	
+        if (file != null) {
+        	int fileType = FileUtil.getFileTypeByExt (file.toString());// return 0 - тип не определен ; 1 - текстовый ; 2 - картинка
+        	
+        	if (fileType == 0) {                   // 0 - тип не определен
+        		//textArea_TemplateContent.appendText("Тип загружаемого файла не определен !" +"\n");
+        		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка файла шаблона", "Тип загружаемого файла не определен !");
+        		return;
+        	}
+
+        	if (fileType == 1) {                   // 1 - текстовый
+        		try {
+        			textArea_TemplateContent.clear();
+        			
+    				//textArea_TemplateContent.appendText(FileUtil.readTextFileToString(label_TemplateNameNew.getText()));
+        			textArea_TemplateContent.appendText(FileUtil.readTextFileToString(file.toString()));
+    			} catch (KBase_ReadTextFileUTFEx e) {
+    				//e.printStackTrace();
+    				ShowAppMsg.showAlert("WARNING", "Чтение файла", e.msg, "Чтение файла шаблона прервано.");
+        			return;
+    			}
+        	}
+        	
+        	if (fileType == 2) {                   // 2 - image
+        		//textArea_TemplateContent.appendText("Картинки использовать нельзя!" +"\n");
+        		ShowAppMsg.showAlert("WARNING", "Тип файла", "Загрузка файла шаблона", "Картинки здесь использовать нельзя!");
+        		return;
+        	}
+        	
+        	// save dir name
+        	curDir = file.getAbsolutePath();
+        	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+        	prefs.put("stageTemplateEdit_SelectTemplateDir", curDir);
+        }
+    }
+    
+    /**
+     * Вызывается для сохранения шаблона в файл на диске
+     */
+    @FXML
+    private void handleButtonTemplateFileSaveToDisk() {
+    	
+    	//======== get file name
+    	FileChooser fileChooser = new FileChooser();
+    	fileChooser.setTitle("Сохранение шаблона в файл");
+    	  
+        //Set extension filter
+    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTML файлы (*.html)", "*.html"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстовые файлы (*.txt)", "*.txt"));
+        fileChooser.setInitialFileName(fileName);
+        
+        // set current dir
+        String curDir = prefs.get("stageTemplateEdit_CurDirNameForSave", "");
+        if (! curDir.equals("")) 
+        	fileChooser.setInitialDirectory(new File(curDir));
+        
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(params.getStageCur());
+    	
+        if (file != null) {
+        	FileUtil.writeTextFile(file.toString(), textArea_TemplateContent.getText());
+            
+            // save filename and dir name
+        	fileName = file.getAbsolutePath();
+        	fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1, fileName.length());
+        	curDir = file.getAbsolutePath();
+        	curDir = curDir.substring(0, curDir.lastIndexOf(File.separator));
+        	prefs.put("stageTemplateEdit_CurDirNameForSave", curDir);
+        }
+    }
+    
+    /**
+	 * Вызывается для сохранения шаблона в БД
+	 */
+	@FXML
+	private void handleButtonTemplateFileSaveToDB() {
+		save();
+		((TemplateList_Controller)params.getParentObj()).treeTableView_templates.sort();
+	}
+	
+	/**
+     * Вызывается при нажатии на кнопке "Ok"
+     */
+    @FXML
+    private void handleButtonOk() {
+    	
+    	save();
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateEdit_Width", params.getStageCur().getWidth());
