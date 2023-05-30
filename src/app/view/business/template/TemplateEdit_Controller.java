@@ -1,9 +1,11 @@
 package app.view.business.template;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import app.exceptions.KBase_Ex;
 import app.exceptions.KBase_ReadTextFileUTFEx;
 import app.lib.DateConv;
 import app.lib.FileCache;
@@ -177,19 +179,19 @@ public class TemplateEdit_Controller {
     /**
      * Функція збереження шаблона в БД
      */
-    private void save() {
+    private void save() throws KBase_Ex {
     	TemplateItem ti;
     	
     	//---------- check data in fields
 		if ((textField_TemplateName.getText().equals("") || (textField_TemplateName.getText() == null))) {
-    		ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Название шаблона", "Укажите Название шаблона");
-    		return;
-    		//throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Название шаблона", this);
+    		//ShowAppMsg.showAlert("WARNING", "Нет данных", "Не заполнено Название шаблона", "Укажите Название шаблона");
+    		//return;
+    		throw new KBase_Ex (1, "Ошибка при сохранении", "Не заполнено Название шаблона", this);
     	}
     	if ((textArea_TemplateContent.getText().equals("") || (textArea_TemplateContent.getText() == null))) {
-    		ShowAppMsg.showAlert("WARNING", "Нет данных", "Нет текста шаблона", "Укажите текст шаблона");
-    		return;
-    		//throw new KBase_Ex (1, "Ошибка при сохранении", "Нет текста шаблона", this);
+    		//ShowAppMsg.showAlert("WARNING", "Нет данных", "Нет текста шаблона", "Укажите текст шаблона");
+    		//return;
+    		throw new KBase_Ex (1, "Ошибка при сохранении", "Нет текста шаблона", this);
     	}
     	
     	//-------- Сохраняем
@@ -227,8 +229,40 @@ public class TemplateEdit_Controller {
     		
     		break;
     	case ACTION_TYPE_EDIT :
+    		ti = conn.db.templateGet(editedItem.getId());
+    		
+    		//-------- дополнительные проверки
+			if (	textField_TemplateName.getText().equals(ti.getName()) &&
+					textField_TemplateDescr.getText().equals(ti.getDescr()) &&
+					textArea_TemplateContent.getText().equals(ti.getBody())
+					) {
+				//ShowAppMsg.showAlert("WARNING", "Изменение шаблона", "Нет никаких изменений", "Укажите новые значения.");
+				//return;
+				throw new KBase_Ex (1, "Ошибка при сохранении", "Нет никаких изменений", this);
+			}
     	
-    	
+			//-------- create template object and update it into db
+			ti = new TemplateItem (
+					ti.getId(),
+					ti.getParentId(),
+					ti.getType(),
+					textField_TemplateName.getText(),
+					textField_TemplateDescr.getText(),
+					textArea_TemplateContent.getText(),
+					ti.getDateCreated(),
+					null,
+					ti.getUserCreated(),
+					null
+			);
+			conn.db.templateUpdate (ti);
+			ti = conn.db.templateGet(ti.getId());                   // get full info by Id
+			ti.setFlag(conn.db.TemplateListLinks(ti.getId()).size());  // кількість лінків у шаблона
+			
+			editedItem_ti.setValue(null);
+			editedItem_ti.setValue(ti);
+			
+			// выводим сообщение в статус бар
+			params.setMsgToStatusBar("Шаблон '" + ti.getName() + "' змінено.  " + (new Date()));
     	
 
     		
@@ -334,7 +368,13 @@ public class TemplateEdit_Controller {
 	 */
 	@FXML
 	private void handleButtonTemplateFileSaveToDB() {
-		save();
+		try {
+			save();
+		} catch (KBase_Ex e) {
+			//e.printStackTrace();
+			ShowAppMsg.showAlert("WARNING", e.errSign, e.msg, "");
+			return;
+		}
 		((TemplateList_Controller)params.getParentObj()).treeTableView_templates.sort();
 	}
 	
@@ -344,7 +384,13 @@ public class TemplateEdit_Controller {
     @FXML
     private void handleButtonOk() {
     	
-    	save();
+    	try {
+			save();
+		} catch (KBase_Ex e) {
+			//e.printStackTrace();
+			ShowAppMsg.showAlert("WARNING", e.errSign, e.msg, "");
+			return;
+		}
     	
     	//-------- save stage position
     	prefs.putDouble("stageTemplateEdit_Width", params.getStageCur().getWidth());
