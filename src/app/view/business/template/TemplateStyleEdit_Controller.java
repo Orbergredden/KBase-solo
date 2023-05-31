@@ -312,20 +312,6 @@ public class TemplateStyleEdit_Controller {
 			conn.db.templateStyleAdd(si);  // стиль добавляем в БД
 			si = conn.db.templateStyleGet(newId);                   // get full info by Id
 
-    		// додати зв'язку стиль-шаблон
-			if (textField_TemplateId.getText().trim().length() > 0) {
-				templateId = Long.parseLong(textField_TemplateId.getText().trim());
-				TemplateItem ti = conn.db.templateGet (templateId);
-				
-				if ((ti.getType() == 0) || (ti.getType() == 10)) {
-					conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
-				} else {
-					ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
-				             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
-					return;
-				}
-			}
-
 			// set/unset default
 			styleSetDefault (curThemeItem.getId(), si, checkBox_StyleDef.isSelected());
 
@@ -335,13 +321,34 @@ public class TemplateStyleEdit_Controller {
 					si);
 			// раскрываем текущий элемент
 			editedItem_ti.setExpanded(true);
+
+			// додати зв'язку стиль-шаблон
+			if (textField_TemplateId.getText().trim().length() > 0) {
+				templateId = Long.parseLong(textField_TemplateId.getText().trim());
+				TemplateItem ti = conn.db.templateGet (templateId);
+				
+				if ((ti.getType() == 0) || (ti.getType() == 10)) {
+					conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
+					
+					// шукаємо в editedItem_ti чілда з нашим ід для flag2 та додаємо шаблон з лінку
+					for (TreeItem<TemplateSimpleItem> i : editedItem_ti.getChildren()) {
+						if (i.getValue().getId() == si.getId()) {
+							i.getValue().setFlag2(templateId);
+						}
+					}
+				} else {
+					ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
+				             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
+					return;
+				}
+			}
 			
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Стиль '" + si.getName() + "' добавлен.");
     		
     		break;
     	case ACTION_TYPE_EDIT :
-    		si = conn.db.templateStyleGet(editedItem.getId());
+    		si = conn.db.templateStyleGet(editedItem.getId());  // з БД який до змін на формі
     		
     		//-------- create style object and update it into db
 			si = new TemplateStyleItem(
@@ -359,7 +366,7 @@ public class TemplateStyleEdit_Controller {
 					);
 			conn.db.templateStyleUpdate(si);
 			si = conn.db.templateStyleGet(si.getId());                   // get full info by Id
-    		
+    	
 			// set/unset default
 			styleSetDefault (curThemeItem.getId(), si, checkBox_StyleDef.isSelected());
     		
@@ -367,6 +374,37 @@ public class TemplateStyleEdit_Controller {
 			((TemplateList_Controller)params.getParentObj()).treeViewCtrl.updateStyleItemRecursive(
 					((TemplateList_Controller)params.getParentObj()).treeViewCtrl.root,
 					si);
+			
+			// редагування зв'язку стиль-шаблон
+			if ((conn.db.templateStyleGetLinkTemplateId (curThemeItem.getId(), si.getId()) > 0) && 
+				(textField_TemplateId.getText().trim().length() == 0)) {
+					
+					
+				// вилучаємо лінк з БД
+					
+					
+				// обнуляємо Flag2
+					
+					
+			}
+						
+			/*			
+									if (textField_TemplateId.getText().trim().length() > 0) {
+										templateId = Long.parseLong(textField_TemplateId.getText().trim());
+										TemplateItem ti = conn.db.templateGet (templateId);
+										
+										if ((ti.getType() == 0) || (ti.getType() == 10)) {
+											conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
+										} else {
+											ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
+										             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
+											return;
+										}
+									}
+			*/		
+						
+						
+			//TODO
     		
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Стиль '" + si.getName() + "' змінений.");

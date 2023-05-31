@@ -263,10 +263,6 @@ public class TemplateEdit_Controller {
 			
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Шаблон '" + ti.getName() + "' змінено.  " + (new Date()));
-    	
-
-    		
-    		//TODO
     		
     		break;
     	}

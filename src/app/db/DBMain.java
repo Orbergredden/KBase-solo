@@ -3328,6 +3328,56 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Стиль. Повертає ід шаблона з лінку. Якщо лінку немає, то 0
+	 */
+	public long templateStyleGetLinkTemplateId (long themeId, long styleId) {
+		long retVal = 0;
+		
+		try {
+			String stm = "select count(*) "+
+					     "  from template_style_link  "+
+					     " where theme_id = ? "+
+					     "   and style_id = ? ";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setLong (2, styleId);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+
+			retVal = rs.getLong("CountR");
+			
+			rs.close();
+			pst.close();
+			
+			if (retVal == 0)  return retVal;
+			
+			// get templateId
+			stm = "select templateId "+
+				     "  from template_style_link  "+
+				     " where theme_id = ? "+
+				     "   and style_id = ? ";
+			pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setLong (2, styleId);
+			rs = pst.executeQuery();
+			rs.next();
+
+			retVal = rs.getLong("CountR");
+		
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+			ShowAppMsg.showAlert("WARNING", "db error", 
+    				"Ошибка при работе с базой данных , templateStyleGetLinkTemplateId ("+themeId+", "+styleId+")", 
+		            e.getMessage());
+    		e.printStackTrace();
+    	}
+		
+		return retVal;
+	}
+	//TODO
+	
+	/**
 	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя
 	 */
 	public boolean templateStyleIsDefault (long themeId, long templateStyleId) { 
