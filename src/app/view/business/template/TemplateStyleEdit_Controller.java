@@ -181,7 +181,7 @@ public class TemplateStyleEdit_Controller {
     		}
 
         	// template
-        	if (conn.db.templateIsLinkPresent(curThemeItem.getId(), editedItem.getId())) {
+        	if (conn.db.templateLinkIsPresent(curThemeItem.getId(), editedItem.getId())) {
         		curTemplateItem = conn.db.templateGet(curThemeItem.getId(), editedItem.getId());
         		textField_TemplateId.setText(Long.toString(curTemplateItem.getId()));
         		label_TemplateName.setText(curTemplateItem.getName());
@@ -232,6 +232,13 @@ public class TemplateStyleEdit_Controller {
      */
     @FXML
     private void handleTextFieldTemplateId() {
+    	
+    	
+    	
+    	
+    	
+    	//TODO
+    	
     	try {
     		long templateId = Long.parseLong(textField_TemplateId.getText());
         	
@@ -328,7 +335,7 @@ public class TemplateStyleEdit_Controller {
 				TemplateItem ti = conn.db.templateGet (templateId);
 				
 				if ((ti.getType() == 0) || (ti.getType() == 10)) {
-					conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
+					conn.db.templateLinkSet (curThemeItem.getId(), si.getId(), templateId);
 					
 					// шукаємо в editedItem_ti чілда з нашим ід для flag2 та додаємо шаблон з лінку
 					for (TreeItem<TemplateSimpleItem> i : editedItem_ti.getChildren()) {
@@ -378,33 +385,22 @@ public class TemplateStyleEdit_Controller {
 			// редагування зв'язку стиль-шаблон
 			if ((conn.db.templateStyleGetLinkTemplateId (curThemeItem.getId(), si.getId()) > 0) && 
 				(textField_TemplateId.getText().trim().length() == 0)) {
-					
-					
-				// вилучаємо лінк з БД
-					
-					
-				// обнуляємо Flag2
-					
-					
+				conn.db.templateLinkDelete(curThemeItem.getId(), si.getId());
+				editedItem_ti.getValue().setFlag2(0);
 			}
-						
-			/*			
-									if (textField_TemplateId.getText().trim().length() > 0) {
-										templateId = Long.parseLong(textField_TemplateId.getText().trim());
-										TemplateItem ti = conn.db.templateGet (templateId);
+			if (textField_TemplateId.getText().trim().length() > 0) {
+				templateId = Long.parseLong(textField_TemplateId.getText().trim());
+				TemplateItem ti = conn.db.templateGet (templateId);
 										
-										if ((ti.getType() == 0) || (ti.getType() == 10)) {
-											conn.db.templateSetLink (curThemeItem.getId(), si.getId(), templateId);
-										} else {
-											ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
-										             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
-											return;
-										}
-									}
-			*/		
-						
-						
-			//TODO
+				if ((ti.getType() == 0) || (ti.getType() == 10)) {
+					conn.db.templateLinkSet (curThemeItem.getId(), si.getId(), templateId);
+					editedItem_ti.getValue().setFlag2(templateId);
+				} else {
+					ShowAppMsg.showAlert("WARNING", "Увага", "Помилка при зв'язуванні стиля і шаблона", 
+							             "Не можливо зв'язувати директорію шаблона, тільки шаблон потрібно вказувати.");
+						return;
+					}
+			}
     		
 			// выводим сообщение в статус бар
 			params.setMsgToStatusBar("Стиль '" + si.getName() + "' змінений.");

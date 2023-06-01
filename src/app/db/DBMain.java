@@ -3334,7 +3334,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		long retVal = 0;
 		
 		try {
-			String stm = "select count(*) "+
+			String stm = "select count(*) CountR "+
 					     "  from template_style_link  "+
 					     " where theme_id = ? "+
 					     "   and style_id = ? ";
@@ -3352,7 +3352,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			if (retVal == 0)  return retVal;
 			
 			// get templateId
-			stm = "select templateId "+
+			stm = "select template_Id "+
 				     "  from template_style_link  "+
 				     " where theme_id = ? "+
 				     "   and style_id = ? ";
@@ -3362,7 +3362,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			rs = pst.executeQuery();
 			rs.next();
 
-			retVal = rs.getLong("CountR");
+			retVal = rs.getLong("template_Id");
 		
 			rs.close();
 			pst.close();
@@ -3375,7 +3375,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO
 	
 	/**
 	 * Проверяем, является ли указанный стиль дефолтным для темы и пользователя
@@ -3960,9 +3959,65 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
+	 */
+	public boolean templateIsPresent (long id) {
+		boolean retVal = false;
+	
+		try {
+			String stm = "SELECT count(*) as cnt " +
+					     "  FROM template " +
+					     " WHERE id = ?";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, id);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			if (rs.getInt("cnt") > 0) {
+				retVal = true; 
+			}
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+			//System.out.println("get template info : execute query Failed");
+			e.printStackTrace();
+	    	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+					             "templateIsPresent ("+ id +")");
+		}
+		
+		return retVal;
+	}
+	
+	/*
+	 * Вилучення зв'язку між стилем та шаблоном для конкретної схеми
+	 */
+	public void templateLinkDelete (long themeId, long templateStyleId) {
+		PreparedStatement pst = null;
+		
+		try {
+			String stm = "DELETE FROM template_style_link "+
+					     " WHERE theme_id = ? "+
+					     "   and style_id = ? ";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, themeId);
+            pst.setLong  (2, templateStyleId);
+
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
+        	
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateLinkDelete ("+ themeId+','+templateStyleId +")");
+        }
+	}
+	//TODO
+
+	/**
 	 * Шаблон. Перевіряємо по themeId и templateStyleId чи існує звязок між стилем та шаблоном і такий шаблон
 	 */
-	public boolean templateIsLinkPresent (long themeId, long templateStyleId) {
+	public boolean templateLinkIsPresent (long themeId, long templateStyleId) {
 		boolean retVal = false;
 	
 		try {
@@ -3985,14 +4040,61 @@ public static int getRowCount(ResultSet set) throws SQLException
 			rs.close();
 			pst.close();
 		} catch (SQLException e) {
-    		//System.out.println("get template info : execute query Failed");
-    		e.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+			//System.out.println("get template info : execute query Failed");
+			e.printStackTrace();
+	    	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 					             "templateIsLinkPresent ("+ themeId +", "+ templateStyleId +")");
-    	}
+		}
 		
 		return retVal;
 	}
+
+	/*
+	 * Створення/оновлення зв'язку між стилем та шаблоном для конкретної схеми
+	 */
+	public void templateLinkSet (long themeId, long templateStyleId, long templateId) {
+		PreparedStatement pst = null;
+		String stm;
+		
+		if (! templateLinkIsPresent (themeId, templateStyleId)) {   // insert
+			try {
+				stm = "INSERT INTO template_style_link (style_id, theme_id, template_id) " + 
+	  			      "VALUES (?, ?, ?)";
+				pst = con.prepareStatement(stm);
+		        pst.setLong  (1, templateStyleId);
+		        pst.setLong  (2, themeId);
+		        pst.setLong  (3, templateId);
+					
+		        pst.executeUpdate();
+		        pst.close();
+	        } catch (SQLException ex) {
+	        	ex.printStackTrace();
+	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+						             "Помилка створення зв'язку між стилем та шаблоном");
+			}
+		} else {     // update
+			try {
+				stm = 	"UPDATE template_style_link " +
+						"   SET template_Id = ?, " +
+						"       date_modified = now(), user_modified = \"current_user\"() " +
+						" WHERE style_id = ? " +
+						"   AND theme_id = ? " +
+						";";
+				pst = con.prepareStatement(stm);
+				pst.setLong  (1, templateId);
+				pst.setLong  (2, templateStyleId);
+		        pst.setLong  (3, themeId);
+				
+				pst.executeUpdate();
+	            pst.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+						             "Помилка зміни зв'язку між стилем та шаблоном.");
+			}
+		}
+	}
+
 	/*
 	 * Шаблон. Повертає текстовий список стилів повязаних з цим шаблоном
 	 */
@@ -4023,37 +4125,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "TemplateListLinks("+id+")");
     		//System.out.println("execute query Failed (infoTypeStyleListByInfoTypeId)");
 		}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
-	 */
-	public boolean templateIsPresent (long id) {
-		boolean retVal = false;
-	
-		try {
-			String stm = "SELECT count(*) as cnt " +
-					     "  FROM template " +
-					     " WHERE id = ?";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, id);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			if (rs.getInt("cnt") > 0) {
-				retVal = true; 
-			}
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		//System.out.println("get template info : execute query Failed");
-    		e.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "templateIsPresent ("+ id +")");
-    	}
 		
 		return retVal;
 	}
@@ -4141,52 +4212,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
-	}
-	
-	/*
-	 * Створення/оновлення зв'язку між стилем та шаблоном для конкретної схеми
-	 */
-	public void templateSetLink (long themeId, long templateStyleId, long templateId) {
-		PreparedStatement pst = null;
-		String stm;
-		
-		if (! templateIsLinkPresent (themeId, templateStyleId)) {   // insert
-			try {
-				stm = "INSERT INTO template_style_link (style_id, theme_id, template_id) " + 
-      			      "VALUES (?, ?, ?)";
-				pst = con.prepareStatement(stm);
-		        pst.setLong  (1, templateStyleId);
-		        pst.setLong  (2, themeId);
-		        pst.setLong  (3, templateId);
-					
-		        pst.executeUpdate();
-		        pst.close();
-	        } catch (SQLException ex) {
-	        	ex.printStackTrace();
-	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-						             "Помилка створення зв'язку між стилем та шаблоном");
-			}
-		} else {     // update
-			try {
-				stm = 	"UPDATE template_style_link " +
-						"   SET templateId = ?, " +
-						"       date_modified = now(), user_modified = \"current_user\"() " +
-						" WHERE style_id = ? " +
-						"   AND theme_id = ? " +
-						";";
-				pst = con.prepareStatement(stm);
-				pst.setLong  (1, templateId);
-				pst.setLong  (2, templateStyleId);
-		        pst.setLong  (3, themeId);
-				
-				pst.executeUpdate();
-	            pst.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-	        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-						             "Помилка зміни зв'язку між стилем та шаблоном.");
-			}
-		}
 	}
 	
 	/**
