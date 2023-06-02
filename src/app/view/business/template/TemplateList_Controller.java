@@ -9,6 +9,7 @@ import app.model.AppItem_Interface;
 import app.model.DBConCur_Parameters;
 import app.model.Params;
 import app.model.business.InfoTypeItem;
+import app.model.business.template.TemplateItem;
 //import app.model.business.InfoTypeStyleItem;
 //import app.model.business.template.TemplateItem;
 //import app.model.business.templates_old.TemplateRequiredFileItem;
@@ -238,7 +239,6 @@ public class TemplateList_Controller implements AppItem_Interface {
     		break;
     	}
     }
-    //TODO
     
     /**
      * Изменяем текущий элемент в справочнике
@@ -295,7 +295,6 @@ public class TemplateList_Controller implements AppItem_Interface {
     		break;
     	}
     }
-    //TODO
     
     /**
      * Удаляем текущий элемент
@@ -354,15 +353,31 @@ public class TemplateList_Controller implements AppItem_Interface {
     		
     		
     		
-    		
+    		//TODO
     		
     		break;
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
+    	case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
+    		//TemplateItem ti = conn.db.templateGet(tft.getId());   // template id
+    		
+    		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Удаление шаблона", 
+					  "Вилучення шаблона/директорії '"+ tft.getName() +"' з усією ієрархією та зв'язками зі стилями", 
+					  "Удалить шаблон ?"))
+    			return;
     	
+    		// delete from DB 
+        	conn.db.templateDelete(tft.getId());
+    	
+    	
+    	
+    		//TODO
+    		
+    		parentItem.getChildren().remove(selectedItem);
 
-    		
-    		
-    		
-    	
+    		break;
+    	default : 
+    		ShowAppMsg.showQuestion("CONFIRMATION", "Удаление шаблона/файла/темы/стилю", 
+    				"Тип элемента '"+ tft.getName() +"' не определен.", "Не удаляем.");
     	}
     	
     	// выводим сообщение в статус бар

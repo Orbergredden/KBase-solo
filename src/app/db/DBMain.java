@@ -3852,6 +3852,29 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Шаблон. Вилучення шаблону/директорії з усією ієрархією та зв'язками зі стилями.
+	 * @param
+	 */
+	public void templateDelete (long id) {
+		PreparedStatement pst = null;
+	
+		try {
+			String stm = "SELECT Template_delete (?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, id);
+
+            ResultSet rs = pst.executeQuery();
+            rs.close();
+            pst.close();
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateDelete ("+ id +")");
+        }
+	}
+	//TODO
+	
+	/**
 	 * Шаблон. Получение информации по id
 	 */
 	public TemplateItem templateGet (long id) {
@@ -4012,7 +4035,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		             "templateLinkDelete ("+ themeId+','+templateStyleId +")");
         }
 	}
-	//TODO
 
 	/**
 	 * Шаблон. Перевіряємо по themeId и templateStyleId чи існує звязок між стилем та шаблоном і такий шаблон
@@ -4302,32 +4324,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
-	}
-	
-	/**
-	 * Шаблон. Удаление одного шаблона.
-	 * @param
-	 */
-	public void templateDelete (long id) {
-		PreparedStatement pst = null;
-	
-		try {
-			String stm = "DELETE FROM templates WHERE id = ? ;";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, id);
-
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	
-        	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             ex.getMessage());
-        }
 	}
 	
 	/**
