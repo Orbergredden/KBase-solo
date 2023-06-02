@@ -232,12 +232,11 @@ public class TemplateStyleEdit_Controller {
      */
     @FXML
     private void handleTextFieldTemplateId() {
-    	
-    	
-    	
-    	
-    	
-    	//TODO
+    	if (textField_TemplateId.getText().trim().length() == 0) {
+    		label_TemplateName.setText("");
+    		
+    		return;
+    	}
     	
     	try {
     		long templateId = Long.parseLong(textField_TemplateId.getText());
