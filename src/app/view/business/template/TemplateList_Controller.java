@@ -356,22 +356,31 @@ public class TemplateList_Controller implements AppItem_Interface {
     		//TODO
     		
     		break;
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
+    	case TemplateSimpleItem.TYPE_ITEM_STYLE :
+    		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Вилучення стиля", 
+					  "Вилучення стиля/директорії '"+ tft.getName() +"' з усією ієрархією та зв'язками з шаблонами", 
+					  "Вилучити стиль ?"))
+  			return;
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		//TODO
+    		
+    		break;
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
     	case TemplateSimpleItem.TYPE_ITEM_TEMPLATE :
-    		//TemplateItem ti = conn.db.templateGet(tft.getId());   // template id
-    		
     		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Удаление шаблона", 
 					  "Вилучення шаблона/директорії '"+ tft.getName() +"' з усією ієрархією та зв'язками зі стилями", 
 					  "Удалить шаблон ?"))
     			return;
     	
-    		// delete from DB 
         	conn.db.templateDelete(tft.getId());
-    	
-    	
-    	
-    		//TODO
-    		
     		parentItem.getChildren().remove(selectedItem);
 
     		break;

@@ -947,31 +947,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Стили шаблонов. Удаление стиля по его Id.
-	 */
-	public void infoTypeStyleDelete (long id) {
-		PreparedStatement pst = null;
-	
-		try {
-            String stm = "DELETE FROM infotype_style WHERE id = ? ; ";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, id);
-
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	
-        	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных (infoTypeStyleDelete by id)", 
-		             ex.getMessage());
-        }
-	}
-	
-	/**
 	 * Стиль шаблонов. Обновление последнего используемого стиля для темы, типа блока и пользователя.
 	 */
 	@SuppressWarnings("resource")
@@ -3158,6 +3133,28 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Стили шаблонов. Вилучення стиля/директорії з усією ієрархією та зв'язками з шаблонами по его Id.
+	 */
+	public void templateStyleDelete (long id) {
+		PreparedStatement pst = null;
+	
+		try {
+			String stm = "SELECT TemplateStyle_delete (?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, id);
+
+            ResultSet rs = pst.executeQuery();
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных , templateStyleDelete ("+id+")", 
+		             e.getMessage());
+        }
+	}
+	//TODO
+	
+	/**
 	 * Стиль шаблонов. Получение информации по id
 	 */
 	public TemplateStyleItem templateStyleGet (long id) {
@@ -3872,7 +3869,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		             "templateDelete ("+ id +")");
         }
 	}
-	//TODO
 	
 	/**
 	 * Шаблон. Получение информации по id

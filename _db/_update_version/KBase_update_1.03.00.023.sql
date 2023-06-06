@@ -729,7 +729,7 @@ alter table kbase.current_style rename column infotype_style_id to template_styl
 --             ON UPDATE CASCADE
 --          NOT DEFERRABLE INITIALLY IMMEDIATE
 --;	
-*/
+
 --######## modify functions infotypestyle_* ##########################################
 
 DROP FUNCTION IF EXISTS kbase.infotypestyle_getiddefault(bigint, bigint, integer);
@@ -876,6 +876,55 @@ END;
 $BODY$;
 
 ALTER FUNCTION kbase.templatestyle_unsetdefault(bigint, bigint)
+    OWNER TO kbase;
+*/
+--###################################################### create template_delete()
+DROP FUNCTION IF EXISTS kbase.template_delete(bigint);
+
+CREATE OR REPLACE FUNCTION kbase.template_delete(
+	p_id bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- Вилучення шаблону/директорії з усією ієрархією та зв'язками зі стилями 
+	
+BEGIN
+	WITH RECURSIVE x AS ( 
+		SELECT id 
+          FROM "template" 
+         WHERE id = p_id 
+        UNION  ALL 
+        SELECT a.id 
+		  FROM x 
+		  JOIN "template" a ON a.parent_id = x.id 
+	) 
+	DELETE FROM template_style_link a 
+	 USING x 
+     WHERE a.template_id = x.id
+	;
+
+	WITH RECURSIVE x AS ( 
+		SELECT id 
+          FROM "template" 
+         WHERE id = p_id 
+        UNION  ALL 
+        SELECT a.id 
+		  FROM x 
+		  JOIN "template" a ON a.parent_id = x.id 
+	) 
+	DELETE FROM "template" a 
+	 USING x 
+     WHERE a.id = x.id
+	;
+   
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.template_delete(bigint)
     OWNER TO kbase;
 
 --<<
