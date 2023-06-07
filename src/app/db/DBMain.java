@@ -2667,6 +2667,28 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Файл для шаблона. Вилучення файла/директорії з усією ієрархією.
+	 * @param
+	 */
+	public void templateFileDelete (long id) {
+		PreparedStatement pst = null;
+		
+		try {
+			String stm = "SELECT TemplateFile_delete (?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, id);
+
+            ResultSet rs = pst.executeQuery();
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных , templateFileDelete ("+id+")", 
+		             e.getMessage());
+        }
+	}
+	
+	/**
 	 * Файл (или директория) для шаблона. Получение информации по id
 	 */
 	public TemplateFileItem templateFileGetById (long id) {
@@ -3152,7 +3174,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		             e.getMessage());
         }
 	}
-	//TODO
 	
 	/**
 	 * Стиль шаблонов. Получение информации по id
@@ -4349,32 +4370,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
-	}
-	
-	/**
-	 * Файл для шаблона. Удаление одного файла.
-	 * @param
-	 */
-	public void templateFileDelete (long id) {
-		PreparedStatement pst = null;
-	
-		try {
-			String stm = "DELETE FROM template_required_files WHERE id = ? ;";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, id);
-
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	
-        	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             ex.getMessage());
-        }
 	}
 	
 	/**

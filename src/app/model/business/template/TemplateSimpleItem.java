@@ -140,7 +140,11 @@ public class TemplateSimpleItem extends SimpleItem {
 		this.themeId      = new SimpleLongProperty(item.getThemeId());
 		this.typeItem     = new SimpleIntegerProperty(item.getTypeItem());
 		this.subtypeItem  = new SimpleLongProperty(item.getSubtypeItem());
-		this.flag         = new SimpleLongProperty(item.getFlag());
+		try {
+			this.flag     = new SimpleLongProperty(item.getFlag());
+		} catch (NullPointerException e) {
+			this.flag     = new SimpleLongProperty(-1);
+    	}
 	}
 	
 	// themeId  -- g,s,p

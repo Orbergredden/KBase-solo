@@ -356,21 +356,28 @@ public class TemplateList_Controller implements AppItem_Interface {
     		//TODO
     		
     		break;
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE_OPTIONAL :
+    	case TemplateSimpleItem.TYPE_ITEM_FILE :
+    	case TemplateSimpleItem.TYPE_ITEM_FILE_OPTIONAL :
+    		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Вилучення файла", 
+					  "Вилучення файла/директорії '"+ tft.getName() +"' з усією ієрархією", 
+					  "Вилучити файл/директорію ?"))
+  			return;
+    		
+    		conn.db.templateFileDelete(tft.getId());
+    		parentItem.getChildren().remove(selectedItem);
+    		
+    		break;
     	case TemplateSimpleItem.TYPE_ITEM_DIR_STYLE :
     	case TemplateSimpleItem.TYPE_ITEM_STYLE :
     		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Вилучення стиля", 
 					  "Вилучення стиля/директорії '"+ tft.getName() +"' з усією ієрархією та зв'язками з шаблонами", 
 					  "Вилучити стиль ?"))
-  			return;
+    			return;
     		
-    		
-    		
-    		
-    		
-    		
-    		
-    		
-    		//TODO
+    		conn.db.templateStyleDelete(tft.getId());
+    		treeViewCtrl.deleteStyleItemRecursive (treeViewCtrl.root, tft.getId());
     		
     		break;
     	case TemplateSimpleItem.TYPE_ITEM_DIR_TEMPLATE :
@@ -870,7 +877,6 @@ public class TemplateList_Controller implements AppItem_Interface {
             e.printStackTrace();
         }
     }
-    //TODO
     
     /**
 	 * уникальный ИД обьекта
@@ -1387,5 +1393,30 @@ public class TemplateList_Controller implements AppItem_Interface {
 	    		updateStyleItemRecursive (i, new_sip);
 	    	}
 	    }
+	    
+	    /**
+		 * Удаляет стиль в дереве-контроле во всех темах
+		 */
+		private void deleteStyleItemRecursive (TreeItem<TemplateSimpleItem> parentTI, long styleId) {
+			// получаем список дочерних элементов
+			List<TreeItem<TemplateSimpleItem>> oList = parentTI.getChildren();
+			Iterator<TreeItem<TemplateSimpleItem>> iter = oList.iterator();
+
+			while (iter.hasNext()) {
+				TreeItem<TemplateSimpleItem> ti = iter.next();
+				TemplateSimpleItem tft = new TemplateSimpleItem(ti.getValue());
+
+				// проверяем элемент на нужный стиль
+				if (((tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_DIR_STYLE) || 
+					 (tft.getTypeItem() == TemplateSimpleItem.TYPE_ITEM_STYLE)) && 
+					(tft.getId() == styleId)) {
+					//parentTI.getChildren().remove(i);
+					iter.remove();
+				} else {
+					// вызываем эту ф-цию для проверки элементов следующей глубины вложения для текущего элемента
+					deleteStyleItemRecursive (ti, styleId);
+				}
+			}
+		}
 	}
 }

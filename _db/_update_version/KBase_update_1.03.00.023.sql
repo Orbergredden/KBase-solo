@@ -877,7 +877,7 @@ $BODY$;
 
 ALTER FUNCTION kbase.templatestyle_unsetdefault(bigint, bigint)
     OWNER TO kbase;
-*/
+
 --###################################################### create template_delete()
 DROP FUNCTION IF EXISTS kbase.template_delete(bigint);
 
@@ -927,4 +927,87 @@ $BODY$;
 ALTER FUNCTION kbase.template_delete(bigint)
     OWNER TO kbase;
 
+--#################################################### create templatestyle_delete
+DROP FUNCTION IF EXISTS kbase.templatestyle_delete(bigint);
+
+CREATE OR REPLACE FUNCTION kbase.templatestyle_delete(
+	p_id bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- Вилучення стилю/директорії з усією ієрархією та зв'язками з шаблонами
+	
+BEGIN
+	WITH RECURSIVE x AS ( 
+		SELECT id 
+          FROM template_style
+         WHERE id = p_id 
+        UNION  ALL 
+        SELECT a.id 
+		  FROM x 
+		  JOIN template_style a ON a.parent_id = x.id 
+	) 
+	DELETE FROM template_style_link a 
+	 USING x 
+     WHERE a.style_id = x.id
+	;
+
+	WITH RECURSIVE x AS ( 
+		SELECT id 
+          FROM template_style 
+         WHERE id = p_id 
+        UNION  ALL 
+        SELECT a.id 
+		  FROM x 
+		  JOIN template_style a ON a.parent_id = x.id 
+	) 
+	DELETE FROM template_style a 
+	 USING x 
+     WHERE a.id = x.id
+	;
+   
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatestyle_delete(bigint)
+    OWNER TO kbase;
+*/
+--###################################################### templatefile_delete
+DROP FUNCTION IF EXISTS kbase.templatefile_delete(bigint);
+
+CREATE OR REPLACE FUNCTION kbase.templatefile_delete(
+	p_id bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- Вилучення стилю/директорії з усією ієрархією та зв'язками з шаблонами
+	
+BEGIN
+	WITH RECURSIVE x AS ( 
+		SELECT id 
+          FROM template_files
+         WHERE id = p_id 
+        UNION  ALL 
+        SELECT a.id 
+		  FROM x 
+		  JOIN template_files a ON a.parent_id = x.id 
+	) 
+	DELETE FROM template_files a 
+	 USING x 
+     WHERE a.id = x.id
+	;
+   
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatefile_delete(bigint)
+    OWNER TO kbase;
 --<<
