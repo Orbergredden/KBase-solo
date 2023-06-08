@@ -975,7 +975,7 @@ $BODY$;
 
 ALTER FUNCTION kbase.templatestyle_delete(bigint)
     OWNER TO kbase;
-*/
+
 --###################################################### templatefile_delete
 DROP FUNCTION IF EXISTS kbase.templatefile_delete(bigint);
 
@@ -1009,5 +1009,52 @@ END;
 $BODY$;
 
 ALTER FUNCTION kbase.templatefile_delete(bigint)
+    OWNER TO kbase;
+
+--############################################################### templatetheme_delete
+DROP FUNCTION IF EXISTS kbase.templatetheme_delete(bigint);
+
+CREATE OR REPLACE FUNCTION kbase.templatetheme_delete(
+	p_id bigint)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- Вилучення теми з зв'язками з стилями/шаблонами
+	
+BEGIN
+	delete from template_style_link de where de.theme_id = p_id;
+	delete from template_themes de where de.id = p_id;
+   
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatetheme_delete(bigint)
+    OWNER TO kbase;
+*/
+--###################################################### templatestyles_delete
+DROP FUNCTION IF EXISTS kbase.templatestyles_delete();
+
+CREATE OR REPLACE FUNCTION kbase.templatestyles_delete ()
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+-- Вилучення усіх стилей з зв'язками з шаблонами
+	
+BEGIN
+	delete from template_style_link;
+	delete from template_style;
+   
+	return 1;
+END;
+$BODY$;
+
+ALTER FUNCTION kbase.templatestyles_delete()
     OWNER TO kbase;
 --<<
