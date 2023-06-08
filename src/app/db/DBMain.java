@@ -923,30 +923,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Стили шаблонов. Удаление всех стилей.
-	 */
-	public void infoTypeStyleDelete () {
-		PreparedStatement pst = null;
-	
-		try {
-            String stm = "DELETE FROM infotype_style ; ";
-            pst = con.prepareStatement(stm);
-
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	
-        	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных (infoTypeStyleDelete)", 
-		             ex.getMessage());
-        }
-	}
-	
-	/**
 	 * Стиль шаблонов. Обновление последнего используемого стиля для темы, типа блока и пользователя.
 	 */
 	@SuppressWarnings("resource")
@@ -3126,6 +3102,27 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Файлы для шаблонов. Удаление всех файлов указанной темы.
+	 * @param
+	 */
+	public void templateFilesDelete (long themeId) {
+		PreparedStatement pst = null;
+	
+		try {
+			String stm = "DELETE FROM template_files WHERE theme_id = ? ";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, themeId);
+
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных , templateFilesDelete ("+themeId+")", 
+		             e.getMessage());
+        }
+	}
+	
+	/**
 	 * Стиль шаблонов. Добавление нового.
 	 */
 	public void templateStyleAdd (TemplateStyleItem i) {
@@ -3644,6 +3641,27 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Стили шаблонов. Удаление всех стилей.
+	 * !!! не тестував
+	 */
+	public void templateStylesDelete () {
+		PreparedStatement pst = null;
+		
+		try {
+			String stm = "SELECT TemplateStyles_delete ()";
+            pst = con.prepareStatement(stm);
+
+            ResultSet rs = pst.executeQuery();
+            rs.close();
+            pst.close();
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "TemplateStyles_delete ()");
+        }
+	}
+	
+	/**
 	 * Тема для шаблонов. Добавление новой.
 	 */
 	public void templateThemeAdd (TemplateThemeItem i) {
@@ -3692,6 +3710,27 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		
 		return retVal;
+	}
+	
+	/**
+	 * Тема для шаблонов. Удаление темы.
+	 */
+	public void templateThemeDelete (long id) {
+		PreparedStatement pst = null;
+		
+		try {
+			String stm = "SELECT TemplateTheme_delete (?)";
+            pst = con.prepareStatement(stm);
+            pst.setLong  (1, id);
+
+            ResultSet rs = pst.executeQuery();
+            rs.close();
+            pst.close();
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
+        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
+		             "templateThemeDelete ("+ id +")");
+        }
 	}
 	
 	/**
@@ -4540,32 +4579,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
-	 * Файлы для шаблонов. Удаление всех файлов указанной темы.
-	 * @param
-	 */
-	public void templateFilesDelete (long themeId) {
-		PreparedStatement pst = null;
-	
-		try {
-			String stm = "DELETE FROM template_required_files WHERE theme_id = ? ;";
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, themeId);
-
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	
-        	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             ex.getMessage());
-        }
-	}
-	
-	/**
 	 * Шаблон. Получение информации по themeId и infoTypeStyleId
 	 */
 	public app.model.business.templates_old.TemplateItem templateGet__old (long themeId, long infoTypeStyleId) {
@@ -4691,54 +4704,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 	
 		return retVal;
-	}
-	
-	/**
-	 * Шаблоны. Удаление всех шаблонов указанной темы.
-	 * @param
-	 */
-	public void templatesDelete (long themeId) {
-		PreparedStatement pst = null;
-
-		try {
-			String stm = "DELETE FROM templates WHERE theme_id = ? ;";
-	        pst = con.prepareStatement(stm);
-	        pst.setLong  (1, themeId);
-
-	        pst.executeUpdate();
-	        pst.close();
-	    } catch (SQLException ex) {
-	        //Logger lgr = Logger.getLogger(Prepared.class.getName());
-	        //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-	    	ex.printStackTrace();
-	    	
-	    	//ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-			//		             "Ошибка при удалении пиктограммы.");
-	    	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-		             ex.getMessage());
-	    }
-	}
-	
-	/**
-	 * Тема для шаблонов. Удаление темы.
-	 */
-	public void templateThemeDelete (long id) {
-		PreparedStatement pst = null;
-	
-		try {
-            String stm = "DELETE FROM template_themes WHERE id = ? ;"; 
-            pst = con.prepareStatement(stm);
-            pst.setLong  (1, id);
-            
-            pst.executeUpdate();
-            pst.close();
-        } catch (SQLException ex) {
-            //Logger lgr = Logger.getLogger(Prepared.class.getName());
-            //lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        	ex.printStackTrace();
-        	ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
-					             "Ошибка при удалении темы шаблонов.");
-		}
 	}
 	/* <<<  OLD TEMPLATE ################################################################### */	
 	//TODO OLD TEMPLATE

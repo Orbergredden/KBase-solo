@@ -341,7 +341,7 @@ public class TemplateList_Controller implements AppItem_Interface {
     		}
     		else {
     			msgTheme1 = "";
-    			msgTheme2 = "Удалить тему вместе со всеми ее файлами и стилями ?";
+    			msgTheme2 = "Удалить тему вместе со всеми ее файлами ?";
     		}
     		
     		if (! ShowAppMsg.showQuestion("CONFIRMATION", "Удаление темы", 
@@ -349,11 +349,19 @@ public class TemplateList_Controller implements AppItem_Interface {
 					  msgTheme2))
     			return;
     		
+    		conn.db.templateFilesDelete(tft.getId());
+    		conn.db.templateThemeDelete(tft.getId());
     		
+    		if (countThemes == 1) {
+    			if (ShowAppMsg.showQuestion("CONFIRMATION", "Удаление стилей", 
+  					  "Удаление всех стилей", "Удалить все стили шаблонов ?")) {
+    				conn.db.templateStylesDelete();
+    			}
+    		}
     		
-    		
-    		
-    		//TODO
+    		if (parentItem != null) {     // текущая иконка не корневая
+                parentItem.getChildren().remove(selectedItem);
+        	}
     		
     		break;
     	case TemplateSimpleItem.TYPE_ITEM_DIR_FILE :
