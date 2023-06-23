@@ -23,7 +23,8 @@ public class InfoHeaderItem extends SimpleItem {
 	/**
 	 * Id - Стиль шаблона инфо блока.
 	 */
-	private final LongProperty infoTypeStyleId;
+	//private final LongProperty infoTypeStyleId;
+	private final LongProperty templateStyleId;
 	/**
 	 * Id - ссылка на инфу в таблице с информационным блоком соответствующего типа
 	 */
@@ -44,12 +45,12 @@ public class InfoHeaderItem extends SimpleItem {
 	 * Конструктор с основными данными
 	 * @param
 	 */
-	public InfoHeaderItem(long id, long sectionId, long infoTypeId, long infoTypeStyleId, long infoId,
+	public InfoHeaderItem(long id, long sectionId, long infoTypeId, long templateStyleId, long infoId,
 			              long position, String name, String descr) {
 		super(id, name, descr);
 		this.sectionId       = new SimpleLongProperty(sectionId);
 		this.infoTypeId      = new SimpleLongProperty(infoTypeId);
-		this.infoTypeStyleId = new SimpleLongProperty(infoTypeStyleId);
+		this.templateStyleId = new SimpleLongProperty(templateStyleId);
 		this.infoId          = new SimpleLongProperty(infoId);
 		this.position        = new SimpleLongProperty(position);
 	}
@@ -59,13 +60,13 @@ public class InfoHeaderItem extends SimpleItem {
 	 * @param
 	 */
 	public InfoHeaderItem(
-			long id, long sectionId, long infoTypeId, long infoTypeStyleId, long infoId,
+			long id, long sectionId, long infoTypeId, long templateStyleId, long infoId,
             long position, String name, String descr,
 			Date dateCreated, Date dateModified, String userCreated, String userModified) {
 		super(id, name, descr, dateCreated, dateModified, userCreated, userModified);
 		this.sectionId       = new SimpleLongProperty(sectionId);
 		this.infoTypeId      = new SimpleLongProperty(infoTypeId);
-		this.infoTypeStyleId = new SimpleLongProperty(infoTypeStyleId);
+		this.templateStyleId = new SimpleLongProperty(templateStyleId);
 		this.infoId          = new SimpleLongProperty(infoId);
 		this.position        = new SimpleLongProperty(position);
 	}
@@ -78,7 +79,7 @@ public class InfoHeaderItem extends SimpleItem {
 		super((SimpleItem)item);
 		this.sectionId       = new SimpleLongProperty(item.getSectionId());
 		this.infoTypeId      = new SimpleLongProperty(item.getInfoTypeId());
-		this.infoTypeStyleId = new SimpleLongProperty(item.getInfoTypeStyleId());
+		this.templateStyleId = new SimpleLongProperty(item.getTemplateStyleId());
 		this.infoId          = new SimpleLongProperty(item.getInfoId());
 		this.position        = new SimpleLongProperty(item.getPosition());
 	}
@@ -105,15 +106,15 @@ public class InfoHeaderItem extends SimpleItem {
 	    return infoTypeId;
 	}
 	
-	// infoTypeStyleId  -- g,s,p
-	public long getInfoTypeStyleId() {
-	    return infoTypeStyleId.get();
+	// templateStyleId  -- g,s,p
+	public long getTemplateStyleId() {
+	    return templateStyleId.get();
 	}
-	public void setInfoTypeStyleId(long infoTypeStyleId) {
-	    this.infoTypeStyleId.set(infoTypeStyleId);
+	public void setTemplateStyleId(long templateStyleId) {
+	    this.templateStyleId.set(templateStyleId);
 	}
-	public LongProperty infoTypeStyleIdProperty() {
-	    return infoTypeStyleId;
+	public LongProperty templateStyleIdProperty() {
+	    return templateStyleId;
 	}
 	
 	// infoId  -- g,s,p

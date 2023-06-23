@@ -1207,7 +1207,7 @@ public static int getRowCount(ResultSet set) throws SQLException
             pst.setLong  (3, i.getInfoTypeId());
             pst.setLong  (4, i.getInfoId());
             pst.setLong  (5, i.getPosition());
-            pst.setLong  (6, i.getInfoTypeStyleId());
+            pst.setLong  (6, i.getTemplateStyleId());
             pst.setString(7, i.getName());
             pst.setString(8, i.getDescr());
             
@@ -1551,7 +1551,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 			pst.setLong  (1, p.getSectionId());
 			pst.setLong  (2, p.getInfoTypeId());
 			pst.setLong  (3, p.getInfoId());
-			pst.setLong  (4, p.getInfoTypeStyleId());
+			pst.setLong  (4, p.getTemplateStyleId());
 			pst.setLong  (5, p.getPosition());
 			pst.setString(6, p.getName());
 			pst.setString(7, p.getDescr());
@@ -4640,10 +4640,10 @@ public static int getRowCount(ResultSet set) throws SQLException
 		long infoTypeStyleId = 0;
 		app.model.business.templates_old.TemplateItem retVal = null;
 		
-		if (infoHeader.getInfoTypeStyleId() <= 0) {
+		if (infoHeader.getTemplateStyleId() <= 0) {
 			infoTypeStyleId = infoTypeStyleGetDefault(themeId, infoHeader.getInfoTypeId()).getId();
 		} else {
-			infoTypeStyleId = infoHeader.getInfoTypeStyleId();
+			infoTypeStyleId = infoHeader.getTemplateStyleId();
 		}
 		
 		retVal = templateGet__old (themeId, infoTypeStyleId);

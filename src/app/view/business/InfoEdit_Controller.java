@@ -195,7 +195,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
     	long themeDefId = AppDataObj.sectionGetDefaultTheme(conn, ihi.getSectionId());
     	styleDefault = conn.db.infoTypeStyleGetDefault(themeDefId, ihi.getInfoTypeId());
     	
-    	if (ihi.getInfoTypeStyleId() == 0) {              // default style
+    	if (ihi.getTemplateStyleId() == 0) {              // default style
     		styleSelected = null;
     		
         	// check for exist template for default style
@@ -219,7 +219,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
         	else 
         		label_InfoTypeStyle.setText("");
     	} else {                                            // selected style
-    		styleSelected = conn.db.infoTypeStyleGet(ihi.getInfoTypeStyleId());
+    		styleSelected = conn.db.infoTypeStyleGet(ihi.getTemplateStyleId());
     		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleSelected.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 

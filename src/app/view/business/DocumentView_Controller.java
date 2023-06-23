@@ -243,9 +243,9 @@ public class DocumentView_Controller implements AppItem_Interface {
     	treeTableColumn_style.setCellValueFactory(
     			(TreeTableColumn.CellDataFeatures<InfoHeaderItem, String> param) -> 
     			new ReadOnlyStringWrapper(
-    					(param.getValue().getValue().getInfoTypeStyleId() != 0) ?
-    					Long.toString(param.getValue().getValue().getInfoTypeStyleId()) +" - "+
-    					params.getConCur().db.infoTypeStyleGet(param.getValue().getValue().getInfoTypeStyleId()).getName() :
+    					(param.getValue().getValue().getTemplateStyleId() != 0) ?
+    					Long.toString(param.getValue().getValue().getTemplateStyleId()) +" - "+
+    					params.getConCur().db.infoTypeStyleGet(param.getValue().getValue().getTemplateStyleId()).getName() :
     					""
     			));
     	treeTableColumn_infoId.setCellValueFactory(

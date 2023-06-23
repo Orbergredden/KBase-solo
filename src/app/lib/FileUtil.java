@@ -106,7 +106,6 @@ public class FileUtil {
     	
     	return retVal;
     }
-    //TODO 25.02.2020 readBinaryFile
     
     /**
      * Читает текстовый файл и возвращает String.
