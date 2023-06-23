@@ -343,8 +343,6 @@ public class SectionList_Controller implements Container_Interface, AppItem_Inte
 		}
 
     	//
-        //mainApp.closeCurTab();
-		//objContainer.closeContainer(getOID());
 		params.getObjContainer().closeContainer(getOID());
     }
     
@@ -416,7 +414,6 @@ public class SectionList_Controller implements Container_Interface, AppItem_Inte
 		params.setTabPane_Cur(null);
 		
 		(new AppDataObj()).openDocumentViewInWin(params, tsi);
-		//(new AppDataObj()).openDocumentViewInWin(tsi, params.getConCur(), params.getMain(), this);
 	}
     
     /**

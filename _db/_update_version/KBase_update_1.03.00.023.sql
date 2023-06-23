@@ -8,6 +8,7 @@ SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 --SET client_encoding = 'WIN1251';
+SET lc_messages TO 'en_US.UTF-8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -156,7 +157,7 @@ CREATE TABLE kbase.template
     id bigint NOT NULL DEFAULT nextval('kbase.seq_template'::regclass),
 	parent_id bigint NULL,
 	type INTEGER NOT NULL DEFAULT 0,
-	name character varying(25) COLLATE pg_catalog."default",
+	name character varying(50) COLLATE pg_catalog."default",
     descr character varying(50) COLLATE pg_catalog."default",
     body text COLLATE pg_catalog."default",
     date_created timestamp without time zone DEFAULT now(),
@@ -1034,7 +1035,7 @@ $BODY$;
 
 ALTER FUNCTION kbase.templatetheme_delete(bigint)
     OWNER TO kbase;
-*/
+
 --###################################################### templatestyles_delete
 DROP FUNCTION IF EXISTS kbase.templatestyles_delete();
 
@@ -1057,4 +1058,161 @@ $BODY$;
 
 ALTER FUNCTION kbase.templatestyles_delete()
     OWNER TO kbase;
+
+--######## move table info #######################################
+CREATE SEQUENCE kbase.seq_info
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE kbase.seq_info OWNER TO kbase;
+
+do $$ 
+<<seq_info>>
+declare
+-- устанавливаем значение сиквенса
+	v_maxId   bigint;
+	v_result  bigint;
+begin
+	select max(id)
+	  into v_maxId
+	  from public.info
+	;
+	
+	v_maxId := v_maxId + 1;
+	SELECT pg_catalog.setval('kbase.seq_info', v_maxId, true) into v_result;
+	raise notice 'v_result =  %', v_result;
+end seq_info $$;
+---------------------------------------
+DROP TABLE IF EXISTS kbase.info;
+
+CREATE TABLE IF NOT EXISTS kbase.info
+(
+    id bigint NOT NULL DEFAULT nextval('kbase.seq_info'::regclass),
+    sectionid bigint NOT NULL,
+    infotypeid bigint NOT NULL,
+    infoid bigint NOT NULL,
+	template_style_id bigint,
+    "position" bigint,
+	name character varying(255) COLLATE pg_catalog."default",
+    descr character varying(255) COLLATE pg_catalog."default",
+    date_created timestamp without time zone DEFAULT now(),
+    date_modified timestamp without time zone DEFAULT now(),
+    user_created character varying(30) COLLATE pg_catalog."default" DEFAULT "current_user"(),
+    user_modified character varying(30) COLLATE pg_catalog."default" DEFAULT "current_user"(),
+    CONSTRAINT pk_info_id PRIMARY KEY (id),
+    CONSTRAINT fk_info_infotypeid FOREIGN KEY (infotypeid)
+        REFERENCES kbase.infotype (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_info_sectionid FOREIGN KEY (sectionid)
+        REFERENCES public.sections (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_info_template_style_id FOREIGN KEY (template_style_id)
+        REFERENCES kbase.template_style (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+) TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS kbase.info OWNER to kbase;
+REVOKE ALL ON TABLE kbase.info FROM kbase_user;
+GRANT ALL ON TABLE kbase.info TO kbase;
+GRANT SELECT ON TABLE kbase.info TO kbase_user;
+
+COMMENT ON TABLE kbase.info IS 'Заголовки инфоблоков.';
+COMMENT ON COLUMN kbase.info.infotypeid IS 'тип информационного блока (текст, ссылка, картинка и тд)';
+COMMENT ON COLUMN kbase.info.infoid IS 'ссылка на инфу в таблице с информационным блоком соответствующего типа';
+COMMENT ON COLUMN kbase.info.template_style_id IS 'Стиль шаблона инфо блока.';	
+COMMENT ON COLUMN kbase.info."position" IS 'Положение (порядковый номер) в документе.';
+COMMENT ON COLUMN kbase.info.descr IS 'краткое описание информационного блока';
+---------------------------------------
+-- копируем информацию
+insert into kbase.info
+select id, sectionid, infotypeid, infoid, infotypestyleid, "position", name, descr,
+       date_created, date_modified, user_created, user_modified
+  from public.info
+;
+------------------------------ 
+-- удаляем старые обьекты
+DROP TABLE public.info;
+DROP SEQUENCE public.seq_info;
+*/
+--####################################### section_copyinfoblocks, замінюємо поле infotypestyleid
+DROP FUNCTION IF EXISTS public.section_copyinfoblocks(bigint, bigint);
+
+CREATE OR REPLACE FUNCTION kbase.section_copyinfoblocks(p_sectionsrcid bigint, p_sectiontrgid bigint)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+declare
+	v_rec        record;
+    v_infoId_new bigint;
+begin
+	for v_rec in (select id, sectionid, infotypeid, infoid, template_style_id,
+                         position, name, descr,
+                         date_created, date_modified, user_created, user_modified
+                    from info
+                   where sectionId = p_sectionSrcId
+                   order by position)
+    loop
+    	-------- copy info block
+		case when v_rec.infoTypeId = 1        -- Простой текст
+			 then 
+             	select nextval('seq_info_text') into v_infoId_new;
+             
+             	insert into info_text (id, title, text, isshowtitle)
+				select v_infoId_new, title, text, isShowTitle
+				  from info_text
+				 where id = v_rec.infoId
+				;
+			 when v_rec.infoTypeId = 2        -- Изображение
+			 then 
+             	select nextval('seq_info_image') into v_infoId_new;
+             
+             	insert into info_image (id, title, image, width, height, descr, text, isshowtitle, isshowdescr, isshowtext)
+				select v_infoId_new, title, image, width, height, descr, text, isshowtitle, isshowdescr, isshowtext
+				  from info_Image
+				 where id = v_rec.infoId
+				;
+			 when v_rec.infoTypeId = 3        -- Файл
+			 then 
+             	select nextval('seq_info_file') into v_infoId_new;
+             
+             	insert into info_file (id, title, file_body, file_name, icon_id, descr, text, isshowtitle, isshowdescr, isshowtext)
+				select v_infoId_new, title, file_body, file_name, icon_id, descr, text, isshowtitle, isshowdescr, isshowtext
+				  from info_file
+				 where id = v_rec.infoId
+				;	
+             else 
+             	raise exception 'section_copyinfoblocks : Not existing type of info block , infoTypeId = %', v_rec.infoTypeId;
+		end case;
+
+		-------- copy info header
+		insert into info (id, sectionid, infotypeid, infoid, template_style_id,
+                          position, name, descr,
+                          date_created, date_modified, user_created, user_modified)
+        	values (nextval('seq_info'), p_sectionTrgId, v_rec.infoTypeId, v_infoId_new, v_rec.template_style_id,
+                    v_rec.position, v_rec.name, v_rec.descr,
+                    v_rec.date_created, v_rec.date_modified, v_rec.user_created, v_rec.user_modified)
+        ;
+    end loop;
+
+	return 0;
+end;
+$function$
+;
+
+ALTER FUNCTION kbase.section_copyinfoblocks(bigint, bigint) OWNER TO kbase;
+
+COMMENT ON FUNCTION kbase.section_copyinfoblocks(bigint, bigint)
+    IS 'копирование всех инфо блоков с одного раздела в другой';
+	
+	
+	
+	
+	
+	
 --<<

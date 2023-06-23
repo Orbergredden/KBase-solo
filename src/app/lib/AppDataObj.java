@@ -93,10 +93,6 @@ public class AppDataObj {
 	/**
 	 * Открываем отдельное окно для просмотра дерева/ветки разделов
 	 */
-//	public void openSectionTreeInWin (DBConCur_Parameters conn,
-//									  Main mainApp,
-//									  long rootSectionId,
-//									  Double... d_win) {
 	public void openSectionTreeInWin (Params params, long rootSectionId, Double... d_win) {
 		AnchorPane paneForView = null;
 		int winId = params.getWinList().getNextId();
@@ -156,12 +152,6 @@ public class AppDataObj {
 	/**
 	 * Открываем таб для просмотра документа
 	 */
-//	public static void openDocumentView (TreeItem<SectionItem> tsi,
-//			 DBConCur_Parameters conn,
-//			 Main mainApp,
-//			 SectionList_Controller parrentObj,
-//			 Container_Interface objContainer,
-//			 TabPane tabPane) {
 	public static void openDocumentView (Params params, TreeItem<SectionItem> tsi) {
 		AnchorPane paneForEdit = null;
 		SectionItem si = tsi.getValue();
@@ -206,16 +196,10 @@ public class AppDataObj {
 		
 		controller.load(si.getId(), false);
 	}
-	//TODO
 	
 	/**
 	 * Открываем отдельное окно для просмотра документа
 	 */
-//	public void openDocumentViewInWin (TreeItem<SectionItem> tsi,
-//			   DBConCur_Parameters conn,
-//			   Main mainApp,
-//			   SectionList_Controller parrentObj,
-//			   Double... d_win) {
 	public void openDocumentViewInWin (Params params, TreeItem<SectionItem> tsi, Double... d_win) {
 		AnchorPane paneForView = null;
 		int winId = params.getWinList().getNextId();
@@ -275,16 +259,10 @@ public class AppDataObj {
 		
 		controller.load(si.getId(), false);
 	}
-	//TODO 05.02
 
 	/**
 	 * Открываем таб для редактирования инфо блока
 	 */
-//	public static void openEditInfo (InfoHeaderItem ihi,
-//			 DBConCur_Parameters conn,
-//			 Main mainApp,
-//			 Container_Interface objContainer,
-//			 TabPane tabPane) {
 	public static void openEditInfo (Params params, InfoHeaderItem ihi) {
 		AnchorPane paneForEdit = null;
 		InfoEdit_Controller controller = null;
@@ -324,15 +302,10 @@ public class AppDataObj {
 		params.getTabPane_Cur().getTabs().add(tab);
 		params.getTabPane_Cur().getSelectionModel().select(tab);
 	}
-	//TODO 10.02.2020
 
 	/**
 	 * Открываем отдельное окно для редактирования инфо блока
 	 */
-//	public void openEditInfoInWin (InfoHeaderItem ihi,
-//			  DBConCur_Parameters conn,
-//			  Main mainApp,
-//		  Double... d_win) {
 	public void openEditInfoInWin (Params params, InfoHeaderItem ihi, Double... d_win) {
 		AnchorPane paneForEdit = null;
 		int winId = params.getWinList().getNextId();

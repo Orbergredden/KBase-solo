@@ -1100,7 +1100,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		long styleId = -1;
 	
 		try {
-			String stm = "SELECT InfoTypeStyle_getIdDefault(?,?,3) AS id ;";
+			String stm = "SELECT templatestyle_getiddefault(?,?,3) AS id ;";
      		PreparedStatement pst = con.prepareStatement(stm);
 	    	pst.setLong  (1, themeId);
 		    pst.setLong  (2, infoTypeId);
@@ -1198,7 +1198,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		PreparedStatement pst;
 		
 		try {
-            String stm = "INSERT INTO info (id, sectionid, infotypeid, infoid, position, infotypestyleid, " +
+            String stm = "INSERT INTO info (id, sectionid, infotypeid, infoid, position, template_style_id, " +
 		                 "                            name, descr) " + 
             			 "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
             pst = con.prepareStatement(stm);
@@ -1285,7 +1285,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		InfoHeaderItem retVal = null;
 	
 		try {
-			String stm = "SELECT id,sectionid,infotypeid,infoid,position,name,descr,infotypestyleid, " +
+			String stm = "SELECT id,sectionid,infotypeid,infoid,position,name,descr,template_style_id, " +
 		                 "       date_created, date_modified, user_created, user_modified " +
 				         "  FROM info " +
 				         " WHERE id = ?";
@@ -1308,7 +1308,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 					rs.getLong("id"), 
 					rs.getLong("sectionid"),
 					rs.getLong("infoTypeId"),
-					rs.getLong("infoTypeStyleId"),
+					rs.getLong("template_style_id"),
 					rs.getLong("infoId"),
 					rs.getLong("position"),
 					rs.getString("name"),
@@ -1335,7 +1335,7 @@ public static int getRowCount(ResultSet set) throws SQLException
         InfoHeaderItem retVal = null;
 
         try {
-            String stm = "SELECT id,sectionid,infotypeid,infoid,position,name,descr,infotypestyleid, " +
+            String stm = "SELECT id,sectionid,infotypeid,infoid,position,name,descr,template_style_id, " +
                     "       date_created, date_modified, user_created, user_modified " +
                     "  FROM info " +
                     " WHERE InfoTypeId = ?" +
@@ -1360,7 +1360,7 @@ public static int getRowCount(ResultSet set) throws SQLException
                     rs.getLong("id"),
                     rs.getLong("sectionid"),
                     rs.getLong("infoTypeId"),
-                    rs.getLong("infoTypeStyleId"),
+                    rs.getLong("template_style_id"),
                     rs.getLong("infoId"),
                     rs.getLong("position"),
                     rs.getString("name"),
@@ -1432,7 +1432,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		try {
 			String stm = "SELECT id, name, descr, position, " +
-					     "       sectionid, infotypeid, infoid, infotypestyleid, " +
+					     "       sectionid, infotypeid, infoid, template_style_id, " +
 		                 "       date_created, date_modified, user_created, user_modified " +
 					     "  FROM info " +
 					     " WHERE sectionid = ? " +
@@ -1456,7 +1456,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 						rs.getLong("id"), 
 						rs.getLong("sectionId"),
 						rs.getLong("infoTypeId"),
-						rs.getLong("infoTypeStyleId"),
+						rs.getLong("template_style_id"),
 						rs.getLong("infoId"),
 						rs.getLong("position"),
 	         			rs.getString("name"),
@@ -1542,7 +1542,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		try {
 			stm = 	  "UPDATE info " +
-					  "   SET sectionId = ?, infoTypeId = ?, infoId = ?, infoTypeStyleId = ?, " +
+					  "   SET sectionId = ?, infoTypeId = ?, infoId = ?, template_style_id = ?, " +
 					  "       position = ?, name = ?, descr = ?, " +
 					  "       date_modified = now(), user_modified = \"current_user\"() " +
 				      " WHERE id = ? " +
