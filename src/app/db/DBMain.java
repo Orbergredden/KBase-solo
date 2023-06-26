@@ -3279,6 +3279,67 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Возвращает текущий стиль согласно флагу в указанной теме для указанного типа инфо блока.
+	 */
+	public TemplateStyleItem templateStyleGetCurrent (long themeId, long infoTypeId, int flag) {
+		TemplateStyleItem retVal = null;
+	
+		try {
+			String stm = "SELECT s.id, s.parent_id, s.type, s.infotype_id, s.name, s.descr, s.tag, " +
+		                 "       s.date_created, s.date_modified, s.user_created, s.user_modified " +
+				         "  FROM template_style s, current_style cs " + 
+                         " WHERE s.id = cs.template_style_id " +
+                         "   AND cs.theme_id = ? " +
+                         "   AND s.infotype_id = ? " +
+                         "   AND cs.\"user\" = \"current_user\"() " +
+                         "   AND cs.flag = ? " +
+                         ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setLong (2, infoTypeId);
+			pst.setInt  (3, flag);
+			ResultSet rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				java.util.Date dateTmpCre;
+				Timestamp timestampCr = rs.getTimestamp("date_created");
+				if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+				else                      dateTmpCre = null;
+				
+				java.util.Date dateTmpMod;
+				Timestamp timestampMo = rs.getTimestamp("date_modified");
+				if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+				else                      dateTmpMod = null;
+				
+				retVal = new TemplateStyleItem (
+						rs.getLong("id"), 
+	         			rs.getLong("parent_id"),
+	         			rs.getInt("type"),
+	         			rs.getLong("infotype_id"),
+	         			rs.getString("name"),
+	         			rs.getString("descr"),
+	         			rs.getString("tag"),
+						dateTmpCre, 
+	         			dateTmpMod,
+	         			rs.getString("user_created"),
+	         			rs.getString("user_modified")
+						);
+			}
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		//System.out.println("infoTypeStyleGet : execute query Failed");
+    		e.printStackTrace();
+    		ShowAppMsg.showAlert("WARNING", "db error", 
+    				"Ошибка при работе с базой данных , TemplateStyleGetCurrent ("+themeId+","+infoTypeId+","+flag+")", 
+		            e.getMessage());
+    	}
+		return retVal;
+	}
+	//TODO
+	
+	/**
 	 * Возвращает стиль по умолчанию в указанной теме для указанного типа инфо блока.
 	 * Если такого стиля нет, возвращается null.
 	 */

@@ -135,18 +135,9 @@ public class SectionEdit_Controller {
      * Вызывается родительским обьектом, которое даёт на себя ссылку.
      * Инициализирует контролы на слое.
      */
-//    public void setParrentObj(SectionList_Controller parrentObj, int actionType,
-//			  TreeItem<SectionItem> selectedSectionParam_ti, Stage dialogStage) {
     public void setParams(Params params, int actionType, TreeItem<SectionItem> selectedSectionParam_ti) {
     	this.params     = params;
     	this.actionType = actionType;
-    	
-    	
-    	
-    	
-    	
-//        this.mainInfo_C = parrentObj;
-//        this.dialogStage = dialogStage;
         
         // init controls
         this.selectedSectionParam_ti = selectedSectionParam_ti;
@@ -311,15 +302,6 @@ public class SectionEdit_Controller {
 							true
 					));
 			
-//			controller.setParentObj(
-//        			this, dialogStage, iconId,
-//					siRootIdTmp,
-//        			params.getConCur().db.sectionGetIconIdDefault(
-//							(actionType == 1) ? selectedSectionParam.getId() : selectedSectionParam.getParentId(),
-//							true
-//					)
-//			);
-
 	        // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
 	        dialogStage.showAndWait();
 	        
