@@ -3513,6 +3513,11 @@ public static int getRowCount(ResultSet set) throws SQLException
 	                 	 "   and s.infotype_id = ? "+
 	                 	 subSql;
 			
+			/*System.out.println("parentItem.getName() = "+ parentItem.getName());
+			System.out.println("parentItem.getThemeId() = "+ parentItem.getThemeId());
+			System.out.println("parentItem.getId() = "+ parentItem.getId());
+			System.out.println("parentItem.getFlag() = "+ parentItem.getFlag());*/
+			
 			pst = con.prepareStatement(stm);
 			pst.setLong (1, parentItem.getThemeId());
 			pst.setLong (2, parentItem.getId());
@@ -3572,6 +3577,7 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
+	//TODO print
 	
 	/**
 	 * Выдает следующий Id для добавления нового стиля шаблона
@@ -3700,6 +3706,69 @@ public static int getRowCount(ResultSet set) throws SQLException
 					             "Ошибка при изменении стиля шаблонов (templateStyleUpdate).");
 		}
 	}
+	
+	/**
+	 * Стиль шаблонов. Обновление последнего используемого стиля для темы, типа блока и пользователя.
+	 */
+	@SuppressWarnings("resource")
+	public void templateStyleEditCurrent (long themeId, long infoTypeId, long styleId, int flag) {
+		String stm;
+		int countR;
+		
+		try {
+			//-------- check record with the style for exist
+			stm = "SELECT count(cs.id) CountR " +
+			      "  FROM template_style s, current_style cs " + 
+                  " WHERE s.id = cs.template_style_id " +
+                  "   AND cs.theme_id = ? " +
+                  "   AND s.infotype_id = ? " +
+                  "   AND cs.\"user\" = \"current_user\"() " +
+                  "   AND cs.flag = ? " +
+                  ";";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setLong (2, infoTypeId);
+			pst.setInt  (3, flag);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+
+			countR = rs.getInt("CountR");
+			
+			rs.close();
+			pst.close();
+			
+			//-------- insert style
+			if (countR == 0) {
+				stm = "INSERT INTO current_style (theme_id, template_style_id, flag) " + 
+           			  "VALUES(?, ?, ?)";
+				pst = con.prepareStatement(stm);
+				pst.setLong (1, themeId);
+				pst.setLong (2, styleId);
+				pst.setInt  (3, flag);
+			} else {
+			//-------- update style
+				stm = 	  "UPDATE current_style " +
+						  "   SET template_style_id = ?, "+
+						  "       date_modified = now() " +
+					      " WHERE theme_id = ? " +
+						  "   AND template_style_id = ? " +
+					      "   AND flag = ? " +
+					      ";";
+				pst = con.prepareStatement(stm);
+				pst.setLong(1, styleId);
+				pst.setLong(2, themeId);
+				pst.setLong(3, templateStyleGetCurrent (themeId, infoTypeId, flag).getId()); // old current style
+				pst.setInt (4, flag);
+			}
+			pst.executeUpdate();
+			pst.close();
+		} catch (SQLException e) {
+    		e.printStackTrace();
+			ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных templateStyleEditCurrent", 
+					e.getMessage());
+    	}
+	}
+	//TODO
 	
 	/**
 	 * Стили шаблонов. Удаление всех стилей.

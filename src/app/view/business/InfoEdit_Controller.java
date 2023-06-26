@@ -13,7 +13,9 @@ import app.model.business.InfoHeaderItem;
 import app.model.business.InfoTypeItem;
 import app.model.business.InfoTypeStyleItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.templates_old.TemplateItem;
+import app.view.business.template.TemplateStyleSelect_Controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -67,8 +69,8 @@ public class InfoEdit_Controller implements AppItem_Interface {
 	private TextField textField_Position;
 	
 	//
-	private InfoTypeStyleItem styleDefault;
-	private InfoTypeStyleItem styleSelected;
+	private TemplateStyleItem styleDefault;
+	private TemplateStyleItem styleSelected;
 	
 	// for info block
 	private InfoEdit_Simple_Controller controller_Info;
@@ -189,11 +191,11 @@ public class InfoEdit_Controller implements AppItem_Interface {
     	
     	//-------- init style controls
     	button_InfoTypeStyle.setTooltip(new Tooltip("Выбор стиля"));
-    	button_InfoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png")));
+    	button_InfoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
     	
     	// get default style 
     	long themeDefId = AppDataObj.sectionGetDefaultTheme(conn, ihi.getSectionId());
-    	styleDefault = conn.db.infoTypeStyleGetDefault(themeDefId, ihi.getInfoTypeId());
+    	styleDefault = conn.db.templateStyleGetDefault(themeDefId, ihi.getInfoTypeId());
     	
     	if (ihi.getTemplateStyleId() == 0) {              // default style
     		styleSelected = null;
@@ -219,7 +221,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
         	else 
         		label_InfoTypeStyle.setText("");
     	} else {                                            // selected style
-    		styleSelected = conn.db.infoTypeStyleGet(ihi.getTemplateStyleId());
+    		styleSelected = conn.db.templateStyleGet(ihi.getTemplateStyleId());
     		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleSelected.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
@@ -306,7 +308,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/InfoTypeStyleSelect.fxml"));
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateStyleSelect.fxml"));
 			AnchorPane page = loader.load();
 			
 			// Создаём диалоговое окно Stage.
@@ -317,16 +319,16 @@ public class InfoEdit_Controller implements AppItem_Interface {
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
 			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 
 			Preferences prefs = Preferences.userNodeForPackage(SectionEdit_Controller.class);
-			dialogStage.setWidth(prefs.getDouble("stageInfoTypeStyleSelect_Width", 500));
-			dialogStage.setHeight(prefs.getDouble("stageInfoTypeStyleSelect_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageInfoTypeStyleSelect_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageInfoTypeStyleSelect_PosY", 0));
+			dialogStage.setWidth(prefs.getDouble("stageTemplateStyleSelect_Width", 500));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateStyleSelect_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageTemplateStyleSelect_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageTemplateStyleSelect_PosY", 0));
 			
 			// Даём контроллеру доступ к главному прилодению.
-			InfoTypeStyleSelect_Controller controller = loader.getController();
+			TemplateStyleSelect_Controller controller = loader.getController();
 			controller.setParentObj(this, dialogStage, conn,
 					AppDataObj.sectionGetDefaultTheme(conn, conn.db.infoGet(infoHeaderId).getSectionId()),
 					conn.db.infoGet(infoHeaderId).getInfoTypeId(),

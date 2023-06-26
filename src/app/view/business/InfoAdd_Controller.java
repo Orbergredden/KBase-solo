@@ -12,7 +12,9 @@ import app.model.business.InfoTypeStyleItem;
 import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
+import app.model.business.template.TemplateStyleItem;
 import app.model.business.templates_old.TemplateItem;
+import app.view.business.template.TemplateStyleSelect_Controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,8 +78,8 @@ public class InfoAdd_Controller {
 	List<InfoTypeItem> listInfoType;
 	
 	//
-	InfoTypeStyleItem styleDefault;
-	InfoTypeStyleItem styleSelected;
+	TemplateStyleItem styleDefault;
+	TemplateStyleItem styleSelected;
 	
 	/**
      * Конструктор.
@@ -156,7 +158,7 @@ public class InfoAdd_Controller {
     	
     	//-------- init style controls
     	button_infoTypeStyle.setTooltip(new Tooltip("Выбор стиля"));
-    	button_infoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png")));
+    	button_infoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
     	
     	// get default style and output
     	getAndShowDefaultStyle (comboBox_infoType.getSelectionModel().getSelectedItem());
@@ -191,7 +193,7 @@ public class InfoAdd_Controller {
     private void getAndShowDefaultStyle (String comboBoxItemName) {
     	long themeDefId = AppDataObj.sectionGetDefaultTheme(params.getConCur(), sectionId);
     	long infoTypeSelId = StringUtil.getIdFromComboName(comboBoxItemName);
-    	styleDefault = params.getConCur().db.infoTypeStyleGetDefault(themeDefId, infoTypeSelId);
+    	styleDefault = params.getConCur().db.templateStyleGetDefault(themeDefId, infoTypeSelId);
     	
     	// check for exist template for default style
     	if (styleDefault != null) {
@@ -344,7 +346,7 @@ public class InfoAdd_Controller {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/business/InfoTypeStyleSelect.fxml"));
+			loader.setLocation(Main.class.getResource("view/business/template/TemplateStyleSelect.fxml"));
 			AnchorPane page = loader.load();
 			
 			// Создаём диалоговое окно Stage.
@@ -355,16 +357,16 @@ public class InfoAdd_Controller {
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add((getClass().getResource("/app/view/custom.css")).toExternalForm());
 			dialogStage.setScene(scene);
-			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 
 			Preferences prefs = Preferences.userNodeForPackage(SectionEdit_Controller.class);
-			dialogStage.setWidth(prefs.getDouble("stageInfoTypeStyleSelect_Width", 500));
-			dialogStage.setHeight(prefs.getDouble("stageInfoTypeStyleSelect_Height", 600));
-			dialogStage.setX(prefs.getDouble("stageInfoTypeStyleSelect_PosX", 0));
-			dialogStage.setY(prefs.getDouble("stageInfoTypeStyleSelect_PosY", 0));
+			dialogStage.setWidth(prefs.getDouble("stageTemplateStyleSelect_Width", 500));
+			dialogStage.setHeight(prefs.getDouble("stageTemplateStyleSelect_Height", 600));
+			dialogStage.setX(prefs.getDouble("stageTemplateStyleSelect_PosX", 0));
+			dialogStage.setY(prefs.getDouble("stageTemplateStyleSelect_PosY", 0));
 			
 			// Даём контроллеру доступ к главному прилодению.
-			InfoTypeStyleSelect_Controller controller = loader.getController();
+			TemplateStyleSelect_Controller controller = loader.getController();
 			controller.setParentObj(this, dialogStage, params.getConCur(), 
 					AppDataObj.sectionGetDefaultTheme(params.getConCur(), sectionId),
 					StringUtil.getIdFromComboName(comboBox_infoType.getSelectionModel().getSelectedItem()), 

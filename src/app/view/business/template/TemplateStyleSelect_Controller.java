@@ -33,8 +33,8 @@ public class TemplateStyleSelect_Controller {
 	//
 	long themeId;
 	long infoTypeId;
-	TemplateStyleItem styleSelected;
-	int styleTypeSelection;           // 0 - дефолтный стиль ; 1 - текущий стиль ; 2 - стиль из списка
+	public TemplateStyleItem styleSelected;
+	public int styleTypeSelection;           // 0 - дефолтный стиль ; 1 - текущий стиль ; 2 - стиль из списка
 	//
 	DBConCur_Parameters conn;
 	
@@ -218,7 +218,7 @@ public class TemplateStyleSelect_Controller {
     	// init 
     	final TreeItem<TemplateSimpleItem> root;
    		root = new TreeItem<>(new TemplateSimpleItem(
-   				0, "Теми", "це корінь", themeId, TemplateSimpleItem.TYPE_ITEM_DIR_STYLE, 0,0, new Date(), new Date(), "",""));
+   				0, "Теми", "це корінь", themeId, TemplateSimpleItem.TYPE_ITEM_DIR_STYLE, 1,infoTypeId, new Date(), new Date(), "",""));
     	root.setExpanded(true);
     	treeTableView_styles.setShowRoot(false);
     	treeTableView_styles.setRoot(root);
@@ -252,11 +252,17 @@ public class TemplateStyleSelect_Controller {
             	
             	try {
             		row = getTreeTableRow().getItem();
-            		TemplateItem ti = conn.db.templateGet(themeId, row.getId());
-            		if (ti == null) {
-            			graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
+            		
+            		if (row.getSubtypeItem() == 1) {
+            			graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_section_style_16.png"));
+            			
             		} else {
-            			graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_template_16.png"));
+            			TemplateItem ti = conn.db.templateGet(themeId, row.getId());
+            			if (ti == null) {
+            				graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_empty_16.png"));
+            			} else {
+            				graphic = new ImageView(new Image("file:resources/images/icon_templates/icon_style_16.png"));
+            			}
             		}
             		
             		if (conn.db.templateStyleIsDefault (row.getThemeId(), row.getId())) {
@@ -311,6 +317,9 @@ public class TemplateStyleSelect_Controller {
     		List<TemplateSimpleItem> styleList = conn.db.templateStyleListByParent (f);
     		
     		for (TemplateSimpleItem i : styleList) {
+    			
+    			//System.out.println(i.getName() +" "+ i.getName());
+    			
     			i.setThemeId(f.getThemeId());
     			TreeItem<TemplateSimpleItem> subItem = new TreeItem<>(i);
     			ti.getChildren().add(subItem);
@@ -390,10 +399,7 @@ public class TemplateStyleSelect_Controller {
     		styleTypeSelection = 2;
     		
     		// save current style in DB
-    		conn.db.infoTypeStyleEditCurrent(themeId, infoTypeId, si.getId(), 1);
-    		//TODO
-    		
-    		
+    		conn.db.templateStyleEditCurrent(themeId, infoTypeId, si.getId(), 1);
     	}
     	
         //-------- close window
