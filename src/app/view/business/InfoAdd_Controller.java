@@ -8,12 +8,11 @@ import app.lib.StringUtil;
 import app.model.Params;
 import app.model.business.InfoHeaderItem;
 import app.model.business.InfoTypeItem;
-import app.model.business.InfoTypeStyleItem;
 import app.model.business.Info_FileItem;
 import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
+import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateStyleItem;
-import app.model.business.templates_old.TemplateItem;
 import app.view.business.template.TemplateStyleSelect_Controller;
 
 import java.io.IOException;
@@ -44,9 +43,7 @@ import javafx.stage.Stage;
 public class InfoAdd_Controller {
 	//
 	private Params params;
-	///////////DocumentView_Controller parrentObj;
 	long sectionId;
-	////////////Stage dialogStage;
 	TreeItem<InfoHeaderItem> selectedInfoHeader_ti;
 	InfoHeaderItem selectedInfoHeader;
 	
@@ -59,9 +56,9 @@ public class InfoAdd_Controller {
 	@FXML
 	private ComboBox<String> comboBox_infoType;
 	@FXML
-	private Button button_infoTypeStyle;
+	private Button button_templateStyle;
 	@FXML
-	private Label label_infoTypeStyle;
+	private Label label_templateStyle;
 	@FXML
 	private TextField textField_position;
 	@FXML
@@ -114,27 +111,7 @@ public class InfoAdd_Controller {
         if (selectedInfoHeader_ti != null)  this.selectedInfoHeader = selectedInfoHeader_ti.getValue();
         initControlsValue();
     }
-    //TODO
     
-    /**
-     * Вызывается родительским обьектом, которое даёт на себя ссылку.
-     * Инициализирует контролы на слое.
-     */
-//    public void setParrentObj(
-//    		DocumentView_Controller parrentObj,
-//    		long sectionId,
-//    		TreeItem<InfoHeaderItem> selectedInfoHeader_ti, 
-//    		Stage dialogStage) {
-//        this.parrentObj = parrentObj;
-//        this.sectionId = sectionId;
-//        this.dialogStage = dialogStage;
-//        
-//        // init controls
-//        this.selectedInfoHeader_ti = selectedInfoHeader_ti;
-//        if (selectedInfoHeader_ti != null)  this.selectedInfoHeader = selectedInfoHeader_ti.getValue();
-//        initControlsValue();
-//    }
-	
     /**
      * Инициализирует контролы значениями 
      */
@@ -152,13 +129,12 @@ public class InfoAdd_Controller {
     	comboBox_infoType.setValue(OList_infoType.get(0));    // первый эдемент в списке
     	
     	comboBox_infoType.getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {
-            //System.out.println(newValue);
             getAndShowDefaultStyle (newValue);
     	});
     	
     	//-------- init style controls
-    	button_infoTypeStyle.setTooltip(new Tooltip("Выбор стиля"));
-    	button_infoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
+    	button_templateStyle.setTooltip(new Tooltip("Выбор стиля"));
+    	button_templateStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
     	
     	// get default style and output
     	getAndShowDefaultStyle (comboBox_infoType.getSelectionModel().getSelectedItem());
@@ -197,7 +173,7 @@ public class InfoAdd_Controller {
     	
     	// check for exist template for default style
     	if (styleDefault != null) {
-    		TemplateItem ti = params.getConCur().db.templateGet__old(themeDefId, styleDefault.getId());
+    		TemplateItem ti = params.getConCur().db.templateGet(themeDefId, styleDefault.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля по умолчанию "+styleDefault.getName()+" ("+styleDefault.getId()+") нет шаблона", 
@@ -208,9 +184,9 @@ public class InfoAdd_Controller {
     	
     	// output
     	if (styleDefault != null)  
-    		label_infoTypeStyle.setText("[по умолчанию] "+styleDefault.getName()+" ("+styleDefault.getId()+")");
+    		label_templateStyle.setText("[по умолчанию] "+styleDefault.getName()+" ("+styleDefault.getId()+")");
     	else 
-    		label_infoTypeStyle.setText("");
+    		label_templateStyle.setText("");
     }
 
 	/**
@@ -325,14 +301,6 @@ public class InfoAdd_Controller {
 
 		//-------- refresh headers list
 		((DocumentView_Controller)params.getParentObj()).handleButtonRefresh();
-		
-		
-		
-		
-		
-		//TODO
-		
-		
 
 		return ihi;
 	}
@@ -341,7 +309,7 @@ public class InfoAdd_Controller {
      * Вызывается при нажатии на кнопке выбора стиля для инфо блока
      */
     @FXML
-    private void handleButtonInfoTypeStyle() {
+    private void handleButtonTemplateStyle() {
     	try {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
@@ -359,7 +327,7 @@ public class InfoAdd_Controller {
 			dialogStage.setScene(scene);
 			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 
-			Preferences prefs = Preferences.userNodeForPackage(SectionEdit_Controller.class);
+			Preferences prefs = Preferences.userNodeForPackage(TemplateStyleSelect_Controller.class);
 			dialogStage.setWidth(prefs.getDouble("stageTemplateStyleSelect_Width", 500));
 			dialogStage.setHeight(prefs.getDouble("stageTemplateStyleSelect_Height", 600));
 			dialogStage.setX(prefs.getDouble("stageTemplateStyleSelect_PosX", 0));
@@ -380,12 +348,12 @@ public class InfoAdd_Controller {
 	        	case 0 :         // default style
 	        		styleDefault  = controller.styleSelected;
 	        		styleSelected = null;
-	        		label_infoTypeStyle.setText("[по умолчанию] "+styleDefault.getName()+" ("+styleDefault.getId()+")");
+	        		label_templateStyle.setText("[по умолчанию] "+styleDefault.getName()+" ("+styleDefault.getId()+")");
 	        		break;
 	        	case 1 :         // current style
 	        	case 2 :          // style from list
 	        		styleSelected = controller.styleSelected;
-	        		label_infoTypeStyle.setText(styleSelected.getName()+" ("+styleSelected.getId()+")");
+	        		label_templateStyle.setText(styleSelected.getName()+" ("+styleSelected.getId()+")");
 	        		break;
 	        	}
 	        }
@@ -408,12 +376,6 @@ public class InfoAdd_Controller {
     	
     	AppDataObj.openEditInfo (params, ihi);
     	
-//    	AppDataObj.openEditInfo(ihi, params.getConCur(), params.getMain(), 
-//    			params.getObjContainer(),
-//				params.getTabPane_Cur());
-    	
-    	//TODO 07.02.2020
-
     	//-------- close window
     	// get a handle to the stage
         Stage stage = (Stage) button_cancel.getScene().getWindow();
@@ -437,10 +399,6 @@ public class InfoAdd_Controller {
 		
 		AppDataObj.openEditInfo (params, ihi);
 		
-//		AppDataObj.openEditInfo(ihi, params.getConCur(), params.getMain(),
-//				params.getRootController(),
-//				params.getRootController().tabPane_Main);
-
 		//-------- close window
 		// get a handle to the stage
 		Stage stage = (Stage) button_cancel.getScene().getWindow();

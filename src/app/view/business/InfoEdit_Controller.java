@@ -1,21 +1,24 @@
 package app.view.business;
 
-import app.Main;
-import app.lib.AppDataObj;
-import app.lib.ShowAppMsg;
-import app.model.*;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
+import app.Main;
+import app.lib.AppDataObj;
+import app.lib.ShowAppMsg;
+import app.model.AppItem_Interface;
+import app.model.DBConCur_Parameters;
+import app.model.Params;
+import app.model.StateItem;
+import app.model.StateList;
 import app.model.business.InfoHeaderItem;
 import app.model.business.InfoTypeItem;
-import app.model.business.InfoTypeStyleItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateItem;
 import app.model.business.template.TemplateStyleItem;
-import app.model.business.templates_old.TemplateItem;
 import app.view.business.template.TemplateStyleSelect_Controller;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -62,9 +65,9 @@ public class InfoEdit_Controller implements AppItem_Interface {
 	@FXML
 	private Label label_InfoType;
 	@FXML
-	private Button button_InfoTypeStyle;
+	private Button button_TemplateStyle;
 	@FXML
-	private Label label_InfoTypeStyle;
+	private Label label_TemplateStyle;
 	@FXML
 	private TextField textField_Position;
 	
@@ -127,10 +130,6 @@ public class InfoEdit_Controller implements AppItem_Interface {
     	case 3 :     // attached file
     		fxmlFileName = "view/business/InfoEdit_File.fxml";
     		break;
-    		
-    		
-    		
-    		//TODO 13.02.2020
     	default :
     		fxmlFileName = null;
     	}
@@ -144,15 +143,11 @@ public class InfoEdit_Controller implements AppItem_Interface {
 			
 			// Даём контроллеру доступ к родителю и инициализируем
 			controller_Info = loader.getController();
-			//controller_Info.setParrentObj(this, conn, ihi.getInfoTypeId(), ihi.getInfoId());
 			
 			Params params = new Params(this.params);
 			params.setParentObj(this);
 			
 			controller_Info.setParams(params, ihi.getInfoTypeId(), ihi.getInfoId());
-			
-			
-			//TODO 14.02.2020 params
     	} catch (IOException e) {
             e.printStackTrace();
             ShowAppMsg.showAlert("WARNING", "Редактирование инфо блока", "Ошибка при открытии под-таба редактирования инфо блока", 
@@ -190,8 +185,8 @@ public class InfoEdit_Controller implements AppItem_Interface {
     	label_InfoType.setText("("+ ihi.getInfoTypeId() +") "+ iti.getName());
     	
     	//-------- init style controls
-    	button_InfoTypeStyle.setTooltip(new Tooltip("Выбор стиля"));
-    	button_InfoTypeStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
+    	button_TemplateStyle.setTooltip(new Tooltip("Выбор стиля"));
+    	button_TemplateStyle.setGraphic(new ImageView(new Image("file:resources/images/icon_templates/icon_template_link_16.png")));
     	
     	// get default style 
     	long themeDefId = AppDataObj.sectionGetDefaultTheme(conn, ihi.getSectionId());
@@ -202,7 +197,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
     		
         	// check for exist template for default style
         	if (styleDefault != null) {
-        		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleDefault.getId());
+        		TemplateItem ti = conn.db.templateGet(themeDefId, styleDefault.getId());
         		if (ti == null) {
         			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
         					"Для стиля по умолчанию "+styleDefault.getName()+" ("+styleDefault.getId()+") нет шаблона", 
@@ -217,12 +212,12 @@ public class InfoEdit_Controller implements AppItem_Interface {
         	
         	// output
         	if (styleDefault != null)  
-        		label_InfoTypeStyle.setText("[по умолчанию] ("+styleDefault.getId()+") "+styleDefault.getName());
+        		label_TemplateStyle.setText("[по умолчанию] ("+styleDefault.getId()+") "+styleDefault.getName());
         	else 
-        		label_InfoTypeStyle.setText("");
+        		label_TemplateStyle.setText("");
     	} else {                                            // selected style
     		styleSelected = conn.db.templateStyleGet(ihi.getTemplateStyleId());
-    		TemplateItem ti = conn.db.templateGet__old(themeDefId, styleSelected.getId());
+    		TemplateItem ti = conn.db.templateGet(themeDefId, styleSelected.getId());
     		if (ti == null) {
     			ShowAppMsg.showAlert("WARNING", "Предупреждение", 
     					"Для стиля "+styleSelected.getName()+" ("+styleSelected.getId()+") нет шаблона", 
@@ -232,9 +227,9 @@ public class InfoEdit_Controller implements AppItem_Interface {
 
     		// output
         	if (styleSelected != null)  
-        		label_InfoTypeStyle.setText("("+styleSelected.getId()+") "+ styleSelected.getName());
+        		label_TemplateStyle.setText("("+styleSelected.getId()+") "+ styleSelected.getName());
         	else 
-        		label_InfoTypeStyle.setText("");
+        		label_TemplateStyle.setText("");
     	}
     	
     	//-------- init position
@@ -303,7 +298,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
      * Вызывается при нажатии на кнопке выбора стиля для инфо блока
      */
     @FXML
-    private void handleButtonInfoTypeStyle() {
+    private void handleButtonTemplateStyle() {
     	try {
 	    	// Загружаем fxml-файл и создаём новую сцену
 			// для всплывающего диалогового окна.
@@ -321,7 +316,7 @@ public class InfoEdit_Controller implements AppItem_Interface {
 			dialogStage.setScene(scene);
 			dialogStage.getIcons().add(new Image("file:resources/images/icon_templates/icon_style_16.png"));
 
-			Preferences prefs = Preferences.userNodeForPackage(SectionEdit_Controller.class);
+			Preferences prefs = Preferences.userNodeForPackage(TemplateStyleSelect_Controller.class);
 			dialogStage.setWidth(prefs.getDouble("stageTemplateStyleSelect_Width", 500));
 			dialogStage.setHeight(prefs.getDouble("stageTemplateStyleSelect_Height", 600));
 			dialogStage.setX(prefs.getDouble("stageTemplateStyleSelect_PosX", 0));
@@ -342,12 +337,12 @@ public class InfoEdit_Controller implements AppItem_Interface {
 	        	case 0 :         // default style
 	        		styleDefault  = controller.styleSelected;
 	        		styleSelected = null;
-	        		label_InfoTypeStyle.setText("[по умолчанию] ("+styleDefault.getId()+") "+styleDefault.getName());
+	        		label_TemplateStyle.setText("[по умолчанию] ("+styleDefault.getId()+") "+styleDefault.getName());
 	        		break;
 	        	case 1 :         // current style
 	        	case 2 :          // style from list
 	        		styleSelected = controller.styleSelected;
-	        		label_InfoTypeStyle.setText("("+styleSelected.getId()+") "+ styleSelected.getName());
+	        		label_TemplateStyle.setText("("+styleSelected.getId()+") "+ styleSelected.getName());
 	        		break;
 	        	}
 

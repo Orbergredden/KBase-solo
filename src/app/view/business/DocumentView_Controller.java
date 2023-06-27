@@ -4,7 +4,12 @@ package app.view.business;
 import app.Main;
 import app.exceptions.KBase_Ex;
 import app.exceptions.KBase_HtmlCompileEx;
-import app.lib.*;
+import app.lib.AppDataObj;
+import app.lib.DateConv;
+import app.lib.FileCache;
+import app.lib.FromJS_InfoFile;
+import app.lib.HtmlCompile;
+import app.lib.ShowAppMsg;
 import app.model.AppItem_Interface;
 import app.model.Params;
 import app.model.StateItem;
@@ -12,8 +17,8 @@ import app.model.StateList;
 import app.model.business.DocumentItem;
 import app.model.business.InfoHeaderItem;
 import app.model.business.SectionItem;
+import app.model.business.template.TemplateFileItem;
 import app.model.business.template.TemplateThemeItem;
-import app.model.business.templates_old.TemplateRequiredFileItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -245,7 +250,7 @@ public class DocumentView_Controller implements AppItem_Interface {
     			new ReadOnlyStringWrapper(
     					(param.getValue().getValue().getTemplateStyleId() != 0) ?
     					Long.toString(param.getValue().getValue().getTemplateStyleId()) +" - "+
-    					params.getConCur().db.infoTypeStyleGet(param.getValue().getValue().getTemplateStyleId()).getName() :
+    					params.getConCur().db.templateStyleGet(param.getValue().getValue().getTemplateStyleId()).getName() :
     					""
     			));
     	treeTableColumn_infoId.setCellValueFactory(
@@ -420,15 +425,11 @@ public class DocumentView_Controller implements AppItem_Interface {
     public void load (long sectionId, boolean isReload) {
     	long countInfoHeaders = params.getConCur().db.infoCount(sectionId);
     	long selectedItemId = 0;
-    	//int selectedItemIndex;
-    	//TreeItem<InfoHeaderItem> ti = null;
 
     	this.sectionId = sectionId;
     	
     	//======== если это релоад , то запоминаем текущий инфо блок , что бы потом на него вернуться
     	if (isReload && (countInfoHeaders > 0)) {
-    		//selectedItem = treeTableView_InfoHeader.getSelectionModel().getSelectedIndex();
-    		//ti = treeTableView_InfoHeader.getSelectionModel().getSelectedItem();
     		if (treeTableView_InfoHeader.getSelectionModel().getSelectedItem() != null) {
     			selectedItemId = treeTableView_InfoHeader.getSelectionModel().getSelectedItem().getValue().getId();
     		}
@@ -455,20 +456,15 @@ public class DocumentView_Controller implements AppItem_Interface {
         	
         	//======== restore active list item
         	if (isReload) {
-        		//treeTableView_InfoHeader.getSelectionModel().select(selectedItem);
-        		//onChangeSelectedInfo(ti);
-        		
         		for (TreeItem<InfoHeaderItem> t : rootInfoList.getChildren()) {
         			if (t.getValue().getId() == selectedItemId) {
         				treeTableView_InfoHeader.getSelectionModel().select(t);
-        				//onChangeSelectedInfo(t);
-        				//System.out.println("t.getValue().getId() = " + t.getValue().getId());
         				isReloadedId = t.getValue().getId();
         			}
         		}
         	}
     	} else {
-    		showRequiredFile (params.getConCur().db.sectionGetThemeId(sectionId, true), "no_info.html");
+    		showTemplateFile (params.getConCur().db.sectionGetThemeId(sectionId, true), "no_info.html");
     	}
     }
     
@@ -479,12 +475,8 @@ public class DocumentView_Controller implements AppItem_Interface {
      * @param ti — информация по одном разделе
      */
     private void onChangeSelectedInfo(TreeItem<InfoHeaderItem> ti) {
-    	//mainInfo_C.mainApp.statusBar_ShowMsg("TEST : "+ ti.getValue().getName());
     	if (ti != null) {
-    		//showDocument (ti.getValue().getSectionId(), ti.getValue().getId(), false);
-    		
     		webEngine.executeScript("scrollToElement(\""+ ti.getValue().getId() +"\")");
-    		//System.out.println("t.getValue().getId() = " + ti.getValue().getId());
     	}
     }
     
@@ -586,10 +578,10 @@ public class DocumentView_Controller implements AppItem_Interface {
     /**
      * Показывает обязательный файл в WebView.
      */
-    private void showRequiredFile (long themeId, String fileName) {
+    private void showTemplateFile (long themeId, String fileName) {
     	if (isDebug)   strDebugForShow = "";
     	
-    	TemplateRequiredFileItem trf = params.getConCur().db.templateFileGet(themeId, fileName);
+    	TemplateFileItem trf = params.getConCur().db.templateFileGet(themeId, fileName);
     	webEngine.loadContent(trf.getBody());
     }
     
@@ -747,13 +739,6 @@ public class DocumentView_Controller implements AppItem_Interface {
 		params.setStageCur(null);
 		
 		AppDataObj.openEditInfo (params, ihi);
-    	
-//		AppDataObj.openEditInfo (
-//				ihi, 
-//				params.getConCur(), 
-//				params.getMain(), 
-//				(SectionList_Controller)params.getParentObj(), 
-//				((SectionList_Controller)params.getParentObj()).tabPane_info);
     }
 
 	/**
@@ -778,9 +763,6 @@ public class DocumentView_Controller implements AppItem_Interface {
 		params.setStageCur(null);
 		
 		AppDataObj.openEditInfo (params, ihi);
-		
-//		AppDataObj.openEditInfo (ihi, params.getConCur(), params.getMain(), params.getRootController(),
-//				params.getRootController().tabPane_Main);
 	}
 
 	/**
@@ -798,8 +780,6 @@ public class DocumentView_Controller implements AppItem_Interface {
 		InfoHeaderItem ihi = treeTableView_InfoHeader.getSelectionModel().getSelectedItem().getValue();
 
 		//-------- открываем окно для редактирования
-		//AppDataObj.openEditInfoInWin (ihi, conn, mainInfo_C.mainApp);
-		//(new AppDataObj()).openEditInfoInWin(ihi, conn, mainInfo_C.mainApp);
 		(new AppDataObj()).openEditInfoInWin(params, ihi);
 	}
     
@@ -890,16 +870,13 @@ public class DocumentView_Controller implements AppItem_Interface {
 	public void saveControlsState (StateList stateList) {
 		String splitOrientation = 
 				(splitPane_info.getOrientation() == Orientation.HORIZONTAL) ? "HORIZONTAL" : "VERTICAL";
-		//StateItem stateItem;
 		
-		//stateItem = stateList.add(
 		stateList.add(
 				"splitPane_info_Orientation",
 				splitOrientation,
 				null);
 		stateList.add(
 				"splitPane_info_Position",
-				//Double.toString(splitPane_info.getDividerPositions()[0]),
 				String.valueOf(splitPane_info.getDividerPositions()[0]),
 				null);
 	}

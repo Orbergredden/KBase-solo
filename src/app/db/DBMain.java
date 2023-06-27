@@ -2665,6 +2665,65 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Файл для шаблона. Получение информации по themeId и fileName 
+	 * (перетягнув зі старої версії шаблонів, де у файлів не було директорій)
+	 */
+	public TemplateFileItem templateFileGet (long themeId, String fileName) {
+		TemplateFileItem retVal = null;
+		Image isImage = null;
+	
+		try {
+			String stm = "SELECT id, parent_id, theme_id, type, file_type, file_name, descr, body, body_bin, " +
+		                 "       date_created, date_modified, user_created, user_modified " +
+				         "  FROM template_files " +
+				         " WHERE theme_id = ? " +
+				         "   AND file_name = ? ";
+			PreparedStatement pst = con.prepareStatement(stm);
+			pst.setLong (1, themeId);
+			pst.setString(2, fileName);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			
+			java.util.Date dateTmpCre;
+			Timestamp timestampCr = rs.getTimestamp("date_created");
+			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
+			else                      dateTmpCre = null;
+			
+			java.util.Date dateTmpMod;
+			Timestamp timestampMo = rs.getTimestamp("date_modified");
+			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
+			else                      dateTmpMod = null;
+			
+			if (rs.getInt("file_type") == TemplateRequiredFileItem.FILETYPEEXT_IMAGE) 
+				isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
+			
+			retVal = new TemplateFileItem (
+					rs.getLong("id"),
+					rs.getLong("parent_id"),
+         			rs.getLong("theme_id"),
+         			rs.getInt("type"),
+         			rs.getInt("file_type"),
+         			rs.getString("file_name"),
+         			rs.getString("descr"),
+         			rs.getString("body"),
+         			isImage,
+					dateTmpCre, 
+         			dateTmpMod,
+         			rs.getString("user_created"),
+         			rs.getString("user_modified")
+					);
+			
+			rs.close();
+			pst.close();
+		} catch (SQLException e) {
+    		System.out.println("templateFileGet (long themeId, String fileName) : execute query Failed");
+    		e.printStackTrace();
+    	}
+		
+		return retVal;
+	}
+	
+	/**
 	 * Файл (или директория) для шаблона. Получение информации по id
 	 */
 	public TemplateFileItem templateFileGetById (long id) {
@@ -3337,7 +3396,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     	}
 		return retVal;
 	}
-	//TODO
 	
 	/**
 	 * Возвращает стиль по умолчанию в указанной теме для указанного типа инфо блока.
@@ -3577,7 +3635,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 		
 		return retVal;
 	}
-	//TODO print
 	
 	/**
 	 * Выдает следующий Id для добавления нового стиля шаблона
@@ -3768,7 +3825,6 @@ public static int getRowCount(ResultSet set) throws SQLException
 					e.getMessage());
     	}
 	}
-	//TODO
 	
 	/**
 	 * Стили шаблонов. Удаление всех стилей.
@@ -4646,63 +4702,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     		e.printStackTrace();
     		ShowAppMsg.showAlert("WARNING", "db error", "Ошибка при работе с базой данных", 
 		             e.getMessage());
-    	}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Файл для шаблона. Получение информации по themeId и fileName
-	 */
-	public TemplateRequiredFileItem templateFileGet (long themeId, String fileName) {
-		TemplateRequiredFileItem retVal = null;
-		Image isImage = null;
-	
-		try {
-			String stm = "SELECT id, theme_id, file_name, descr, type, file_type, body, body_bin, " +
-		                 "       date_created, date_modified, user_created, user_modified " +
-				         "  FROM template_required_files " +
-				         " WHERE theme_id = ? " +
-				         "   AND file_name = ? ";
-			PreparedStatement pst = con.prepareStatement(stm);
-			pst.setLong (1, themeId);
-			pst.setString(2, fileName);
-			ResultSet rs = pst.executeQuery();
-			rs.next();
-			
-			java.util.Date dateTmpCre;
-			Timestamp timestampCr = rs.getTimestamp("date_created");
-			if (timestampCr != null)  dateTmpCre = new java.util.Date(timestampCr.getTime());
-			else                      dateTmpCre = null;
-			
-			java.util.Date dateTmpMod;
-			Timestamp timestampMo = rs.getTimestamp("date_modified");
-			if (timestampMo != null)  dateTmpMod = new java.util.Date(timestampMo.getTime());
-			else                      dateTmpMod = null;
-			
-			if (rs.getInt("file_type") == TemplateRequiredFileItem.FILETYPEEXT_IMAGE) 
-				isImage = new Image(new ByteArrayInputStream(rs.getBytes("body_bin")));
-			
-			retVal = new TemplateRequiredFileItem (
-					rs.getLong("id"), 
-         			rs.getLong("theme_id"),
-         			rs.getString("file_name"),
-         			rs.getString("descr"),
-         			rs.getString("body"),
-         			isImage,
-         			rs.getInt("type"),
-         			rs.getInt("file_type"),
-					dateTmpCre, 
-         			dateTmpMod,
-         			rs.getString("user_created"),
-         			rs.getString("user_modified")
-					);
-			
-			rs.close();
-			pst.close();
-		} catch (SQLException e) {
-    		System.out.println("templateFileGet (long themeId, String fileName) : execute query Failed");
-    		e.printStackTrace();
     	}
 		
 		return retVal;

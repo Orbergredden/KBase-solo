@@ -284,12 +284,12 @@ public class TemplateStyleSelect_Controller {
         });
 
 		//---- восстанавливаем сортировку таблицы по столбцу
-		String sortColumnId = prefs.get("stageInfoTypeStyleSelect_sortColumnId","");
+		String sortColumnId = prefs.get("stageTemplateStyleSelect_sortColumnId","");
 
 		if (! sortColumnId.equals("")) {
 			for (TreeTableColumn column : treeTableView_styles.getColumns()) {
 				if (column.getId().equals(sortColumnId)) {
-					String sortType = prefs.get("stageInfoTypeStyleSelect_sortType","ASCENDING");
+					String sortType = prefs.get("stageTemplateStyleSelect_sortType","ASCENDING");
 
 					treeTableView_styles.setSortMode(TreeSortMode.ALL_DESCENDANTS);
 					column.setSortable(true); // This performs a sort
