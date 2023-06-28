@@ -31,7 +31,7 @@ update settings
  where alias = 'VERSION_DB_END_DATE'
 ;
 --######## move table template_themes #######################################
-/*
+
 CREATE SEQUENCE kbase.seq_template_themes
     START WITH 1
     INCREMENT BY 1
@@ -1139,7 +1139,7 @@ select id, sectionid, infotypeid, infoid, infotypestyleid, "position", name, des
 -- удаляем старые обьекты
 DROP TABLE public.info;
 DROP SEQUENCE public.seq_info;
-*/
+
 --####################################### section_copyinfoblocks, замінюємо поле infotypestyleid
 DROP FUNCTION IF EXISTS public.section_copyinfoblocks(bigint, bigint);
 
@@ -1209,10 +1209,15 @@ ALTER FUNCTION kbase.section_copyinfoblocks(bigint, bigint) OWNER TO kbase;
 
 COMMENT ON FUNCTION kbase.section_copyinfoblocks(bigint, bigint)
     IS 'копирование всех инфо блоков с одного раздела в другой';
-	
-	
-	
-	
-	
-	
+
+--######## drop old tables ####################################################
+
+DROP TABLE public.template_required_files;
+DROP SEQUENCE public.seq_template_required_files;
+
+DROP TABLE public.templates;
+DROP SEQUENCE public.templates;
+
+DROP TABLE kbase.infotype_style;
+DROP SEQUENCE kbase.seq_infotype_style;
 --<<
