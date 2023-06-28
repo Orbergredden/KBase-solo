@@ -4224,6 +4224,25 @@ public static int getRowCount(ResultSet set) throws SQLException
 	}
 	
 	/**
+	 * Шаблон. Получение информации по themeId и InfoHeaderItem
+	 */
+	public TemplateItem templateGet (long themeId, InfoHeaderItem infoHeader) {
+		long templateStyleId = 0;
+		TemplateItem retVal = null;
+		
+		if (infoHeader.getTemplateStyleId() <= 0) {
+			templateStyleId = templateStyleGetDefault(themeId, infoHeader.getInfoTypeId()).getId();
+		} else {
+			templateStyleId = infoHeader.getTemplateStyleId();
+		}
+		
+		retVal = templateGet (themeId, templateStyleId);
+		
+		return retVal;
+	}
+	//TODO
+	
+	/**
 	 * Шаблон. Перевіряємо по id чи існує такий шаблон (або директорія шаблонів)
 	 */
 	public boolean templateIsPresent (long id) {
@@ -4758,24 +4777,6 @@ public static int getRowCount(ResultSet set) throws SQLException
     		System.out.println("templateGetByInfoTypeStyleId : execute query Failed");
     		e.printStackTrace();
     	}
-		
-		return retVal;
-	}
-	
-	/**
-	 * Шаблон. Получение информации по themeId и InfoHeaderItem
-	 */
-	public app.model.business.templates_old.TemplateItem templateGet (long themeId, InfoHeaderItem infoHeader) {
-		long infoTypeStyleId = 0;
-		app.model.business.templates_old.TemplateItem retVal = null;
-		
-		if (infoHeader.getTemplateStyleId() <= 0) {
-			infoTypeStyleId = infoTypeStyleGetDefault(themeId, infoHeader.getInfoTypeId()).getId();
-		} else {
-			infoTypeStyleId = infoHeader.getTemplateStyleId();
-		}
-		
-		retVal = templateGet__old (themeId, infoTypeStyleId);
 		
 		return retVal;
 	}

@@ -11,8 +11,8 @@ import app.model.business.Info_ImageItem;
 import app.model.business.Info_TextItem;
 import app.model.business.SectionItem;
 import app.model.business.template.TemplateThemeItem;
-import app.model.business.templates_old.TemplateItem;
-import app.model.business.templates_old.TemplateRequiredFileItem;
+import app.model.business.template.TemplateItem;
+import app.model.business.template.TemplateFileItem;
 
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -59,7 +59,7 @@ public class HtmlCompile {
 	//
 	TemplateThemeItem tti;
 	//
-	TemplateRequiredFileItem templateMain;
+	TemplateFileItem templateMain;
 	//
 	boolean isDocumentCached;
 	//
@@ -81,7 +81,9 @@ public class HtmlCompile {
 				Integer.parseInt(conn.db.settingsGetValue("MAIN__CACHE_DOC__ENABLE")) :
 				si.getCacheType();
 		tti = conn.db.templateThemeGetById(conn.db.sectionGetThemeId(sectionId, true));
-		templateMain = conn.db.templateFileGetByType(tti.getId(), TemplateRequiredFileItem.FILETYPE_MAIN_FILE);
+		//templateMain = conn.db.templateFileGetByType(tti.getId(), TemplateRequiredFileItem.FILETYPE_MAIN_FILE);
+		templateMain = conn.db.templateFileGet(tti.getId(), "kbase_main.html");
+		//TODO
 		
 		isDocumentCached = conn.db.documentFindBySectionId(sectionId);
 		di = (isDocumentCached) ? conn.db.documentGetBySectionId(sectionId) : null;
@@ -216,7 +218,6 @@ public class HtmlCompile {
 	 * Компиляция инфо блоков
 	 */
 	String compileInfoBlock (InfoHeaderItem infoHeader) throws KBase_HtmlCompileEx {
-		//TemplateItem template = conn.db.templateGet(tti.getId(), infoHeader.getInfoTypeStyleId());
 		TemplateItem template = conn.db.templateGet(tti.getId(), infoHeader);
 		String tmplInfoBody = template.getBody();
 		int posBegin;
@@ -401,5 +402,4 @@ public class HtmlCompile {
 		
 		return retVal;
 	}
-	//TODO
 }
